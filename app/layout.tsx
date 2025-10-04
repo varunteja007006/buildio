@@ -5,7 +5,7 @@ import { Footer } from "./_components/footer/Footer";
 import { Navbar } from "./_components/nav/Navbar";
 import BloomContainer from "@/components/bloom-container";
 import { Providers } from "@/components/providers";
-import "@workspace/ui/globals.css"
+import "@workspace/ui/globals.css";
 
 const comicNeue = Comic_Neue({ weight: "400", subsets: ["latin"] });
 
@@ -21,6 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="varunteja" />
+      </head>
       <body className={`${comicNeue.className} scroll-smooth antialiased`}>
         <Providers>
           <BloomContainer>
