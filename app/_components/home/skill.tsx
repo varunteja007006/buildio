@@ -16,20 +16,20 @@ export default function Skills() {
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Technical Skills</h3>
 
-        {technicalSkillTypes.map((item, index) => {
+        {technicalSkillTypes.map((item) => {
           return (
-            <React.Fragment key={index}>
+            <React.Fragment key={item}>
               <p className="font-semibold">{technicalSkillsData[item].label}</p>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {technicalSkillsData[item].skillList.map((item) => {
-                  if (!item.toShow) {
+                {technicalSkillsData[item].skillList.map((innerItem) => {
+                  if (!innerItem.toShow) {
                     return null;
                   }
                   return (
-                    <Card key={item.name}>
+                    <Card key={`${item} ${innerItem.name}`}>
                       <div className="flex items-center gap-5 px-5">
-                        <item.icon className="size-12" />
-                        <CardTitle className="text-base">{item.name}</CardTitle>
+                        <innerItem.icon className="size-12" />
+                        <CardTitle className="text-base">{innerItem.name}</CardTitle>
                       </div>
                     </Card>
                   );
