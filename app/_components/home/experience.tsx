@@ -42,9 +42,9 @@ export default function Experience() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg">
                   {item.jobTitle}{" "}
-                  {item.current && <Badge variant="default">Current</Badge>}
+                  {item.current && <Badge variant="default" className="font-semibold">Current</Badge>}
                   {item.current ? (
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="font-semibold">
                       Exp:{" "}
                       {calcExp(
                         format(new Date(), "yyyy-MM-dd"),
@@ -53,7 +53,7 @@ export default function Experience() {
                       yrs
                     </Badge>
                   ) : (
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="font-semibold">
                       Exp: {calcExp(item.dateOfResigning, item.dateOfJoining)}
                       {"  "}
                       yrs

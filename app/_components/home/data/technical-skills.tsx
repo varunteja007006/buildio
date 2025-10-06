@@ -63,7 +63,7 @@ const technicalSkillsData = {
       { name: "Gemini", icon: SiGooglegemini, toShow: true },
     ],
   },
-  ProgrammingLanguages: {
+  "Programming Languages": {
     label: "Programming Languages / Technologies",
     skillList: [
       { name: "React JS", icon: FaReact, toShow: true },
@@ -109,11 +109,11 @@ const technicalSkillsData = {
       { name: "Jenkins", icon: SiJenkins, toShow: true },
     ],
   },
-  os: {
+  OS: {
     label: "Operating Systems",
     skillList: [
       { name: "Linux", icon: FaLinux, toShow: true },
-      { name: "Windows 10", icon: FaWindows, toShow: true },
+      { name: "Windows 11", icon: FaWindows, toShow: true },
     ],
   },
 }

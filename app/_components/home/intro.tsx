@@ -1,11 +1,11 @@
-import React from "react"
+import React from "react";
 
-import { Button } from "@workspace/ui/components/button"
-import { Card } from "@workspace/ui/components/card"
-import { CloudDownload } from "lucide-react"
+import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
+import { CloudDownload } from "lucide-react";
 
-import Image from "next/image"
-import ContactIcons from "./contact-icons"
+import Image from "next/image";
+import ContactIcons from "./contact-icons";
 
 export default function Intro() {
   return (
@@ -57,7 +57,7 @@ export default function Intro() {
               coding, while planning to explore Go, Rust, and C to get closer to
               the low-level systems that fascinate me.`}
             </div>
-            <div className="font-semibold">- Varun Teja</div>
+            <div>{`- Varun Teja`}</div>
             <div>
               <ContactIcons className="" />
             </div>
@@ -65,5 +65,5 @@ export default function Intro() {
         </div>
       </Card>
     </section>
-  )
+  );
 }

@@ -84,6 +84,7 @@ export default function Projects() {
                               ? "default"
                               : "outline"
                           }
+                          className="font-semibold"
                         >
                           {item.projectStatus}
                         </Badge>
@@ -95,7 +96,7 @@ export default function Projects() {
                     <div className="flex flex-wrap items-center justify-start gap-2">
                       {item.project_badges.map(item => {
                         return (
-                          <Badge variant={"outline"} key={item}>
+                          <Badge variant={"outline"} key={item} className="text-sm border-2">
                             {item}
                           </Badge>
                         )
