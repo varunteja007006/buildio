@@ -13,11 +13,11 @@ export default function Homepage() {
       {/* sections */}
       <Intro />
       <br />
-      <Skills />
       <Experience />
       <Projects />
-      <Certifications />
+      <Skills />
       <Academics />
+      <Certifications />
       <ContactMe />
     </div>
   );

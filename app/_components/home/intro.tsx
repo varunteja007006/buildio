@@ -2,10 +2,26 @@ import React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
-import { CloudDownload } from "lucide-react";
+import { CloudDownload, Quote } from "lucide-react";
 
 import Image from "next/image";
 import ContactIcons from "./contact-icons";
+import {
+  SiJavascript,
+  SiNextdotjs,
+  SiPostgresql,
+  SiTailwindcss,
+} from "react-icons/si";
+import { FaNodeJs, FaReact } from "react-icons/fa";
+
+const expertise = [
+  { name: "JavaScript", icon: SiJavascript },
+  { name: "Next JS", icon: SiNextdotjs },
+  { name: "React JS", icon: FaReact },
+  { name: "Node JS", icon: FaNodeJs },
+  { name: "PostgreSQL", icon: SiPostgresql },
+  { name: "Tailwind CSS", icon: SiTailwindcss },
+];
 
 export default function Intro() {
   return (
@@ -35,31 +51,40 @@ export default function Intro() {
             </div>
           </div>
 
-          <div className="space-y-4 text-center text-base leading-loose lg:w-2/3">
-            <div>
-              {`Hi 👋, I’m Varun, a Senior Software Engineer at Renault Nissan
-            Technology and Business Center India (RNTBCI). I build full-stack
-            applications that bring AI-powered insights to supplier risk
-            assessment, procurement, and sustainability—helping businesses cut
-            through paperwork and make better, data-driven decisions. `}
+          <div className="space-y-4 text-center max-w-prose text-base leading-loose">
+            <div>{`Hi 👋, I'm Varun,`}</div>
+            <div className="max-w-prose">
+              {`I work at Renault Nissan
+            Technology and Business Center India as a Senior Software Engineer. I build full-stack
+            applications that bring privacy driven AI-powered insights to assess supplier risk
+            , procurement, and sustainability — helping business with quick analysis
+             and better, data-driven decisions. `}
+            </div>
+
+            <div className="flex flex-row gap-4 items-center flex-wrap justify-center">
+              {expertise.map((item) => {
+                return (
+                  <div
+                    key={item.name}
+                    className="flex shadow-xs flex-row gap-2 items-center border border-primary/10 hover:border-primary/50 hover:bg-primary/10 cursor-pointer px-2 py-1 rounded-lg"
+                  >
+                    <item.icon />
+                    {item.name}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-row justify-center">
+              <blockquote className="relative p-2 font-semibold pl-8 bg-accent/30 border-l-4 border-accent text-accent-foreground font-mono italic rounded-md max-w-prose">
+                <Quote className="absolute top-3 left-2 size-4 opacity-70" />I
+                believe in scalable architecture, clean code, and continuous
+                learning.
+              </blockquote>
             </div>
 
             <div>
-              {`My core stack is Next.js, React, and Tailwind CSS on the frontend,
-              and NestJS, Postgres, and Java on the backend. I also have
-              hands-on experience with Node.js, Express, MongoDB, and MSSQL,
-              giving me a strong foundation in both SQL and NoSQL systems. I’m
-              passionate about scalable architecture, clean code, and continuous
-              learning.`}
-            </div>
-            <div>
-              {`Currently, I’m sharpening my skills in Java, MCP servers, and vibe
-              coding, while planning to explore Go, Rust, and C to get closer to
-              the low-level systems that fascinate me.`}
-            </div>
-            <div>{`- Varun Teja`}</div>
-            <div>
-              <ContactIcons className="" />
+              <ContactIcons />
             </div>
           </div>
         </div>

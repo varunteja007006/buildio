@@ -26,12 +26,11 @@ export default function Skills() {
                     return null;
                   }
                   return (
-                    <Card key={`${item} ${innerItem.name}`}>
-                      <div className="flex items-center gap-5 px-5">
-                        <innerItem.icon className="size-12" />
-                        <CardTitle className="text-base">{innerItem.name}</CardTitle>
-                      </div>
-                    </Card>
+                    <SkillCard
+                      key={`${item} ${innerItem.name}`}
+                      icon={<innerItem.icon className="size-6" />}
+                      name={innerItem.name}
+                    />
                   );
                 })}
               </div>
@@ -49,12 +48,11 @@ export default function Skills() {
               return null;
             }
             return (
-              <Card key={item.id}>
-                <div className="flex items-center gap-5 px-6">
-                  <item.icon className="size-12" />
-                  <CardTitle className="text-base">{item.name}</CardTitle>
-                </div>
-              </Card>
+              <SkillCard
+                key={item.id}
+                icon={<item.icon className="size-6" />}
+                name={item.name}
+              />
             );
           })}
         </div>
@@ -62,3 +60,14 @@ export default function Skills() {
     </section>
   );
 }
+
+const SkillCard = ({ icon, name }: { icon: React.ReactNode; name: string }) => {
+  return (
+    <Card>
+      <div className="flex items-center gap-5 px-6">
+        {icon}
+        <CardTitle className="text-base">{name}</CardTitle>
+      </div>
+    </Card>
+  );
+};
