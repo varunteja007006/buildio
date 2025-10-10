@@ -59,7 +59,7 @@ export function ExperienceToggleBtn({
   };
 
   return (
-    <Button onClick={handleOnClick} className={cn("hidden lg:flex", className)}>
+    <Button onClick={handleOnClick} className={cn("", className)}>
       {children}
     </Button>
   );

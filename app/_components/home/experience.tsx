@@ -136,7 +136,7 @@ export default function Experience() {
                                 <Maximize2 className="size-4" />
                               </Button>
                             </DialogTrigger>
-                            <ExperienceToggleBtn data={item}>
+                            <ExperienceToggleBtn className="hidden lg:flex" data={item}>
                               <Maximize2 className="size-4" />
                             </ExperienceToggleBtn>
                           </div>
@@ -207,7 +207,7 @@ export default function Experience() {
             })}
           </div>
 
-          <div className="flex-1 bg-card p-4 rounded-lg shadow">
+          <div className="flex-1 bg-card p-4 rounded-lg shadow hidden lg:flex">
             <ExperienceDataRender />
           </div>
         </div>
