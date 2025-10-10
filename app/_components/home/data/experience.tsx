@@ -1,6 +1,19 @@
 import { generateId } from "@workspace/utils/utils";
 
-const experienceData = [
+export type ExperienceRecord = {
+  id: string;
+  jobTitle: string;
+  company: string;
+  workingFrom: string;
+  workingTill: string;
+  dateOfJoining: string;
+  dateOfResigning: string;
+  jobDescription: string[];
+  toShow: boolean;
+  current: boolean;
+};
+
+const experienceData: ExperienceRecord[] = [
   {
     id: generateId(),
     jobTitle: "Senior Software Engineer",
@@ -55,5 +68,5 @@ const experienceData = [
     toShow: true,
     current: false,
   },
-]
-export default experienceData
+];
+export default experienceData;
