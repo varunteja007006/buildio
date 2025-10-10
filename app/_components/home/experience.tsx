@@ -65,14 +65,13 @@ export default function Experience() {
                       <div className="relative flex flex-col items-center justify-center w-1 bg-primary h-full flex-1">
                         <div className="absolute top-0 p-2 text-primary-foreground bg-primary rounded-full">
                           {isFirst ? (
-                            <Star className="size-5" />
-                          ) : (
-                            <ChevronUp className="size-5" />
-                          )}
+                            <Star  />
+                          ) : // <ChevronUp className="size-5" />
+                          null}
                         </div>
                         {isLast && (
                           <div className="absolute bottom-0 p-2 inline-flex items-center text-primary-foreground bg-primary rounded-full">
-                            <GraduationCap className="size-5" />
+                            {/* <GraduationCap className="size-5" /> */}
                           </div>
                         )}
                       </div>
@@ -136,7 +135,10 @@ export default function Experience() {
                                 <Maximize2 className="size-4" />
                               </Button>
                             </DialogTrigger>
-                            <ExperienceToggleBtn className="hidden lg:flex" data={item}>
+                            <ExperienceToggleBtn
+                              className="hidden lg:flex"
+                              data={item}
+                            >
                               <Maximize2 className="size-4" />
                             </ExperienceToggleBtn>
                           </div>
@@ -188,11 +190,14 @@ export default function Experience() {
                         </DialogHeader>
                         <div className="space-y-4">
                           <ul className="list-inside list-disc space-y-3 text-black dark:text-white">
-                            {item.jobDescription.map((item, index) => (
-                              <li key={index} className="text-sm">
-                                {item}
-                              </li>
-                            ))}
+                            {item.jobDescription.map((item, index) => {
+                              const key = `${index} - description`;
+                              return (
+                                <li key={key} className="text-sm">
+                                  {item}
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                         <div className="text-sm">
@@ -207,7 +212,7 @@ export default function Experience() {
             })}
           </div>
 
-          <div className="flex-1 bg-card p-4 rounded-lg shadow hidden lg:flex">
+          <div className="flex-1 bg-card p-5 rounded-lg shadow hidden lg:flex">
             <ExperienceDataRender />
           </div>
         </div>
