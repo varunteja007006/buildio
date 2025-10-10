@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
-import { CloudDownload, Quote } from "lucide-react";
+import { CloudDownload } from "lucide-react";
 
 import Image from "next/image";
 import ContactIcons from "./contact-icons";
@@ -76,9 +76,8 @@ export default function Intro() {
             </div>
 
             <div className="flex flex-row justify-center">
-              <blockquote className="relative p-2 font-semibold pl-8 bg-accent/30 border-l-4 border-accent text-accent-foreground font-mono italic rounded-md max-w-prose">
-                <Quote className="absolute top-3 left-2 size-4 opacity-70" />I
-                believe in scalable architecture, clean code, and continuous
+              <blockquote className="relative p-2 font-semibold pl-8 bg-accent/30 border-l-4 border-accent text-accent-foreground italic rounded-md max-w-prose">
+                I believe in scalable architecture, clean code, and continuous
                 learning.
               </blockquote>
             </div>
