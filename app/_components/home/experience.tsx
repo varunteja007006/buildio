@@ -63,15 +63,16 @@ export default function Experience() {
                   <div className="flex flex-row items-stretch gap-5">
                     <div className="flex flex-col w-10 items-center justify-stretch">
                       <div className="relative flex flex-col items-center justify-center w-1 bg-primary h-full flex-1">
-                        <div className="absolute top-0 p-2 text-primary-foreground bg-primary rounded-full">
+                        <div className="absolute top-0 p-1 text-primary-foreground bg-primary rounded-full">
                           {isFirst ? (
-                            <Star  />
-                          ) : // <ChevronUp className="size-5" />
-                          null}
+                            <Star className="size-4" />
+                          ) : <div className="p-1"></div>
+
+                          }
                         </div>
                         {isLast && (
-                          <div className="absolute bottom-0 p-2 inline-flex items-center text-primary-foreground bg-primary rounded-full">
-                            {/* <GraduationCap className="size-5" /> */}
+                          <div className="absolute bottom-0 p-1 inline-flex items-center text-primary-foreground bg-primary rounded-full">
+                            <GraduationCap className="size-5" />
                           </div>
                         )}
                       </div>
