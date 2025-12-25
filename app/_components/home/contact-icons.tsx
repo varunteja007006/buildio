@@ -32,7 +32,7 @@ export default function ContactIcons({
             <TooltipTrigger asChild>
               <button
                 className={cn(
-                  "cursor-pointer rounded-full p-2 bg-card hover:bg-primary/10 hover:shadow-lg",
+                  "cursor-pointer rounded-full shadow dark:shadow-2xl p-2 bg-card hover:bg-primary/10 hover:shadow-lg",
                   className
                 )}
                 onClick={() => handleCopy(item.contact_value)}

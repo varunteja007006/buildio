@@ -51,7 +51,7 @@ export default function Intro() {
             </div>
           </div>
 
-          <div className="space-y-4 text-center max-w-prose text-base leading-loose">
+          <div className="space-y-4 text-center max-w-prose mx-auto text-base leading-loose">
             <div>{`Hi 👋, I'm Varun,`}</div>
             <div className="max-w-prose">
               {`I work at Renault Nissan
