@@ -25,8 +25,9 @@ const expertise = [
 
 export default function Intro() {
   return (
-    <section id="intro">
-      <Card className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center space-y-4">
+    <section id="intro" className="min-h-[calc(100vh-15rem)] flex flex-col items-center justify-center">
+      <Card>
+      {/* <Card className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center space-y-4"> */}
         <div className="flex flex-col items-start gap-10 px-6 lg:flex-row">
           <div className="flex w-full flex-col items-center gap-5 lg:w-1/3">
             <Image

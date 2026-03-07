@@ -252,7 +252,7 @@ const projectData = [
     ],
     project_github: "https://github.com/varunteja007006/open_templates",
     project_link: "",
-    toShow: true,
+    toShow: false,
     projectStatus: INPROGRESS,
   },
 ].sort((a, b) => b.projectStatus.localeCompare(a.projectStatus))
