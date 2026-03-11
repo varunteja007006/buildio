@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { ModeToggle } from "@/components/toggle-theme"
+import { ModeToggle } from "@/components/toggle-theme";
 
-import Icon from "./Icon"
+import Icon from "./Icon";
 
 export function Navbar() {
   return (
@@ -12,5 +12,5 @@ export function Navbar() {
       <Icon />
       <ModeToggle />
     </div>
-  )
+  );
 }

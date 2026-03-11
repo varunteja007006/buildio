@@ -35,10 +35,10 @@ import {
   budget2,
   budget3,
   budget4,
-} from "@/public"
+} from "@/public";
 
-export const COMPLETED = "Completed"
-export const INPROGRESS = "In Progress"
+export const COMPLETED = "Completed";
+export const INPROGRESS = "In Progress";
 
 const projectData = [
   // Completed Projects
@@ -255,6 +255,6 @@ const projectData = [
     toShow: false,
     projectStatus: INPROGRESS,
   },
-].sort((a, b) => b.projectStatus.localeCompare(a.projectStatus))
+].sort((a, b) => b.projectStatus.localeCompare(a.projectStatus));
 
-export default projectData
+export default projectData;

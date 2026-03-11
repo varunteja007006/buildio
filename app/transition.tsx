@@ -1,11 +1,11 @@
-"use client"
-import React from "react"
-import { motion } from "motion/react"
+"use client";
+import React from "react";
+import { motion } from "motion/react";
 
 export default function Transition({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <motion.div
@@ -15,5 +15,5 @@ export default function Transition({
     >
       {children}
     </motion.div>
-  )
+  );
 }

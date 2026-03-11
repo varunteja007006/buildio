@@ -9,7 +9,7 @@ import {
   FaPhp,
   FaAws,
   FaDocker,
-} from "react-icons/fa"
+} from "react-icons/fa";
 import {
   SiJavascript,
   SiMongodb,
@@ -37,10 +37,10 @@ import {
   SiGooglegemini,
   SiOpenai,
   SiJest,
-} from "react-icons/si"
-import { BsFiletypeScss } from "react-icons/bs"
-import { GiTortoise } from "react-icons/gi"
-import { DiVisualstudio, DiMsqlServer } from "react-icons/di"
+} from "react-icons/si";
+import { BsFiletypeScss } from "react-icons/bs";
+import { GiTortoise } from "react-icons/gi";
+import { DiVisualstudio, DiMsqlServer } from "react-icons/di";
 
 // Go, Rust, C
 // React Native, Expo, Electron
@@ -116,6 +116,6 @@ const technicalSkillsData = {
       { name: "Windows 11", icon: FaWindows, toShow: true },
     ],
   },
-}
+};
 
-export default technicalSkillsData
+export default technicalSkillsData;

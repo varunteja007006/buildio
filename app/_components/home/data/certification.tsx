@@ -65,5 +65,5 @@ const certificationData = [
     certificate_year: "",
     toShow: true,
   },
-]
-export default certificationData
+];
+export default certificationData;

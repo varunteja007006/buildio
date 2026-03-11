@@ -1,5 +1,5 @@
-import * as React from "react"
-import ContactIcons from "../home/contact-icons"
+import * as React from "react";
+import ContactIcons from "../home/contact-icons";
 
 export function Footer() {
   return (
@@ -13,5 +13,5 @@ export function Footer() {
         <p>{`-- Varun Teja K --`}</p>
       </div>
     </footer>
-  )
+  );
 }

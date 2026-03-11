@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 import {
   Card,
@@ -7,26 +7,26 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/card"
-import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+} from "@workspace/ui/components/card";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
+} from "@workspace/ui/components/tooltip";
 
-import { FaGithub } from "react-icons/fa6"
-import { GrDeploy } from "react-icons/gr"
+import { FaGithub } from "react-icons/fa6";
+import { GrDeploy } from "react-icons/gr";
 
-import projectData, { COMPLETED } from "./data/projects"
+import projectData, { COMPLETED } from "./data/projects";
 
 const ProjectLink = ({
   URL,
   type,
 }: {
-  URL: string
-  type: "github" | "website"
+  URL: string;
+  type: "github" | "website";
 }) => {
   if (type === "website") {
     return (
@@ -40,7 +40,7 @@ const ProjectLink = ({
         </TooltipTrigger>
         <TooltipContent>Go to deployed website</TooltipContent>
       </Tooltip>
-    )
+    );
   }
 
   if (type === "github") {
@@ -55,10 +55,10 @@ const ProjectLink = ({
         </TooltipTrigger>
         <TooltipContent>Go to github repository</TooltipContent>
       </Tooltip>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 export default function Projects() {
   return (
@@ -68,7 +68,7 @@ export default function Projects() {
       <div className="grid grid-cols-1 gap-5">
         {projectData.map((item, index) => {
           if (!item.toShow) {
-            return null
+            return null;
           }
           return (
             <Card key={item.id} className="relative">
@@ -94,18 +94,22 @@ export default function Projects() {
                       {item.project_subtitle}
                     </CardDescription>
                     <div className="flex flex-wrap items-center justify-start gap-2">
-                      {item.project_badges.map(item => {
+                      {item.project_badges.map((item) => {
                         return (
-                          <Badge variant={"outline"} key={item} className="text-sm border-2">
+                          <Badge
+                            variant={"outline"}
+                            key={item}
+                            className="text-sm border-2"
+                          >
                             {item}
                           </Badge>
-                        )
+                        );
                       })}
                     </div>
                   </CardHeader>
                   <CardContent className="leading-loose">
                     {item.project_description.map((item, index) => {
-                      return <p key={index}>{item}</p>
+                      return <p key={index}>{item}</p>;
                     })}
                   </CardContent>
                   <CardFooter className="gap-5">
@@ -119,9 +123,9 @@ export default function Projects() {
                 </div>
               </div>
             </Card>
-          )
+          );
         })}
       </div>
     </section>
-  )
+  );
 }

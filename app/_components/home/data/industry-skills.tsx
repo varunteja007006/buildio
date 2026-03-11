@@ -1,7 +1,7 @@
-import { FaServer, FaProjectDiagram } from "react-icons/fa"
-import { GrCycle } from "react-icons/gr"
-import { TbMathFunction } from "react-icons/tb"
-import { LuBrainCircuit } from "react-icons/lu"
+import { FaServer, FaProjectDiagram } from "react-icons/fa";
+import { GrCycle } from "react-icons/gr";
+import { TbMathFunction } from "react-icons/tb";
+import { LuBrainCircuit } from "react-icons/lu";
 import { generateId } from "@workspace/utils/utils";
 
 const industrySkillsData = [
@@ -40,5 +40,5 @@ const industrySkillsData = [
     icon: LuBrainCircuit,
     toShow: true,
   },
-]
-export default industrySkillsData
+];
+export default industrySkillsData;
