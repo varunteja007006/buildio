@@ -5,7 +5,9 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export function Providers({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}): React.ReactNode {
   return (
     <NextThemesProvider
       attribute="class"

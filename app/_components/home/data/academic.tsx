@@ -7,8 +7,8 @@ const academicData = [
       "Vel Tech R&D Institute of Science & Technology, Deemed to be a University",
     course: "Bachelor of Technology in Computer Science",
     year: "(2017-2021)",
-    score: "CGPA 8.56",
-    progress: 85.6,
+    score: "CGPA 8.6",
+    progress: 86,
     toShow: true,
   },
   {

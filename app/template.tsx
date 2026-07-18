@@ -3,6 +3,8 @@ import Transition from "@/app/transition";
 
 export default function Template({
   children,
-}: Readonly<{ children: ReactNode }>) {
+}: {
+  children: ReactNode;
+}): ReactNode {
   return <Transition>{children}</Transition>;
 }

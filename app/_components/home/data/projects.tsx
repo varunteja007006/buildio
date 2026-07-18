@@ -44,6 +44,47 @@ const projectData = [
   // Completed Projects
   {
     id: generateId(),
+    project_title: `Buildio Pro`,
+    project_subtitle: `A fully type-safe stack for building full stack applications`,
+    project_badges: [
+      "Next.js",
+      "tRPC",
+      "Drizzle ORM",
+      "PostgreSQL",
+      "Tailwind CSS",
+      "TypeScript",
+    ],
+    project_description: [
+      `Buildio Pro is a type-safe full stack application built with the T3 Stack. TypeScript-first architecture ensures frontend and backend stay in sync, making it an ideal stack for AI-driven development.`,
+      `Leverages tRPC for end-to-end type safety, Drizzle ORM for type-safe database queries, and PostgreSQL for reliable data storage.`,
+    ],
+    project_github: "https://github.com/varunteja007006/Buildio/tree/main/buildio_pro",
+    project_link: "",
+    toShow: true,
+    projectStatus: COMPLETED,
+  },
+  {
+    id: generateId(),
+    project_title: `Vehicle Management System`,
+    project_subtitle: `Monorepo architecture with shared codebase across applications`,
+    project_badges: [
+      "Turborepo",
+      "Next.js",
+      "Node.js",
+      "Shared Packages",
+      "TypeScript",
+    ],
+    project_description: [
+      `A full stack application built with a monorepo architecture using Turborepo, enabling code sharing between multiple applications.`,
+      `Fully type-safe codebase that enables seamless sharing of types, utilities, and components across different apps — optimized for AI-assisted development workflows.`,
+    ],
+    project_github: "https://github.com/varunteja007006/vehicle-management",
+    project_link: "",
+    toShow: true,
+    projectStatus: COMPLETED,
+  },
+  {
+    id: generateId(),
     project_title: `Poker Planner`,
     project_subtitle: `A simple, no-friction collaborative planning app`,
     project_badges: [

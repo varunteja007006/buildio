@@ -6,6 +6,7 @@ import Experience from "./experience";
 import Intro from "./intro";
 import Skills from "./skill";
 import Projects from "./projects";
+import Languages from "./languages";
 
 export default function Homepage() {
   return (
@@ -18,6 +19,7 @@ export default function Homepage() {
       <Skills />
       <Academics />
       <Certifications />
+      {/* <Languages /> */}
       <ContactMe />
     </div>
   );

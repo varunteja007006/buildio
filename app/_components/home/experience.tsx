@@ -79,7 +79,11 @@ function ExperienceContext() {
           <div className="flex flex-col space-y-1.5" key={exp.id}>
             <div className="text-lg font-semibold">{title}</div>
             <div className="text-sm text-muted-foreground">{`${rangeLabel} (${duration} yrs)`}</div>
-            <div>{exp.jobDescription[0]}</div>
+            <ul className="list-disc pl-5 space-y-1">
+              {exp.jobDescription.map((desc, i) => (
+                <li key={i}>{desc}</li>
+              ))}
+            </ul>
             <Separator
               className={cn(
                 "my-2",

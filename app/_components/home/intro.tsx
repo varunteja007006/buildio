@@ -11,14 +11,19 @@ import {
   SiNextdotjs,
   SiPostgresql,
   SiTailwindcss,
+  SiTypescript,
 } from "react-icons/si";
-import { FaNodeJs, FaReact } from "react-icons/fa";
+import { FaNodeJs, FaReact, FaPython } from "react-icons/fa";
+import { SiExpressvpn } from "react-icons/si";
 
 const expertise = [
   { name: "JavaScript", icon: SiJavascript },
+  { name: "TypeScript", icon: SiTypescript },
   { name: "Next JS", icon: SiNextdotjs },
   { name: "React JS", icon: FaReact },
   { name: "Node JS", icon: FaNodeJs },
+  { name: "Express JS", icon: SiExpressvpn },
+  { name: "Python", icon: FaPython },
   { name: "PostgreSQL", icon: SiPostgresql },
   { name: "Tailwind CSS", icon: SiTailwindcss },
 ];
@@ -58,11 +63,10 @@ export default function Intro() {
           <div className="space-y-4 text-center max-w-prose mx-auto text-base leading-loose">
             <div>{`Hi 👋, I'm Varun,`}</div>
             <div className="max-w-prose">
-              {`I work at Renault Nissan
-            Technology and Business Center India as a Senior Software Engineer. I build full-stack
-            applications that bring privacy driven AI-powered insights to assess supplier risk
-            , procurement, and sustainability — helping business with quick analysis
-             and better, data-driven decisions. `}
+              {`Full Stack Engineer with 5+ years of experience building scalable web applications using Next.js, React, and Node.js. Specialized in rapid product development and AI-integrated systems, delivering production-grade solutions in compressed timelines.`}
+            </div>
+            <div className="max-w-prose">
+              {`Currently at Renault Group, I'm pioneering AI-integrated SDLC workflows to accelerate enterprise product delivery — building full-stack applications that bring AI-powered insights to supplier risk, procurement, and sustainability.`}
             </div>
 
             <div className="flex flex-row gap-4 items-center flex-wrap justify-center">

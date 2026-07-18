@@ -10,15 +10,16 @@ import "@workspace/ui/globals.css";
 const comicNeue = Comic_Neue({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Varun Teja K",
-  description: "varunteja007006@gmail.com",
+  title: "Varun Teja K | Full Stack Engineer",
+  description:
+    "Full Stack Engineer with 5+ years of experience in Next.js, React, Node.js, and AI-driven systems.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}): React.ReactNode {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

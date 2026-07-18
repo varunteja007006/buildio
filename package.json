@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "node ../../scripts/clean-workspace.mjs",
+    "clean:dry": "node ../../scripts/clean-workspace.mjs --dry-run",
+    "clean:cache": "node ../../scripts/clean-workspace.mjs --mode cache",
+    "clean:deps": "node ../../scripts/clean-workspace.mjs --mode deps"
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",

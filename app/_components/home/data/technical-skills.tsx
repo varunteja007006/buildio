@@ -12,6 +12,8 @@ import {
 } from "react-icons/fa";
 import {
   SiJavascript,
+  SiTypescript,
+  SiExpressvpn,
   SiMongodb,
   SiMysql,
   SiCss3,
@@ -61,6 +63,8 @@ const technicalSkillsData = {
       { name: "Co-Pilot", icon: SiGithubcopilot, toShow: true },
       { name: "Claude", icon: SiClaude, toShow: true },
       { name: "Gemini", icon: SiGooglegemini, toShow: true },
+      { name: "Prompt Engineering", icon: SiOpenai, toShow: true },
+      { name: "AI SDLC", icon: SiGithubcopilot, toShow: true },
     ],
   },
   "Programming Languages": {
@@ -69,6 +73,8 @@ const technicalSkillsData = {
       { name: "React JS", icon: FaReact, toShow: true },
       { name: "Node JS", icon: FaNodeJs, toShow: true },
       { name: "JavaScript", icon: SiJavascript, toShow: true },
+      { name: "TypeScript", icon: SiTypescript, toShow: true },
+      { name: "Express JS", icon: SiExpressvpn, toShow: true },
       { name: "PostgreSQL", icon: SiPostgresql, toShow: true },
       { name: "MSSQL", icon: DiMsqlServer, toShow: true },
       { name: "MySQL", icon: SiMysql, toShow: true },

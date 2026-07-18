@@ -4,9 +4,9 @@ import { motion } from "motion/react";
 
 export default function Transition({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}): React.ReactNode {
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
