@@ -19,7 +19,7 @@ export default function Certifications() {
             return null;
           }
           return (
-            <Card key={item.id}>
+            <Card key={`cert-${item.certificate_name}`}>
               <CardHeader className="flex h-full flex-col justify-between">
                 <CardTitle className="text-md">
                   {item.certificate_name}

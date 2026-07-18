@@ -2,39 +2,38 @@ import { FaServer, FaProjectDiagram } from "react-icons/fa";
 import { GrCycle } from "react-icons/gr";
 import { TbMathFunction } from "react-icons/tb";
 import { LuBrainCircuit } from "react-icons/lu";
-import { generateId } from "@workspace/utils/utils";
 
 const industrySkillsData = [
   {
-    id: generateId(),
+    id: "skill-oop",
     name: "Object Oriented Programming System",
     image: "",
     icon: FaProjectDiagram,
     toShow: true,
   },
   {
-    id: generateId(),
+    id: "skill-dbms",
     name: "Database Management System",
     image: "",
     icon: FaServer,
     toShow: true,
   },
   {
-    id: generateId(),
+    id: "skill-sdlc",
     name: "Software Development and Life Cycle",
     image: "",
     icon: GrCycle,
     toShow: true,
   },
   {
-    id: generateId(),
+    id: "skill-dsa",
     name: "Data Structures and Algorithms",
     image: "",
     icon: TbMathFunction,
     toShow: true,
   },
   {
-    id: generateId(),
+    id: "skill-problem-solving",
     name: "Problem Solving",
     image: "",
     icon: LuBrainCircuit,

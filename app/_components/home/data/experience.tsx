@@ -1,5 +1,3 @@
-import { generateId } from "@workspace/utils/utils";
-
 export type ExperienceRecord = {
   id: string;
   jobTitle: string;
@@ -15,7 +13,7 @@ export type ExperienceRecord = {
 
 const experienceData: ExperienceRecord[] = [
   {
-    id: generateId(),
+    id: "exp-renault",
     jobTitle: "Senior Engineer",
     company: "Renault Group",
     workingFrom: "May 2025",
@@ -32,7 +30,7 @@ const experienceData: ExperienceRecord[] = [
     current: true,
   },
   {
-    id: generateId(),
+    id: "exp-invest4edu",
     jobTitle: "Software Engineer",
     company: "invest4Edu",
     workingFrom: "Dec 2023",
@@ -49,7 +47,7 @@ const experienceData: ExperienceRecord[] = [
     current: false,
   },
   {
-    id: generateId(),
+    id: "exp-tcs",
     jobTitle: "System Engineer",
     company: "Tata Consultancy Services",
     workingFrom: "May 2021",

@@ -19,7 +19,7 @@ export default function ContactMe() {
           <TableBody>
             {contactData.map((item) => {
               return (
-                <TableRow key={item.id} className="border-none">
+                <TableRow key={item.contact_type} className="border-none">
                   <TableCell className="font-semibold capitalize">
                     {item.contact_type}
                   </TableCell>

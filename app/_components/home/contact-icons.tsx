@@ -28,7 +28,7 @@ export default function ContactIcons({
     <div className="flex items-center justify-center gap-4">
       {contactData.map((item) => {
         return (
-          <Tooltip key={item.id}>
+          <Tooltip key={item.contact_type}>
             <TooltipTrigger asChild>
               <button
                 className={cn(

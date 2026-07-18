@@ -11,7 +11,7 @@ export default function Languages() {
         {languagesData.map((item) => {
           return (
             <Badge
-              key={item.id}
+              key={item.language}
               variant="outline"
               className="flex gap-2 px-4 py-2 text-sm font-semibold"
             >

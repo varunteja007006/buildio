@@ -1,8 +1,6 @@
-import { generateId } from "@workspace/utils/utils";
-
 const academicData = [
   {
-    id: generateId(),
+    id: "acad-btech",
     institute:
       "Vel Tech R&D Institute of Science & Technology, Deemed to be a University",
     course: "Bachelor of Technology in Computer Science",
@@ -12,7 +10,7 @@ const academicData = [
     toShow: true,
   },
   {
-    id: generateId(),
+    id: "acad-intermediate",
     institute: "Narayana Junior College",
     course: "Intermediate - MPC",
     year: "(2015-2017)",
@@ -21,7 +19,7 @@ const academicData = [
     toShow: true,
   },
   {
-    id: generateId(),
+    id: "acad-secondary",
     institute: "The Bodhi School",
     course: "Secondary Education - 10th",
     year: "2015",

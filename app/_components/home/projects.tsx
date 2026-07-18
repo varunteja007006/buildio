@@ -71,7 +71,7 @@ export default function Projects() {
             return null;
           }
           return (
-            <Card key={item.id} className="relative">
+            <Card key={`project-${item.project_title}`} className="relative">
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="col-span-2">
                   <CardHeader className="pb-3">

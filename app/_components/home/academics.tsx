@@ -24,7 +24,7 @@ export default function Academics() {
           }
           return (
             <div
-              key={item.id}
+              key={item.course}
               className="flex h-full flex-col gap-2 justify-between bg-card p-5 shadow border rounded-lg"
             >
               <div className="flex flex-row items-start justify-between w-full">

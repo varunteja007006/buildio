@@ -49,7 +49,7 @@ export default function Skills() {
             }
             return (
               <SkillCard
-                key={item.id}
+                key={item.name}
                 icon={<item.icon className="size-6" />}
                 name={item.name}
               />

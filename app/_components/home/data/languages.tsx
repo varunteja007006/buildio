@@ -1,23 +1,21 @@
-import { generateId } from "@workspace/utils/utils";
-
 const languagesData = [
   {
-    id: generateId(),
+    id: "lang-en",
     language: "English",
     proficiency: "Fluent",
   },
   {
-    id: generateId(),
+    id: "lang-hi",
     language: "Hindi",
     proficiency: "Fluent",
   },
   {
-    id: generateId(),
+    id: "lang-te",
     language: "Telugu",
     proficiency: "Native",
   },
   {
-    id: generateId(),
+    id: "lang-ta",
     language: "Tamil",
     proficiency: "Fluent",
   },
