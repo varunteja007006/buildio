@@ -16,17 +16,16 @@ import {
   SiExpressvpn,
   SiMongodb,
   SiMysql,
-  SiCss3,
+  SiCss,
   SiTailwindcss,
   SiDjango,
   SiMdnwebdocs,
   SiNetlify,
-  SiHeroku,
   SiRailway,
   SiGithub,
   SiPostman,
   SiJenkins,
-  SiSonarqube,
+  SiSonarqubecloud,
   SiGooglecloud,
   SiNextdotjs,
   SiMui,
@@ -37,12 +36,11 @@ import {
   SiGithubcopilot,
   SiClaude,
   SiGooglegemini,
-  SiOpenai,
   SiJest,
 } from "react-icons/si";
-import { BsFiletypeScss } from "react-icons/bs";
+import { BsFiletypeScss, BsOpenai } from "react-icons/bs";
 import { GiTortoise } from "react-icons/gi";
-import { DiVisualstudio, DiMsqlServer } from "react-icons/di";
+import { DiVisualstudio, DiMsqlServer, DiHeroku } from "react-icons/di";
 
 // Go, Rust, C
 // React Native, Expo, Electron
@@ -59,11 +57,11 @@ const technicalSkillsData = {
   "AI Tools": {
     label: "AI Tools",
     skillList: [
-      { name: "Open AI", icon: SiOpenai, toShow: true },
+      { name: "Open AI", icon: BsOpenai, toShow: true },
       { name: "Co-Pilot", icon: SiGithubcopilot, toShow: true },
       { name: "Claude", icon: SiClaude, toShow: true },
       { name: "Gemini", icon: SiGooglegemini, toShow: true },
-      { name: "Prompt Engineering", icon: SiOpenai, toShow: true },
+      { name: "Prompt Engineering", icon: BsOpenai, toShow: true },
       { name: "AI SDLC", icon: SiGithubcopilot, toShow: true },
     ],
   },
@@ -81,7 +79,7 @@ const technicalSkillsData = {
       { name: "MongoDB", icon: SiMongodb, toShow: true },
       { name: "Python", icon: FaPython, toShow: true },
       { name: "HTML", icon: FaHtml5, toShow: true },
-      { name: "CSS", icon: SiCss3, toShow: true },
+      { name: "CSS", icon: SiCss, toShow: true },
       { name: "Tailwind CSS", icon: SiTailwindcss, toShow: true },
       { name: "MUI", icon: SiMui, toShow: true },
       { name: "Bootstrap CSS", icon: FaBootstrap, toShow: true },
@@ -97,7 +95,7 @@ const technicalSkillsData = {
       { name: "Google Cloud", icon: SiGooglecloud, toShow: true },
       { name: "Netlify", icon: SiNetlify, toShow: true },
       { name: "AWS", icon: FaAws, toShow: true },
-      { name: "Heroku", icon: SiHeroku, toShow: true },
+      { name: "Heroku", icon: DiHeroku, toShow: true },
     ],
   },
   tools: {
@@ -107,7 +105,7 @@ const technicalSkillsData = {
       { name: "DBeaver", icon: SiDbeaver, toShow: true },
       { name: "GitHub", icon: SiGithub, toShow: true },
       { name: "VS Code", icon: DiVisualstudio, toShow: true },
-      { name: "SonarQube", icon: SiSonarqube, toShow: true },
+      { name: "SonarQube", icon: SiSonarqubecloud, toShow: true },
       { name: "Postman", icon: SiPostman, toShow: true },
       { name: "Bruno", icon: SiBruno, toShow: true },
       { name: "Hoppscotch", icon: SiHoppscotch, toShow: true },
