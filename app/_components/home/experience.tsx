@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 
 import {
@@ -76,7 +78,10 @@ function ExperienceContext() {
         const title = `${exp.jobTitle} · ${exp.company}`;
 
         return (
-          <div className="flex flex-col space-y-1.5" key={`${exp.company}-${exp.jobTitle}`}>
+          <div
+            className="flex flex-col space-y-1.5"
+            key={`${exp.company}-${exp.jobTitle}`}
+          >
             <div className="text-lg font-semibold">{title}</div>
             <div className="text-sm text-muted-foreground">{`${rangeLabel} (${duration} yrs)`}</div>
             <ul className="list-disc pl-5 space-y-1">
