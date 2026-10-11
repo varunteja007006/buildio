@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useAgent, useDeployAgent, useUndeployAgent } from "@/api/agents/query";
 import { AgentFeedbackSection } from "@/components/agents/agent-feedback-section";
 import { AgentStatusBadge } from "@/components/agents/agent-status-badge";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
+import { PageHeader } from "@/components/page-header";
 
 export function AgentDetailPage({ agentId }: { agentId: string }) {
   const { data, isLoading, isError } = useAgent(agentId);
@@ -17,35 +17,22 @@ export function AgentDetailPage({ agentId }: { agentId: string }) {
 
   return (
     <>
-      <AppBreadcrumb
+      <PageHeader
         segments={[
           { label: "Dashboard", href: "/dashboard" },
           { label: "Agent", href: "/dashboard/agent/builder" },
           { label: agent?.name ?? "…" },
         ]}
-      />
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground">Loading agent…</p>
-      ) : isError || !agent ? (
-        <p className="text-sm text-muted-foreground">
-          Agent not found.{" "}
-          <Link href="/dashboard/agent/builder" className="underline">
-            Back to builder
-          </Link>
-        </p>
-      ) : (
-        <div className="flex w-full flex-1 flex-col gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold">{agent.name}</h1>
-                <AgentStatusBadge status={agent.status} />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {agent.description || "No description"}
-              </p>
-            </div>
-            <div className="flex gap-2">
+        title={
+          <span className="inline-flex items-center gap-2">
+            {agent?.name ?? "…"}
+            {agent ? <AgentStatusBadge status={agent.status} /> : null}
+          </span>
+        }
+        description={agent?.description || "No description"}
+        actions={
+          agent ? (
+            <>
               <Button asChild>
                 <Link href={`/dashboard/agent/${agent.id}/playground`}>
                   Open playground
@@ -68,8 +55,21 @@ export function AgentDetailPage({ agentId }: { agentId: string }) {
                   {deploy.isPending ? "Deploying…" : "Deploy"}
                 </Button>
               )}
-            </div>
-          </div>
+            </>
+          ) : undefined
+        }
+      />
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading agent…</p>
+      ) : isError || !agent ? (
+        <p className="text-sm text-muted-foreground">
+          Agent not found.{" "}
+          <Link href="/dashboard/agent/builder" className="underline">
+            Back to builder
+          </Link>
+        </p>
+      ) : (
+        <div className="flex w-full flex-1 flex-col gap-4">
           {deploy.error ? (
             <p className="text-sm text-destructive">
               {deploy.error instanceof Error
@@ -105,7 +105,8 @@ export function AgentDetailPage({ agentId }: { agentId: string }) {
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-muted-foreground uppercase">
-                  Tools ({(data?.tools.length ?? 0) + (data?.toolboxes.length ?? 0)})
+                  Tools (
+                  {(data?.tools.length ?? 0) + (data?.toolboxes.length ?? 0)})
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {(data?.tools ?? []).map((toolKey) => (

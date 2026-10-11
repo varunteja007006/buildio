@@ -28,20 +28,6 @@ export const ACTION_LABELS: Record<DocumentAuditAction, string> = {
   template_delete: "Template delete",
 };
 
-const ACTION_VARIANTS: Record<
-  DocumentAuditAction,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  extract: "default",
-  ingest: "secondary",
-  delete: "destructive",
-  restore: "outline",
-  permanent_delete: "destructive",
-  template_create: "outline",
-  template_update: "outline",
-  template_delete: "destructive",
-};
-
 function statusVariant(
   status: string | null,
 ): "default" | "secondary" | "destructive" | "outline" {
@@ -77,11 +63,7 @@ export function getDocumentAuditColumns(
     },
     {
       header: "Action",
-      accessor: (log) => (
-        <Badge variant={ACTION_VARIANTS[log.action]}>
-          {ACTION_LABELS[log.action] ?? log.action}
-        </Badge>
-      ),
+      accessor: (log) => <>{ACTION_LABELS[log.action] ?? log.action}</>,
     },
     {
       header: "Documents",
@@ -93,7 +75,9 @@ export function getDocumentAuditColumns(
             className="block max-w-40 truncate font-mono text-xs"
             title={ids.join(", ")}
           >
-            {ids.length === 1 ? truncate(ids[0], 16) : `${ids.length} documents`}
+            {ids.length === 1
+              ? truncate(ids[0], 16)
+              : `${ids.length} documents`}
           </span>
         );
       },

@@ -17,11 +17,11 @@ import {
   useRestoreExtractionTemplate,
 } from "@/api/extraction-templates/query";
 import type { ExtractionTemplate } from "@/api/extraction-templates/types";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { DataTable } from "@/components/data-table";
 import { DeleteDialog } from "@/components/documents/delete-dialog";
 import { getTrashDocumentColumns } from "@/components/documents/trash/trash-columns";
 import { TrashTemplatesSection } from "@/components/documents/trash/trash-templates-section";
+import { PageHeader } from "@/components/page-header";
 
 const PAGE_SIZE = 10;
 
@@ -90,7 +90,8 @@ export function DocumentsTrashPage() {
   };
   const handleConfirm = () => {
     if (confirm?.kind === "doc-permanent") void confirmPermanentDoc();
-    else if (confirm?.kind === "template-permanent") void confirmPermanentTemplate();
+    else if (confirm?.kind === "template-permanent")
+      void confirmPermanentTemplate();
     else void confirmEmpty();
   };
 
@@ -111,22 +112,15 @@ export function DocumentsTrashPage() {
 
   return (
     <>
-      <AppBreadcrumb
+      <PageHeader
         segments={[
           { label: "Dashboard", href: "/dashboard" },
           { label: "Documents", href: "/dashboard/documents" },
           { label: "Trash" },
         ]}
-      />
-      <div className="flex w-full flex-1 flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h1 className="text-xl font-semibold">Trash</h1>
-            <p className="text-sm text-muted-foreground">
-              Restoring a document also restores the extractions and chunks
-              trashed with it.
-            </p>
-          </div>
+        title="Trash"
+        description="Restoring a document also restores the extractions and chunks trashed with it."
+        actions={
           <Button
             variant="destructive"
             onClick={() => setConfirm({ kind: "empty" })}
@@ -134,8 +128,9 @@ export function DocumentsTrashPage() {
           >
             Empty trash
           </Button>
-        </div>
-
+        }
+      />
+      <div className="flex w-full flex-1 flex-col gap-4">
         <section className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold">Documents</h2>
           <DataTable
@@ -194,7 +189,9 @@ export function DocumentsTrashPage() {
         }
         description={confirmCopy}
         isPending={
-          permanentDoc.isPending || permanentTemplate.isPending || emptyTrash.isPending
+          permanentDoc.isPending ||
+          permanentTemplate.isPending ||
+          emptyTrash.isPending
         }
         onConfirm={handleConfirm}
       />

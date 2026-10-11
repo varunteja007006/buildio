@@ -18,7 +18,6 @@ import {
   type DocumentAuditAction,
   type DocumentAuditLog,
 } from "@/api/document-audit-logs/types";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { AuditLogDetailsDialog } from "@/components/audit-logs/audit-log-details-dialog";
 import { getChatAuditColumns } from "@/components/audit-logs/chat-audit-columns";
 import {
@@ -28,6 +27,7 @@ import {
 import { DocumentAuditDetailsDialog } from "@/components/audit-logs/document-audit-details-dialog";
 import { AuditPaginationFooter } from "@/components/audit-logs/pagination-footer";
 import { DataTable } from "@/components/data-table";
+import { PageHeader } from "@/components/page-header";
 
 const PAGE_SIZE = 20;
 
@@ -71,12 +71,14 @@ export function AuditLogsPage() {
 
   return (
     <>
-      <AppBreadcrumb
+      <PageHeader
         segments={[
           { label: "Dashboard", href: "/dashboard" },
           { label: "Documents", href: "/dashboard/documents" },
           { label: "Audit Logs" },
         ]}
+        title="Audit Logs"
+        description="Chat and document activity recorded across the workspace."
       />
       <div className="flex w-full flex-1 flex-col gap-3">
         <div className="flex items-center gap-2">
