@@ -21,6 +21,12 @@ import { GrDeploy } from "react-icons/gr";
 
 import projectData, { COMPLETED } from "./data/projects";
 
+const featuredProjectOrder = [
+  "project-poker",
+  "project-buildio",
+  "project-sentiment",
+];
+
 const ProjectLink = ({
   URL,
   type,
@@ -66,11 +72,16 @@ export default function Projects() {
       <h3 className="text-xl font-semibold">Projects</h3>
 
       <div className="grid grid-cols-1 gap-5">
-        {projectData.map((item, index) => {
-          if (!item.toShow) {
-            return null;
-          }
-          return (
+        {projectData
+          .filter(
+            (item) => item.toShow && featuredProjectOrder.includes(item.id),
+          )
+          .sort(
+            (a, b) =>
+              featuredProjectOrder.indexOf(a.id) -
+              featuredProjectOrder.indexOf(b.id),
+          )
+          .map((item) => (
             <Card key={`project-${item.project_title}`} className="relative">
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div className="col-span-2">
@@ -123,8 +134,7 @@ export default function Projects() {
                 </div>
               </div>
             </Card>
-          );
-        })}
+          ))}
       </div>
     </section>
   );

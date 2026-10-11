@@ -46,7 +46,7 @@ function calcExp(date1: string, date2: string) {
     years -= 1;
     months += 12;
   }
-  return `${years}.${months}`;
+  return `${years} year${years === 1 ? "" : "s"} ${months} month${months === 1 ? "" : "s"}`;
 }
 
 export default function Experience() {
@@ -83,7 +83,7 @@ function ExperienceContext() {
             key={`${exp.company}-${exp.jobTitle}`}
           >
             <div className="text-lg font-semibold">{title}</div>
-            <div className="text-sm text-muted-foreground">{`${rangeLabel} (${duration} yrs)`}</div>
+            <div className="text-sm text-muted-foreground">{`${rangeLabel} (${duration})`}</div>
             <ul className="list-disc pl-5 space-y-1">
               {exp.jobDescription.map((desc, i) => (
                 <li key={i}>{desc}</li>
