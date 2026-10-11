@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { folders } from "@/lib/db/schema/folders";
 import { topics } from "@/lib/db/schema/topics";
 import { getCurrentUser } from "@/lib/session";
+import { NAME_MAX_LENGTH } from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 const MAX_ROOT_FOLDERS = 10;
@@ -107,6 +108,14 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    if (name.length > NAME_MAX_LENGTH)
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Folder name must be at most ${NAME_MAX_LENGTH} characters`,
+        },
+        { status: 400 },
+      );
 
     if (!topicId) {
       return NextResponse.json(

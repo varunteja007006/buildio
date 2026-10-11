@@ -17,6 +17,11 @@ import { useRef } from "react";
 import type { AgentDetail } from "@/api/agents/types";
 import { AgentToolPicker } from "@/components/agents/agent-tool-picker";
 import { AgentTopicPicker } from "@/components/agents/agent-topic-picker";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  INSTRUCTIONS_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 
 export type AgentFormState = {
   name: string;
@@ -95,6 +100,7 @@ export function AgentDialog({
             <Input
               id="agent-name"
               value={form.name}
+              maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange({ name: event.target.value })}
             />
           </div>
@@ -103,6 +109,7 @@ export function AgentDialog({
             <Input
               id="agent-description"
               value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(event) => onChange({ description: event.target.value })}
             />
           </div>
@@ -147,6 +154,7 @@ export function AgentDialog({
               className="scrollbar-elegant max-h-64 min-h-40 resize-y overflow-auto font-mono text-sm"
               rows={6}
               value={form.instructions}
+              maxLength={INSTRUCTIONS_MAX_LENGTH}
               onChange={(event) =>
                 onChange({ instructions: event.target.value })
               }

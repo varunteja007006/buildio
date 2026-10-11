@@ -5,6 +5,11 @@ import { db } from "@/lib/db";
 import { topics } from "@/lib/db/schema/topics";
 import { getCurrentUser } from "@/lib/session";
 import { slugify } from "@/lib/slug";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 const MAX_TOPICS = 10;
@@ -71,6 +76,19 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    const lengthError = findTextLengthError([
+      { label: "Topic name", value: name, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: description,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+    ]);
+    if (lengthError)
+      return NextResponse.json(
+        { success: false, error: lengthError },
+        { status: 400 },
+      );
 
     const slug = slugify(name);
     if (!slug) {

@@ -18,6 +18,8 @@ export type ConnectorMetadata = {
     schema: string;
     name: string;
     comment: string | null;
+    /** Saved app-DB explanation for active tables; null when none exists. */
+    explanation?: string | null;
     columns: {
       name: string;
       type: string;
@@ -37,8 +39,7 @@ export type ConnectorMetadata = {
 export async function getPostgresConnector(
   connectionId: string,
   workspaceId: string,
-): Promise<ServerProbeConfig> {
-  const [row] = await db
+): Promise<ServerProbeConfig> {  const [row] = await db
     .select()
     .from(connections)
     .where(

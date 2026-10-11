@@ -57,6 +57,7 @@ export function RenameDialog({
           <Input
             id="rename-name"
             value={name}
+            maxLength={MAX_NAME_LENGTH}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />

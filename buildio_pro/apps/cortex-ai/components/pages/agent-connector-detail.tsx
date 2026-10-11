@@ -9,15 +9,25 @@ import { toast } from "sonner";
 
 import {
   useConnection,
-  useConnectionTables,
+  useSchemaTables,
   useUpdateConnectorContext,
 } from "@/api/connections/query";
+import { CONNECTOR_DESCRIPTION_MAX_LENGTH } from "@/api/connections/schema-contracts";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { StatusBadge } from "@/components/connections/connection-columns";
 import { ConnectorDescriptionDialog } from "@/components/pages/connector-description-dialog";
-import { ConnectorTableBrowser } from "@/components/pages/connector-table-browser";
+import { ConnectorSchemaRefresh } from "@/components/pages/connector-schema-refresh";
+import { ConnectorTableBrowser, type SchemaBrowserFilters } from "@/components/pages/connector-table-browser";
 
 type AgentConnectorDetailPageProps = { connectionId: string };
+
+const INITIAL_FILTERS: SchemaBrowserFilters = {
+  status: "active",
+  search: "",
+  schema: "all",
+  objectType: "all",
+  page: 1,
+};
 
 export function AgentConnectorDetailPage({
   connectionId,
@@ -26,6 +36,7 @@ export function AgentConnectorDetailPage({
   const connection = detail.data?.connection ?? null;
   const [description, setDescription] = useState("");
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [filters, setFilters] = useState<SchemaBrowserFilters>(INITIAL_FILTERS);
   const updateContext = useUpdateConnectorContext();
   useEffect(
     () => setDescription(connection?.description ?? ""),
@@ -33,7 +44,19 @@ export function AgentConnectorDetailPage({
   );
   const supportsTables =
     connection?.type === "postgres" || connection?.type === "mongodb";
-  const tables = useConnectionTables(connectionId, Boolean(supportsTables));
+  const schema = useSchemaTables(
+    connectionId,
+    {
+      status: filters.status,
+      search: filters.search || undefined,
+      schema: filters.schema !== "all" ? filters.schema : undefined,
+      objectType: filters.objectType !== "all" ? filters.objectType : undefined,
+      page: filters.page,
+      pageSize: 50,
+    },
+    Boolean(supportsTables),
+  );
+  const schemaPage = schema.data ?? null;
   const heading = supportsTables
     ? connection?.type === "mongodb"
       ? "Collections"
@@ -90,7 +113,7 @@ export function AgentConnectorDetailPage({
           <Textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            maxLength={4000}
+            maxLength={CONNECTOR_DESCRIPTION_MAX_LENGTH}
             rows={5}
             placeholder="For example: This database contains sales orders. Use completed orders for revenue reporting; refunds are stored separately."
             aria-label="Connector explanation"
@@ -138,26 +161,33 @@ export function AgentConnectorDetailPage({
         </section>
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium">{heading}</h2>
-          {tables.isLoading ? (
+          {schema.isLoading ? (
             <div className="flex h-40 items-center justify-center text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
-          ) : tables.isError ? (
+          ) : schema.isError || !schemaPage ? (
             <p className="text-sm text-destructive">
-              {tables.error instanceof Error
-                ? tables.error.message
-                : "Unable to load tables."}
-            </p>
-          ) : (tables.data?.tables.length ?? 0) === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No database objects found.
+              {schema.error instanceof Error
+                ? schema.error.message
+                : "Unable to load the schema."}
             </p>
           ) : (
-            <ConnectorTableBrowser
-              connectionId={connectionId}
-              tables={tables.data?.tables ?? []}
-              postgres={connection.type === "postgres"}
-            />
+            <div className="space-y-3">
+              <ConnectorSchemaRefresh
+                connectionId={connectionId}
+                page={schemaPage}
+              />
+              <ConnectorTableBrowser
+                connectionId={connectionId}
+                postgres={connection.type === "postgres"}
+                page={schemaPage}
+                loading={schema.isFetching}
+                filters={filters}
+                onFiltersChange={(patch) =>
+                  setFilters((current) => ({ ...current, page: 1, ...patch }))
+                }
+              />
+            </div>
           )}
         </section>
       </div>

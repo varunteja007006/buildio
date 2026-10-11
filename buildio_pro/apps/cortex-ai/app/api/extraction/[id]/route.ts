@@ -6,6 +6,7 @@ import { documents } from "@/lib/db/schema/documents";
 import { extractionVersions } from "@/lib/db/schema/extraction-versions";
 import { extractions } from "@/lib/db/schema/extractions";
 import { getCurrentUser } from "@/lib/session";
+import { EXTRACTION_CONTENT_MAX_LENGTH } from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
@@ -99,6 +100,17 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     const wantsApproval = body?.approved === true;
     const wantsApprovalChange =
       body?.approved === true || body?.approved === false;
+
+    if (
+      newContent !== null &&
+      newContent.length > EXTRACTION_CONTENT_MAX_LENGTH
+    )
+      return NextResponse.json(
+        {
+          error: `Content must be at most ${EXTRACTION_CONTENT_MAX_LENGTH} characters`,
+        },
+        { status: 400 },
+      );
 
     const contentChanged =
       newContent !== null && newContent !== extraction.currentContent;

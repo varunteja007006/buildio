@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { folders } from "@/lib/db/schema/folders";
 import { softDeleteFolderCascade } from "@/lib/documents/container-cascade";
 import { getCurrentUser } from "@/lib/session";
+import { NAME_MAX_LENGTH } from "@/lib/text-limits";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
@@ -54,6 +55,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         { status: 400 },
       );
     }
+    if (name.length > NAME_MAX_LENGTH)
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Folder name must be at most ${NAME_MAX_LENGTH} characters`,
+        },
+        { status: 400 },
+      );
 
     const [folder] = await db
       .update(folders)

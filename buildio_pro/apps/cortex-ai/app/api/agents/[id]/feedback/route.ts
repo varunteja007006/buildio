@@ -6,6 +6,7 @@ import { agents } from "@/lib/db/schema/agents";
 import { user } from "@/lib/db/schema/auth";
 import { agentFeedback } from "@/lib/db/schema/feedback";
 import { getCurrentUser } from "@/lib/session";
+import { FEEDBACK_COMMENT_MAX_LENGTH } from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
@@ -84,6 +85,13 @@ export async function PUT(request: NextRequest, { params }: Params) {
     if (!Number.isInteger(rating) || rating < 1 || rating > 5)
       return NextResponse.json(
         { error: "Rating must be an integer between 1 and 5" },
+        { status: 400 },
+      );
+    if (comment && comment.length > FEEDBACK_COMMENT_MAX_LENGTH)
+      return NextResponse.json(
+        {
+          error: `Comment must be at most ${FEEDBACK_COMMENT_MAX_LENGTH} characters`,
+        },
         { status: 400 },
       );
 

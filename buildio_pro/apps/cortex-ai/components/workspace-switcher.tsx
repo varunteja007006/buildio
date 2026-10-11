@@ -40,6 +40,7 @@ import {
   useCreateWorkspace,
   useWorkspaces,
 } from "@/api/workspaces/query";
+import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "@/lib/text-limits";
 import { cn } from "@/lib/utils";
 
 function getWorkspaceInitials(name: string): string {
@@ -204,6 +205,7 @@ export function WorkspaceSwitcher() {
               id="workspace-name"
               placeholder="e.g. Client Portal"
               value={name}
+              maxLength={NAME_MAX_LENGTH}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             />
@@ -212,6 +214,7 @@ export function WorkspaceSwitcher() {
               id="workspace-description"
               placeholder="Optional"
               value={description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(e) => setDescription(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             />

@@ -1,15 +1,15 @@
 import {
   getPostgresConnector,
   inspectPostgresMetadata,
-  samplePostgresRows,
 } from "@/lib/connectors/description-metadata";
 import { generateConnectorDescription } from "@/lib/connectors/description-model";
-import { isLikelySensitiveColumn } from "@/lib/connectors/description-safety";
 import {
   failureMessage,
   type SampleSummary,
   streamEvent,
 } from "@/lib/connectors/description-stream";
+import { collectApprovedSamples } from "@/lib/connectors/generate-description-samples";
+import { loadTableExplanations } from "@/lib/connectors/table-explanations";
 
 const MAX_METADATA_BYTES = 128 * 1024;
 const SAMPLE_TABLES_PER_RUN = 5;
@@ -50,6 +50,7 @@ export function streamConnectorDescription(input: GenerateInput) {
       let active: Record<string, unknown> | null = null;
       const sampleSummary: SampleSummary[] = [];
       let samplesIncludedInAiRequest = false;
+      let explanationsIncluded = 0;
       void (async () => {
         try {
           send({
@@ -65,6 +66,10 @@ export function streamConnectorDescription(input: GenerateInput) {
             tool: "inspectPostgresMetadata",
           });
           const metadata = await inspectPostgresMetadata(config);
+          const explanations = await loadTableExplanations(
+            connectionId,
+            workspaceId,
+          );
           send({
             type: "activity",
             status: "completed",
@@ -91,8 +96,11 @@ export function streamConnectorDescription(input: GenerateInput) {
               throw new Error(
                 "Selected metadata table is not in this connector schema",
               );
+            const explanation = explanations.get(key) ?? null;
+            if (explanation) explanationsIncluded += 1;
             return {
               ...table,
+              explanation,
               relationships: table.relationships.filter((relationship) =>
                 requestedTables.some(
                   (candidate) =>
@@ -106,17 +114,17 @@ export function streamConnectorDescription(input: GenerateInput) {
             type: "activity",
             status: "confirmed",
             tool: "metadataSentToAI",
-            tables: selectedMetadata.map(({ schema, name, columns }) => ({
+            tables: selectedMetadata.map(({ schema, name, columns, explanation }) => ({
               schema,
               table: name,
               columns: columns.map(({ name: column }) => column),
+              explanationIncluded: explanation != null,
             })),
+            explanationCount: explanationsIncluded,
           });
           const checkedSamples = includeSamples
             ? requestedSamples.slice(0, SAMPLE_TABLES_PER_RUN)
             : [];
-          const seen = new Set<string>();
-          const sampleContext = [];
           if (
             Buffer.byteLength(JSON.stringify(selectedMetadata)) >
             MAX_METADATA_BYTES
@@ -125,63 +133,19 @@ export function streamConnectorDescription(input: GenerateInput) {
               "Selected schema metadata exceeds the 128 KB limit; select fewer tables",
             );
 
-          for (const selection of checkedSamples) {
-            if (signal.aborted) throw new Error("Generation cancelled");
-            const key = `${selection.schema}\0${selection.table}`;
-            if (seen.has(key)) throw new Error("Select each table only once");
-            seen.add(key);
-            const table = metadata.tables.find(
-              (candidate) =>
-                candidate.schema === selection.schema &&
-                candidate.name === selection.table,
-            );
-            if (!table)
-              throw new Error("Selected table is not in this connector schema");
-            if (!metadataKeys.has(key))
-              throw new Error(
-                "Sample tables must also be selected for metadata",
-              );
-            for (const column of selection.columns) {
-              if (!table.columns.some((candidate) => candidate.name === column))
-                throw new Error(
-                  "Selected column is not in this connector schema",
-                );
-              if (isLikelySensitiveColumn(column))
-                throw new Error("Likely sensitive columns cannot be sampled");
-            }
-            active = {
-              tool: "sampleDatabaseRows",
-              schema: selection.schema,
-              table: selection.table,
-              columns: selection.columns,
-            };
-            send({ type: "activity", status: "running", ...active });
-            const rows = await samplePostgresRows(config, selection, signal);
-            if (rows.length > 5)
-              throw new Error("Sample query exceeded the 5-row limit");
-            sampleSummary.push({
-              schema: selection.schema,
-              table: selection.table,
-              columns: selection.columns,
-              rowCount: rows.length,
+          const { sampleContext, sampleSummary: runSampleSummary } =
+            await collectApprovedSamples({
+              config,
+              metadata,
+              checkedSamples,
+              metadataKeys,
+              signal,
+              setActive: (value) => {
+                active = value;
+              },
+              send,
             });
-            sampleContext.push({
-              schema: selection.schema,
-              table: selection.table,
-              columns: selection.columns,
-              rows,
-            });
-            send({
-              type: "activity",
-              status: "completed",
-              tool: "sampleDatabaseRows",
-              schema: selection.schema,
-              table: selection.table,
-              columns: selection.columns,
-              rowCount: rows.length,
-            });
-            active = null;
-          }
+          sampleSummary.push(...runSampleSummary);
 
           send({
             type: "status",
@@ -205,6 +169,7 @@ export function streamConnectorDescription(input: GenerateInput) {
               database: database,
               metadata: {
                 tableCount: selectedMetadata.length,
+                explanationCount: explanationsIncluded,
                 columnCount: selectedMetadata.reduce(
                   (count, table) => count + table.columns.length,
                   0,

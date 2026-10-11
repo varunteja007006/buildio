@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { agents } from "@/lib/db/schema/agents";
 import { getCurrentUser } from "@/lib/session";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  INSTRUCTIONS_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 const MAX_PAGE_SIZE = 100;
@@ -90,6 +96,21 @@ export async function POST(request: NextRequest) {
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
+    const lengthError = findTextLengthError([
+      { label: "Name", value: name, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: description,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+      {
+        label: "Instructions",
+        value: instructions,
+        maxLength: INSTRUCTIONS_MAX_LENGTH,
+      },
+    ]);
+    if (lengthError)
+      return NextResponse.json({ error: lengthError }, { status: 400 });
 
     const [existing] = await db
       .select({ id: agents.id })

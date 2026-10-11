@@ -21,6 +21,12 @@ import type {
 import { ChatModelSelector } from "@/components/chat/chat-model-selector";
 import { TemplateGenerate } from "@/components/extraction-templates/template-generate";
 import type { ChatModelOption } from "@/lib/chat/models";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  INSTRUCTIONS_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  OUTPUT_SCHEMA_MAX_LENGTH,
+} from "@/lib/text-limits";
 
 export type FormState = {
   name: string;
@@ -105,6 +111,7 @@ export function TemplateDialog({
             <Input
               id="template-name"
               value={form.name}
+              maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange("name", event.target.value)}
             />
           </div>
@@ -113,6 +120,7 @@ export function TemplateDialog({
             <Input
               id="template-description"
               value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(event) => onChange("description", event.target.value)}
             />
           </div>
@@ -123,6 +131,7 @@ export function TemplateDialog({
               className="scrollbar-elegant max-h-64 min-h-40 resize-y overflow-auto font-mono text-sm"
               rows={6}
               value={form.instructions}
+              maxLength={INSTRUCTIONS_MAX_LENGTH}
               onChange={(event) => onChange("instructions", event.target.value)}
             />
           </div>
@@ -147,6 +156,7 @@ export function TemplateDialog({
               rows={6}
               placeholder={'{"type":"object"}'}
               value={form.outputSchema}
+              maxLength={OUTPUT_SCHEMA_MAX_LENGTH}
               onChange={(event) => onChange("outputSchema", event.target.value)}
             />
           </div>

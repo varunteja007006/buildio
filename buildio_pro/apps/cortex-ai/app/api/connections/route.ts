@@ -1,8 +1,9 @@
 import { and, asc, count, eq, isNotNull, isNull } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 
 import { encryptSecret } from "@/lib/connectors/crypto";
 import { probeConnection } from "@/lib/connectors/probe";
+import { refreshConnectorSchema } from "@/lib/connectors/schema-sync/reconcile";
 import {
   connectionCreateSchema,
 } from "@/lib/connectors/validation";
@@ -143,6 +144,23 @@ export async function POST(request: NextRequest) {
         createdBy: user.id,
       })
       .returning();
+
+    // First-time scenario: schedule the initial schema sync after the response
+    // so the connector has tables without a manual refresh. Failures are
+    // recorded on the sync row and surfaced in the UI; creation still succeeds.
+    if (row.type === "postgres" || row.type === "mongodb") {
+      after(async () => {
+        try {
+          await refreshConnectorSchema({
+            workspaceId: workspace.id,
+            connectionId: row.id,
+            userId: user.id,
+          });
+        } catch (error) {
+          console.error("Initial schema sync failed", error);
+        }
+      });
+    }
 
     return NextResponse.json({ connection: toConnectionView(row) }, {
       status: 201,

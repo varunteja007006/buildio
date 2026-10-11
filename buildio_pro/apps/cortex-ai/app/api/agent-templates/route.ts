@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { agentInstructionTemplates } from "@/lib/db/schema/agent-templates";
 import { getCurrentUser } from "@/lib/session";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  INSTRUCTIONS_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 const MAX_PAGE_SIZE = 100;
@@ -92,6 +98,17 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    const lengthError = findTextLengthError([
+      { label: "Name", value: name, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: description,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+      { label: "Body", value: bodyText, maxLength: INSTRUCTIONS_MAX_LENGTH },
+    ]);
+    if (lengthError)
+      return NextResponse.json({ error: lengthError }, { status: 400 });
 
     const [existing] = await db
       .select({ id: agentInstructionTemplates.id })

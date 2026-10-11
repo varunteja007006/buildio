@@ -6,6 +6,11 @@ import { workspaceMembers } from "@/lib/db/schema/workspace-members";
 import { workspaces } from "@/lib/db/schema/workspaces";
 import { getCurrentUser } from "@/lib/session";
 import { slugify } from "@/lib/slug";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 import { getWorkspace, getWorkspaceMembership } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
@@ -97,6 +102,19 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         { status: 400 },
       );
     }
+    const lengthError = findTextLengthError([
+      { label: "Workspace name", value: newName, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: newDescription,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+    ]);
+    if (lengthError)
+      return NextResponse.json(
+        { success: false, error: lengthError },
+        { status: 400 },
+      );
 
     const slug = slugify(newName);
     if (!slug) {

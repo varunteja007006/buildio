@@ -55,6 +55,7 @@ export function NewTopicDialog({ open, onOpenChange }: NewTopicDialogProps) {
             id="topic-name"
             placeholder="e.g. Horror"
             value={name}
+            maxLength={MAX_NAME_LENGTH}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />

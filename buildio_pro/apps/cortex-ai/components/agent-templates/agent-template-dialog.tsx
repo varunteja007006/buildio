@@ -15,6 +15,11 @@ import { Textarea } from "@workspace/ui/components/textarea";
 import { useRef } from "react";
 
 import type { AgentInstructionTemplate } from "@/api/agent-templates/types";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  INSTRUCTIONS_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 
 export type AgentTemplateFormState = {
   name: string;
@@ -82,6 +87,7 @@ export function AgentTemplateDialog({
             <Input
               id="agent-template-name"
               value={form.name}
+              maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange({ name: event.target.value })}
             />
           </div>
@@ -90,6 +96,7 @@ export function AgentTemplateDialog({
             <Input
               id="agent-template-description"
               value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(event) =>
                 onChange({ description: event.target.value })
               }
@@ -102,6 +109,7 @@ export function AgentTemplateDialog({
               className="scrollbar-elegant max-h-64 min-h-40 resize-y overflow-auto font-mono text-sm"
               rows={8}
               value={form.body}
+              maxLength={INSTRUCTIONS_MAX_LENGTH}
               onChange={(event) => onChange({ body: event.target.value })}
             />
           </div>

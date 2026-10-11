@@ -4,6 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { toolboxes, toolboxTools } from "@/lib/db/schema/toolboxes";
 import { getCurrentUser } from "@/lib/session";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
@@ -70,6 +75,16 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         { error: "No valid changes supplied" },
         { status: 400 },
       );
+    const lengthError = findTextLengthError([
+      { label: "Name", value: updates.name, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: updates.description,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+    ]);
+    if (lengthError)
+      return NextResponse.json({ error: lengthError }, { status: 400 });
 
     const [existing] = await db
       .select()

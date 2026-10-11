@@ -17,6 +17,16 @@ export type DetailsFormState = {
   password: string;
 };
 
+/** Client-side mirrors of the server zod limits in lib/connectors/validation.ts. */
+const MAX_FIELD_LENGTHS: Record<keyof DetailsFormState, number | undefined> = {
+  name: 128,
+  host: 255,
+  port: undefined,
+  database: 128,
+  username: 128,
+  password: 256,
+};
+
 export const emptyDetailsForm: DetailsFormState = {
   name: "",
   host: "",
@@ -62,6 +72,7 @@ export function ConnectionDetailsForm({
             id={field.id}
             type={field.type}
             value={form[field.key]}
+            maxLength={MAX_FIELD_LENGTHS[field.key]}
             onChange={(event) => onChange(field.key, event.target.value)}
           />
         </div>
@@ -74,6 +85,7 @@ export function ConnectionDetailsForm({
           autoComplete="new-password"
           placeholder={editing ? "Leave blank to keep current" : ""}
           value={form.password}
+          maxLength={MAX_FIELD_LENGTHS.password}
           onChange={(event) => onChange("password", event.target.value)}
         />
       </div>

@@ -2,6 +2,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { CONNECTOR_DESCRIPTION_MAX_LENGTH } from "@/api/connections/schema-contracts";
 import { db } from "@/lib/db";
 import { connections } from "@/lib/db/schema/connections";
 import { getCurrentUser } from "@/lib/session";
@@ -9,7 +10,9 @@ import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
 
-const contextSchema = z.object({ description: z.string().max(4000) });
+const contextSchema = z.object({
+  description: z.string().max(CONNECTOR_DESCRIPTION_MAX_LENGTH),
+});
 
 export async function PATCH(request: NextRequest, { params }: Params) {
   const user = await getCurrentUser();

@@ -16,6 +16,7 @@ import { useRef } from "react";
 
 import type { Toolbox } from "@/api/toolboxes/types";
 import { toolCatalog } from "@/lib/agents/tool-catalog";
+import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "@/lib/text-limits";
 
 export type ToolboxFormState = {
   name: string;
@@ -88,6 +89,7 @@ export function ToolboxDialog({
             <Input
               id="toolbox-name"
               value={form.name}
+              maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange({ name: event.target.value })}
             />
           </div>
@@ -96,6 +98,7 @@ export function ToolboxDialog({
             <Input
               id="toolbox-description"
               value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(event) =>
                 onChange({ description: event.target.value })
               }

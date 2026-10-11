@@ -8,24 +8,41 @@ import {
   deleteConnection,
   getConnection,
   getConnections,
-  getConnectorTableDetails,
-  getConnectorTables,
+  getSchemaTable,
+  getSchemaTables,
   permanentlyDeleteConnection,
+  refreshSchema,
+  relinkSchemaTable,
   restoreConnection,
   testConnection,
   updateConnection,
   updateConnectorContext,
+  updateSchemaTableContext,
 } from "./api";
-import type { ConnectionInput, ProbeResult } from "./types";
+import type {
+  ConnectionInput,
+  ProbeResult,
+  SchemaTableContextInput,
+  SchemaTableRelinkInput,
+} from "./types";
 
 export const connectionKeys = {
   all: ["connections"] as const,
   list: (page: number, pageSize: number, status: "active" | "deleted") =>
     ["connections", "list", page, pageSize, status] as const,
-  tables: (id: string) => ["connections", "tables", id] as const,
-  tableDetails: (id: string, schema: string, name: string) =>
-    ["connections", "table-details", id, schema, name] as const,
   detail: (id: string) => ["connections", "detail", id] as const,
+  schema: (id: string) => ["connections", "schema", id] as const,
+  schemaList: (
+    id: string,
+    filters: {
+      status?: string;
+      search?: string;
+      page?: number;
+      pageSize?: number;
+    },
+  ) => ["connections", "schema", id, filters] as const,
+  schemaTable: (id: string, tableId: string) =>
+    ["connections", "schema-table", id, tableId] as const,
 };
 
 export function useConnection(id: string) {
@@ -43,28 +60,6 @@ export function useConnections(
   return useQuery({
     queryKey: connectionKeys.list(page, pageSize, status),
     queryFn: () => getConnections(page, pageSize, status),
-  });
-}
-
-export function useConnectionTables(id: string, enabled: boolean) {
-  return useQuery({
-    queryKey: connectionKeys.tables(id),
-    queryFn: () => getConnectorTables(id),
-    enabled,
-  });
-}
-
-export function useConnectionTableDetails(
-  id: string,
-  schema: string,
-  name: string,
-  enabled: boolean,
-) {
-  return useQuery({
-    queryKey: connectionKeys.tableDetails(id, schema, name),
-    queryFn: () => getConnectorTableDetails(id, schema, name),
-    enabled,
-    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -141,6 +136,86 @@ export function usePermanentlyDeleteConnection() {
   return useMutation({
     mutationFn: permanentlyDeleteConnection,
     onSuccess: () => invalidateConnections(queryClient),
+  });
+}
+
+function invalidateSchema(queryClient: ReturnType<typeof useQueryClient>, id: string) {
+  return queryClient.invalidateQueries({
+    queryKey: connectionKeys.schema(id),
+  });
+}
+
+export function useSchemaTables(
+  id: string,
+  filters: {
+    status?: "active" | "removed" | "needs-review" | "all";
+    search?: string;
+    schema?: string;
+    objectType?: string;
+    page?: number;
+    pageSize?: number;
+  },
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: connectionKeys.schemaList(id, filters),
+    queryFn: () => getSchemaTables(id, filters),
+    enabled,
+  });
+}
+
+export function useSchemaTable(id: string, tableId: string, enabled = true) {
+  return useQuery({
+    queryKey: connectionKeys.schemaTable(id, tableId),
+    queryFn: () => getSchemaTable(id, tableId),
+    enabled,
+  });
+}
+
+export function useRefreshSchema() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      input,
+    }: {
+      id: string;
+      input?: { declareReplacement?: boolean };
+    }) => refreshSchema(id, input),
+    onSuccess: (_data, { id }) => invalidateSchema(queryClient, id),
+  });
+}
+
+export function useUpdateSchemaTableContext(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      tableId,
+      input,
+    }: {
+      tableId: string;
+      input: SchemaTableContextInput;
+    }) => updateSchemaTableContext(id, tableId, input),
+    onSuccess: (_data, { tableId }) => {
+      void queryClient.invalidateQueries({
+        queryKey: connectionKeys.schemaTable(id, tableId),
+      });
+      void invalidateSchema(queryClient, id);
+    },
+  });
+}
+
+export function useRelinkSchemaTable(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      tableId,
+      input,
+    }: {
+      tableId: string;
+      input: SchemaTableRelinkInput;
+    }) => relinkSchemaTable(id, tableId, input),
+    onSuccess: () => invalidateSchema(queryClient, id),
   });
 }
 

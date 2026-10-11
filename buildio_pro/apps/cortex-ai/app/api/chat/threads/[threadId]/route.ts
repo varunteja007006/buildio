@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { chatMessages } from "@/lib/db/schema/messages";
 import { chatThreads } from "@/lib/db/schema/threads";
 import { getCurrentUser } from "@/lib/session";
+import { NAME_MAX_LENGTH } from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ threadId: string }> };
@@ -94,6 +95,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         { status: 400 },
       );
     }
+    if (title.length > NAME_MAX_LENGTH)
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Thread title must be at most ${NAME_MAX_LENGTH} characters`,
+        },
+        { status: 400 },
+      );
 
     const [thread] = await db
       .update(chatThreads)

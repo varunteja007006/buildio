@@ -4,6 +4,7 @@ import {
   getPostgresConnector,
   inspectPostgresMetadata,
 } from "@/lib/connectors/description-metadata";
+import { loadTableExplanations } from "@/lib/connectors/table-explanations";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -23,8 +24,12 @@ export async function GET(_request: Request, { params }: Params) {
 
     const config = await getPostgresConnector((await params).id, workspace.id);
     const metadata = await inspectPostgresMetadata(config);
+    const explanations = await loadTableExplanations(
+      (await params).id,
+      workspace.id,
+    );
     return NextResponse.json(
-      { metadata },
+      { metadata, savedExplanationCount: explanations.size },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {

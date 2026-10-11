@@ -33,6 +33,7 @@ export function ConnectorDescriptionDialog({
   onGenerated,
 }: Props) {
   const [metadata, setMetadata] = useState<ConnectorMetadata | null>(null);
+  const [savedExplanationCount, setSavedExplanationCount] = useState(0);
   const [metadataTables, setMetadataTables] = useState<Set<string>>(new Set());
   const [sampleColumns, setSampleColumns] = useState<Record<string, string[]>>(
     {},
@@ -67,10 +68,11 @@ export function ConnectorDescriptionDialog({
     resetGeneration();
     getConnectorDescriptionMetadata(connectionId, abort.signal)
       .then((result) => {
-        setMetadata(result);
+        setMetadata(result.metadata);
+        setSavedExplanationCount(result.savedExplanationCount ?? 0);
         setMetadataTables(
           new Set(
-            result.tables.map(({ schema, name }) => `${schema}\0${name}`),
+            result.metadata.tables.map(({ schema, name }) => `${schema}\0${name}`),
           ),
         );
       })
@@ -113,17 +115,26 @@ export function ConnectorDescriptionDialog({
             </p>
           ) : null}
           {metadata ? (
-            <ConnectorDescriptionSelection
-              metadata={metadata}
-              metadataTables={metadataTables}
-              setMetadataTables={setMetadataTables}
-              includeSamples={includeSamples}
-              setIncludeSamples={setIncludeSamples}
-              sampleColumns={sampleColumns}
-              setSampleColumns={setSampleColumns}
-              disabled={generation.generating}
-              consentVersion={consentVersion}
-            />
+            <>
+              {savedExplanationCount > 0 && (
+                <p className="mb-3 rounded-md border p-2 text-sm">
+                  {savedExplanationCount} saved table{" "}
+                  {savedExplanationCount === 1 ? "explanation" : "explanations"}{" "}
+                  will be shared with the model as additional context.
+                </p>
+              )}
+              <ConnectorDescriptionSelection
+                metadata={metadata}
+                metadataTables={metadataTables}
+                setMetadataTables={setMetadataTables}
+                includeSamples={includeSamples}
+                setIncludeSamples={setIncludeSamples}
+                sampleColumns={sampleColumns}
+                setSampleColumns={setSampleColumns}
+                disabled={generation.generating}
+                consentVersion={consentVersion}
+              />
+            </>
           ) : null}
           <ConnectorDescriptionActivity
             activities={generation.activities}

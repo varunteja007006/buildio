@@ -1,3 +1,5 @@
+import type { ConnectorTableTrigger } from "@/lib/connectors/table-triggers";
+
 export type Connection = {
   id: string;
   workspaceId: string;
@@ -43,29 +45,6 @@ export type ProbeResult = {
 };
 
 export type DeleteResponse = { success: boolean; id: string };
-
-export type ConnectorTrigger = {
-  name: string;
-  events: string[];
-  timing: "BEFORE" | "AFTER" | "INSTEAD OF";
-  rowLevel: boolean;
-  enabled: "enabled" | "disabled" | "replica" | "always";
-  functionSchema: string;
-  functionName: string;
-};
-
-export type ConnectorTable = {
-  schema: string;
-  name: string;
-  objectType:
-    | "table"
-    | "partitioned_table"
-    | "view"
-    | "materialized_view"
-    | "foreign_table"
-    | "collection";
-  triggers: ConnectorTrigger[];
-};
 
 export type ConnectorTableMetadata = {
   storage: {
@@ -114,4 +93,84 @@ export type ConnectorMetadata = {
       referencedColumn: string;
     }[];
   }[];
+};
+
+export type SchemaTableStatus = "active" | "removed" | "needs-review";
+
+export type SchemaTable = {
+  id: string;
+  sourceEpoch: number;
+  schemaName: string;
+  tableName: string;
+  objectType: string;
+  databaseComment: string | null;
+  status: SchemaTableStatus;
+  reviewReason: string | null;
+  lastSeenAt: string | null;
+  updatedAt: string;
+  explanation: string | null;
+  revision: number | null;
+};
+
+export type SchemaTablePage = {
+  tables: SchemaTable[];
+  page: number;
+  pageSize: number;
+  total: number;
+  pageCount: number;
+  lastSync: {
+    id: string;
+    status: string;
+    sourceEpoch: number;
+    tableCount: number;
+    errorCode: string | null;
+    errorMessage: string | null;
+    startedAt: string;
+    completedAt: string | null;
+  } | null;
+  summary: { active: number; removed: number; "needs-review": number };
+  schemas: string[];
+};
+
+export type SchemaTableDetail = {
+  table: {
+    id: string;
+    sourceEpoch: number;
+    sourceObjectId: string | null;
+    schemaName: string;
+    tableName: string;
+    objectType: string;
+    databaseComment: string | null;
+    status: SchemaTableStatus;
+    reviewReason: string | null;
+    lastSeenAt: string | null;
+    removedAt: string | null;
+  };
+  context: {
+    explanation: string | null;
+    revision: number;
+    editedBy: string | null;
+    updatedAt: string;
+  } | null;
+  details: ConnectorTableMetadata | null;
+  triggers: ConnectorTableTrigger[];
+};
+
+export type SchemaRefreshResult = {
+  syncId: string | null;
+  status: "succeeded" | "failed";
+  sourceEpoch: number;
+  tableCount: number;
+  errorCode: string | null;
+  errorMessage: string | null;
+};
+
+export type SchemaTableContextInput = {
+  explanation: string;
+  expectedRevision: number;
+};
+
+export type SchemaTableRelinkInput = {
+  destinationTableId: string;
+  confirm: true;
 };

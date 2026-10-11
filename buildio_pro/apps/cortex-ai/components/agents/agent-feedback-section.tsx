@@ -9,6 +9,7 @@ import {
   useAgentFeedback,
   useUpsertAgentFeedback,
 } from "@/api/agents/query";
+import { FEEDBACK_COMMENT_MAX_LENGTH } from "@/lib/text-limits";
 
 export function AgentFeedbackSection({ agentId }: { agentId: string }) {
   const { data, isLoading } = useAgentFeedback(agentId);
@@ -61,6 +62,7 @@ export function AgentFeedbackSection({ agentId }: { agentId: string }) {
             id="feedback-comment"
             rows={2}
             value={comment}
+            maxLength={FEEDBACK_COMMENT_MAX_LENGTH}
             onChange={(event) => setComment(event.target.value)}
           />
         </div>

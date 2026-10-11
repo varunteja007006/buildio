@@ -42,6 +42,11 @@ The first usable release should let a workspace member:
 
 ## Product decisions
 
+- **Accepted table-explanation implementation slice:** follow
+  `connector-table-explanations-2026-10-11.md` for app-owned descriptions, native
+  source identity, rename handling, uncertain-identity review, and generation use.
+  This slice also covers existing MongoDB collections without adding new drivers;
+  this parent's structured query tools remain Postgres-only and read-only.
 - **Semantic layer, not descriptions only:** model context includes physical
   schema, descriptions, synonyms, approved relationships, and access policy.
 - **Separate data classes:** discovered metadata, user-authored semantic context,
@@ -103,13 +108,20 @@ errors. Only one refresh may run for a connection at a time.
 Current discovered identity and physical metadata:
 
 - `id`, `workspaceId`, `connectionId`
+- `sourceEpoch`, optional `sourceObjectId`, structural fingerprint, review state
 - `schemaName`, `tableName`, `databaseComment`, `estimatedRowCount`
 - `lastSeenSyncId`, `lastSeenAt`, `removedAt`, `createdAt`, `updatedAt`
-- Unique `(connectionId, schemaName, tableName)`
+- Active-only unique `(connectionId, sourceEpoch, schemaName, tableName)` and native
+  source identity where available; retained removed records do not block name reuse
 - Index `(workspaceId, connectionId, removedAt)`
 
 The first release discovers base tables only. Views can be added later after
 their read and security behavior is explicitly designed.
+
+Contexts reference the app table ID. Ordinary native-ID-preserving renames update
+physical names without changing that ID. Restore/replacement, visibility loss,
+and ambiguous identity require review; names/fingerprints alone do not prove a
+rename. See the focused slice for epoch handling and explanation-only relinking.
 
 ### `connector_columns`
 
@@ -415,22 +427,26 @@ practical, a read-only login and display a warning when that cannot be confirmed
 
 ### Phase 1 - Persistence and introspection
 
+- [x] Complete Steps 1-3 of `connector-table-explanations-2026-10-11.md` for source
+      identity, migrations, rename reconciliation, and historical context retention.
 - [ ] Define shared normalized Postgres schema metadata types and limits.
 - [ ] Add schema sync, discovered metadata, context, relationship, and query-audit
       Drizzle tables with workspace/connection indexes and cascades.
 - [ ] Add nullable connector binding to chat threads.
-- [ ] Export new schema modules from `lib/db/schema/index.ts`.
-- [ ] Generate a Drizzle migration with `db:generate`.
-- [ ] Review generated SQL for constraints, indexes, and delete behavior.
-- [ ] Apply the migration with `db:migrate` to the target development database.
+- [x] Export new schema modules from `lib/db/schema/index.ts`.
+- [x] Generate a Drizzle migration with `db:generate`.
+- [x] Review generated SQL for constraints, indexes, and delete behavior.
+- [x] Apply the migration with `db:migrate` to the target development database.
 - [ ] Expand Postgres introspection for columns, comments, keys, and relationships.
 - [x] Introspect table triggers (name, events, timing, enabled state, and function).
 - [ ] Add deterministic snapshot hashing and normalized type categories.
-- [ ] Add bounded transactional upsert/removed-object reconciliation.
-- [ ] Add sync locking, timeout enforcement, sanitized errors, and sync history.
+- [x] Add bounded transactional upsert/removed-object reconciliation.
+- [x] Add sync locking, timeout enforcement, sanitized errors, and sync history.
 
 ### Phase 2 - Schema and context APIs
 
+- [x] Complete Step 4 of the table-explanations slice, including revision conflicts
+      and authorized explanation-only relinking without policy transfer.
 - [ ] Add shared Zod schemas for context, policy, manual relationships, and lists.
 - [ ] Add persisted schema list/detail/refresh routes with workspace authorization.
 - [ ] Add table and column context update routes.
@@ -442,6 +458,8 @@ practical, a read-only login and display a warning when that cannot be confirmed
 
 ### Phase 3 - Connector context UI
 
+- [ ] Complete Steps 5-6 of the table-explanations slice for editing, drift review,
+      relinking, and confirmed use of saved context in connector generation.
 - [ ] Split the connector detail page into focused components.
 - [x] Remove the redundant back arrow; use the existing breadcrumbs for navigation.
 - [x] Use the available page width for schema/object browsing.
@@ -515,6 +533,8 @@ practical, a read-only login and display a warning when that cannot be confirmed
 
 ### Phase 6 - Verification and rollout
 
+- [ ] Complete Step 7 of the table-explanations slice, including native rename,
+      replacement, read-only annotation, and partial-discovery safety checks.
 - [ ] Seed the compose Postgres fixture with comments, keys, nullable fields, and a
       likely-sensitive column for manual verification.
 - [ ] Verify schema refresh is idempotent and preserves edited context.

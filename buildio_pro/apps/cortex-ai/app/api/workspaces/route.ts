@@ -7,6 +7,11 @@ import { workspaces } from "@/lib/db/schema/workspaces";
 import { getCurrentUser } from "@/lib/session";
 import { slugify } from "@/lib/slug";
 import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  NAME_MAX_LENGTH,
+} from "@/lib/text-limits";
+import {
   countUserWorkspaces,
   ensurePersonalWorkspace,
   MAX_WORKSPACES_PER_USER,
@@ -77,6 +82,19 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    const lengthError = findTextLengthError([
+      { label: "Workspace name", value: name, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: description,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+    ]);
+    if (lengthError)
+      return NextResponse.json(
+        { success: false, error: lengthError },
+        { status: 400 },
+      );
 
     const slug = slugify(name);
     if (!slug) {

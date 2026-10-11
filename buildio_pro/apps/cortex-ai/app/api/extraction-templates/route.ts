@@ -6,6 +6,13 @@ import { db } from "@/lib/db";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
 import { exposeUserExtractionModelChoice } from "@/lib/extraction/model-config";
 import { getCurrentUser } from "@/lib/session";
+import {
+  DESCRIPTION_MAX_LENGTH,
+  findTextLengthError,
+  INSTRUCTIONS_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  OUTPUT_SCHEMA_MAX_LENGTH,
+} from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 const MAX_PAGE_SIZE = 100;
@@ -106,6 +113,27 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    const lengthError = findTextLengthError([
+      { label: "Name", value: name, maxLength: NAME_MAX_LENGTH },
+      {
+        label: "Description",
+        value: description,
+        maxLength: DESCRIPTION_MAX_LENGTH,
+      },
+      {
+        label: "Instructions",
+        value: instructions,
+        maxLength: INSTRUCTIONS_MAX_LENGTH,
+      },
+      {
+        label: "Output JSON schema",
+        value: outputSchema ? JSON.stringify(outputSchema) : null,
+        maxLength: OUTPUT_SCHEMA_MAX_LENGTH,
+      },
+    ]);
+    if (lengthError)
+      return NextResponse.json({ error: lengthError }, { status: 400 });
 
     const [existing] = await db
       .select({ id: extractionTemplates.id })

@@ -6,6 +6,7 @@ import { topics } from "@/lib/db/schema/topics";
 import { softDeleteTopicCascade } from "@/lib/documents/container-cascade";
 import { getCurrentUser } from "@/lib/session";
 import { slugify } from "@/lib/slug";
+import { NAME_MAX_LENGTH } from "@/lib/text-limits";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
@@ -39,6 +40,14 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         { status: 400 },
       );
     }
+    if (newName.length > NAME_MAX_LENGTH)
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Topic name must be at most ${NAME_MAX_LENGTH} characters`,
+        },
+        { status: 400 },
+      );
 
     const slug = slugify(newName);
     if (!slug) {

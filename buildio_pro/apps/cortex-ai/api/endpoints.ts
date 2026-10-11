@@ -73,13 +73,19 @@ export const endpoints = {
     restore: (id: string) => `/connections/${id}/restore`,
     permanent: (id: string) => `/connections/${id}/permanent`,
     check: (id: string) => `/connections/${id}/check`,
-    tables: (id: string) => `/connections/${id}/tables`,
-    tableDetails: (id: string) => `/connections/${id}/tables/detail`,
     context: (id: string) => `/connections/${id}/context`,
     descriptionPreview: (id: string) =>
       `/connections/${id}/description/preview`,
     descriptionGenerate: (id: string) =>
       `/connections/${id}/description/generate`,
+    schema: (id: string) => `/connections/${id}/schema`,
+    schemaRefresh: (id: string) => `/connections/${id}/schema/refresh`,
+    schemaTable: (id: string, tableId: string) =>
+      `/connections/${id}/schema/tables/${tableId}`,
+    schemaTableContext: (id: string, tableId: string) =>
+      `/connections/${id}/schema/tables/${tableId}/context`,
+    schemaTableRelink: (id: string, tableId: string) =>
+      `/connections/${id}/schema/tables/${tableId}/relink`,
   },
   ingest: {
     run: "/ingest",

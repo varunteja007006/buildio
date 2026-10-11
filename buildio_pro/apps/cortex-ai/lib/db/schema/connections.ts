@@ -34,6 +34,9 @@ export const connections = pgTable(
     status: text("status").notNull().default("unverified"), // unverified | connected | failed
     lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
     lastError: text("last_error"),
+    // Advances when the connector target changes or a restore/replacement is
+    // declared; scopes native source identity to connection + epoch.
+    sourceEpoch: integer("source_epoch").notNull().default(1),
     createdBy: text("created_by").references(() => user.id, {
       onDelete: "set null",
     }),
