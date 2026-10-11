@@ -169,7 +169,7 @@ export function UploadDocumentDialog({
               config={
                 config ?? {
                   accept:
-                    ".pdf,.md,.mdx,.txt,.csv,application/pdf,text/plain,text/markdown",
+                    ".pdf,.md,.mdx,.txt,.csv,.png,.jpg,.jpeg,.webp,.gif,application/pdf,text/plain,text/markdown,image/png,image/jpeg,image/webp,image/gif",
                   maxFileSize: "10MB",
                   maxFileCount: 10,
                   multiple: true,

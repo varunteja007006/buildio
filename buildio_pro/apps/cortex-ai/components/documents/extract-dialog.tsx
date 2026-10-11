@@ -57,10 +57,13 @@ export function ExtractDocumentsDialog({
   const queryClient = useQueryClient();
   const { data: templateData, isLoading: templatesLoading } =
     useExtractionTemplates(1, 100);
-  const { data: modelsData, isLoading: modelsLoading } = useChatModels();
+  const { data: modelsData, isLoading: modelsLoading } = useChatModels(
+    templateData?.exposeUserModelChoice === true,
+  );
   const createExtractions = useCreateExtractions();
 
   const templates = templateData?.templates ?? [];
+  const exposeModelChoice = templateData?.exposeUserModelChoice === true;
   const models = modelsData?.models ?? [];
   const template = templates.find((t) => t.id === templateId);
 
@@ -145,22 +148,24 @@ export function ExtractDocumentsDialog({
               </p>
             )}
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="extract-model">Model</Label>
-            <ChatModelSelector
-              models={models}
-              value={model}
-              loading={modelsLoading}
-              className="w-full"
-              container={contentRef}
-              onSelect={setModel}
-            />
-            <p className="text-xs text-muted-foreground">
-              {model
-                ? "Overrides the template's default model for this run."
-                : "Uses the template's default model."}
-            </p>
-          </div>
+          {exposeModelChoice && (
+            <div className="grid gap-2">
+              <Label htmlFor="extract-model">Model</Label>
+              <ChatModelSelector
+                models={models}
+                value={model}
+                loading={modelsLoading}
+                className="w-full"
+                container={contentRef}
+                onSelect={setModel}
+              />
+              <p className="text-xs text-muted-foreground">
+                {model
+                  ? "Overrides the template's default model for this run."
+                  : "Uses the template's default model."}
+              </p>
+            </div>
+          )}
           <div className="flex items-start justify-between gap-4 rounded-md border px-3 py-2.5">
             <div className="space-y-0.5">
               <Label htmlFor="extract-auto-ingest">Auto-run ingestion</Label>

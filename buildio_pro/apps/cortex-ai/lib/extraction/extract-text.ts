@@ -6,11 +6,19 @@ import { getDocumentObject } from "@/lib/storage/s3";
 
 /** File extensions extracted inline as plain text. */
 const TEXT_EXTENSIONS = new Set([".txt", ".md", ".mdx", ".csv"]);
+const MULTIMODAL_MEDIA_TYPES: Record<string, string> = {
+  ".pdf": "application/pdf",
+  ".gif": "image/gif",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+};
 
 export class UnsupportedFileError extends Error {
   constructor(extension: string) {
     super(
-      `Unsupported file format: ${extension}. Supported: text/markdown/csv and PDF.`,
+      `Unsupported file format: ${extension}. Supported: PDF, PNG, JPEG, WebP, GIF, Markdown, text and CSV.`,
     );
     this.name = "UnsupportedFileError";
   }
@@ -19,8 +27,9 @@ export class UnsupportedFileError extends Error {
 export type DocumentFile = {
   bytes: Uint8Array;
   extension: string;
-  /** True for PDFs, which are sent to the model as a multimodal file part. */
   isPdf: boolean;
+  /** PDFs and images are sent to the model as multimodal file parts. */
+  mediaType: string | null;
 };
 
 /** Load legacy remote URLs or current MinIO object keys. */
@@ -34,11 +43,11 @@ export function classifyDocumentFile(
   bytes: Uint8Array,
 ): DocumentFile {
   const extension = path.extname(filename).toLowerCase();
-  const isPdf = extension === ".pdf";
-  if (!isPdf && !TEXT_EXTENSIONS.has(extension)) {
+  const mediaType = MULTIMODAL_MEDIA_TYPES[extension] ?? null;
+  if (!mediaType && !TEXT_EXTENSIONS.has(extension)) {
     throw new UnsupportedFileError(extension);
   }
-  return { bytes, extension, isPdf };
+  return { bytes, extension, isPdf: extension === ".pdf", mediaType };
 }
 
 /** Load a document's file and classify it for extraction. */
@@ -50,18 +59,17 @@ export async function loadDocumentFile(
 }
 
 /**
- * Build the document content parts for a model message: PDFs become a
- * multimodal file part; text files are inlined with a filename header.
+ * Build model content parts: PDFs and images are multimodal; text is inlined.
  */
 export function buildDocumentParts(
   file: DocumentFile,
 ): (TextPart | FilePart)[] {
-  if (file.isPdf) {
+  if (file.mediaType) {
     return [
       {
         type: "file",
         data: file.bytes,
-        mediaType: "application/pdf",
+        mediaType: file.mediaType,
       },
     ];
   }

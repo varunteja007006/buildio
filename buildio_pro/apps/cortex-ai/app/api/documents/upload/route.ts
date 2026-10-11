@@ -17,7 +17,18 @@ const inputSchema = z.object({
   folderId: z.string().optional(),
 });
 
-const allowedExtensions = new Set([".pdf", ".md", ".mdx", ".txt", ".csv"]);
+const allowedExtensions = new Set([
+  ".pdf",
+  ".md",
+  ".mdx",
+  ".txt",
+  ".csv",
+  ".gif",
+  ".jpeg",
+  ".jpg",
+  ".png",
+  ".webp",
+]);
 
 export async function POST(request: Request) {
   try {

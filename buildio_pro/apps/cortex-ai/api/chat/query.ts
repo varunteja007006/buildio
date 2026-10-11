@@ -110,10 +110,11 @@ export function useRestoreChatThread() {
 }
 
 /** Fetch the chat model catalog */
-export function useChatModels() {
+export function useChatModels(enabled = true) {
   return useQuery({
     queryKey: chatKeys.models(),
     queryFn: getChatModels,
+    enabled,
   });
 }
 

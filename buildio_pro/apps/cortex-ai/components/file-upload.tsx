@@ -52,7 +52,7 @@ export function FileUpload({
   autoUpload = false,
 }: FileUploadProps) {
   const {
-    accept = ".pdf,.md,.mdx,.txt,.csv,application/pdf,text/plain,text/markdown",
+    accept = ".pdf,.md,.mdx,.txt,.csv,.png,.jpg,.jpeg,.webp,.gif,application/pdf,text/plain,text/markdown,image/png,image/jpeg,image/webp,image/gif",
     maxFileSize = "10MB",
     maxFileCount = 10,
     multiple = true,
@@ -263,7 +263,7 @@ export function FileUpload({
 
       {files.length === 0 && !isUploading && (
         <p className="text-center text-xs text-muted-foreground">
-          PDF, Markdown, or text files up to {maxFileSize}
+          PDF, image, Markdown, or text files up to {maxFileSize}
         </p>
       )}
     </div>

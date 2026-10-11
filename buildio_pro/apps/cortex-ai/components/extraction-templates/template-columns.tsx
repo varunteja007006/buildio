@@ -6,6 +6,7 @@ import type { Column } from "@/components/data-table";
 
 type ColumnActions = {
   status: "active" | "deleted";
+  exposeModelChoice: boolean;
   onEdit: (template: ExtractionTemplate) => void;
   onDelete: (template: ExtractionTemplate) => void;
   onRestore: (id: string) => void;
@@ -16,6 +17,7 @@ type ColumnActions = {
 
 export function getTemplateColumns({
   status,
+  exposeModelChoice,
   onEdit,
   onDelete,
   onRestore,
@@ -35,17 +37,21 @@ export function getTemplateColumns({
         </div>
       ),
     },
-    {
-      header: "Model",
-      accessor: (template) =>
-        template.defaultModel ? (
-          <Badge variant="secondary">{template.defaultModel}</Badge>
-        ) : (
-          <span className="text-muted-foreground">Default</span>
-        ),
-      headClassName: "hidden md:table-cell",
-      cellClassName: "hidden md:table-cell",
-    },
+    ...(exposeModelChoice
+      ? [
+          {
+            header: "Model",
+            accessor: (template: ExtractionTemplate) =>
+              template.defaultModel ? (
+                <Badge variant="secondary">{template.defaultModel}</Badge>
+              ) : (
+                <span className="text-muted-foreground">Default</span>
+              ),
+            headClassName: "hidden md:table-cell",
+            cellClassName: "hidden md:table-cell",
+          },
+        ]
+      : []),
     {
       header: "Updated",
       accessor: (template) => (

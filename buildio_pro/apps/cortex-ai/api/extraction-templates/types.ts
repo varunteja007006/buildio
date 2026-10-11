@@ -18,6 +18,7 @@ export type TemplatePage = {
   page: number;
   pageSize: number;
   pageCount: number;
+  exposeUserModelChoice: boolean;
 };
 
 export type TemplateInput = {

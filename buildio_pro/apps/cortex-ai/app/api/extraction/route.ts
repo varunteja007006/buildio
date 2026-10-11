@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
 import { extractions } from "@/lib/db/schema/extractions";
+import { exposeUserExtractionModelChoice } from "@/lib/extraction/model-config";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -132,7 +133,9 @@ export async function POST(request: NextRequest) {
       name: template.name,
       instructions: template.instructions,
       outputSchema: template.outputSchema,
-      defaultModel: template.defaultModel,
+      defaultModel: exposeUserExtractionModelChoice()
+        ? template.defaultModel
+        : null,
     };
     const rows = await db
       .insert(extractions)
@@ -141,7 +144,9 @@ export async function POST(request: NextRequest) {
           documentId,
           templateId: template.id,
           templateSnapshot,
-          model: model ?? template.defaultModel,
+          model: exposeUserExtractionModelChoice()
+            ? model ?? template.defaultModel
+            : null,
           provider: null,
           status: "pending" as const,
           autoIngest,

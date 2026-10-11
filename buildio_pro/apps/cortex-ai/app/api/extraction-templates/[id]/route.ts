@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
+import { exposeUserExtractionModelChoice } from "@/lib/extraction/model-config";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -31,7 +32,10 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       updates.instructions = body.instructions.trim();
     if ("outputSchema" in (body ?? {}))
       updates.outputSchema = body.outputSchema;
-    if (typeof body?.defaultModel === "string")
+    if (
+      exposeUserExtractionModelChoice() &&
+      typeof body?.defaultModel === "string"
+    )
       updates.defaultModel = body.defaultModel.trim() || null;
     if (!Object.keys(updates).length)
       return NextResponse.json(
@@ -101,7 +105,11 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       status: "updated",
     }).catch(console.error);
 
-    return NextResponse.json({ template });
+    return NextResponse.json({
+      template: exposeUserExtractionModelChoice()
+        ? template
+        : { ...template, defaultModel: null },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

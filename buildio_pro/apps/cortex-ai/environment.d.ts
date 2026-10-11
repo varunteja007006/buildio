@@ -18,6 +18,10 @@ declare namespace NodeJS {
     /** Must match the embeddings.embedding vector column dimension. */
     AI_EMBEDDING_DIMENSIONS: string;
     CHAT_DEFAULT_MODEL: string;
+    DOCUMENT_EXTRACTION_MODEL: string;
+    PDF_EXTRACTION_MODEL: string;
+    IMAGE_EXTRACTION_MODEL: string;
+    EXPOSE_USER_EXTRACTION_MODEL_CHOICE?: string;
 
     /** Model used to draft extraction templates from a sample document. */
     EXTRACTION_TEMPLATE_SUGGESTION_MODEL: string;

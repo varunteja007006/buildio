@@ -55,7 +55,7 @@ export async function ingestDocument(
  *
  * Content resolution (E2): the latest approved completed extraction's
  * `currentContent` wins; otherwise fall back to the raw uploaded file
- * (text formats only — PDFs need an extraction first).
+ * (text formats only — PDFs and images need an extraction first).
  *
  * Re-ingestion (E5): previously active resources for the document are
  * soft-deleted so the new resource supersedes them; their embeddings stay
@@ -98,7 +98,7 @@ async function runIngest(
     if (!SUPPORTED_EXTENSIONS.has(ext)) {
       return {
         success: false,
-        error: `No approved extraction and unsupported file format: ${ext}. Run an extraction first for PDFs.`,
+        error: `No approved extraction and unsupported file format: ${ext}. Run an extraction first.`,
       };
     }
     try {

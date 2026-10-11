@@ -5,11 +5,11 @@ import {
   type TextPart,
 } from "ai";
 
-import { getDefaultChatModelId } from "@/lib/chat/models";
 import {
   buildDocumentParts,
   loadDocumentFile,
 } from "@/lib/extraction/extract-text";
+import { getDefaultExtractionModel } from "@/lib/extraction/model-config";
 
 export type TemplateSnapshot = {
   name?: string;
@@ -106,7 +106,7 @@ export async function runExtraction({
   filepath: string;
   model: string | null;
 }): Promise<ExtractionResult> {
-  const model = modelOverride ?? getDefaultChatModelId();
+  const model = modelOverride ?? getDefaultExtractionModel(filename);
   const file = await loadDocumentFile(filename, filepath);
   const messages = buildExtractionMessages(template, buildDocumentParts(file));
 

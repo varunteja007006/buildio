@@ -7,8 +7,19 @@ import { getCurrentUser } from "@/lib/session";
 import { MAX_DOCUMENT_SIZE } from "@/lib/storage/s3";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
-/** Same formats the extraction pipeline can read inline. */
-const ALLOWED_EXTENSIONS = new Set([".pdf", ".md", ".mdx", ".txt", ".csv"]);
+/** Same formats the extraction pipeline can read. */
+const ALLOWED_EXTENSIONS = new Set([
+  ".pdf",
+  ".md",
+  ".mdx",
+  ".txt",
+  ".csv",
+  ".gif",
+  ".jpeg",
+  ".jpg",
+  ".png",
+  ".webp",
+]);
 
 /**
  * Draft an extraction template from a sample document. The upload is read
@@ -49,7 +60,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            "Unsupported document type. Supported: PDF, Markdown, text and CSV.",
+            "Unsupported document type. Supported: PDF, images, Markdown, text and CSV.",
         },
         { status: 400 },
       );

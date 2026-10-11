@@ -8,7 +8,7 @@ import { useGenerateTemplateSuggestion } from "@/api/extraction-templates/query"
 import type { TemplateSuggestion } from "@/api/extraction-templates/types";
 
 const ACCEPT =
-  ".pdf,.md,.mdx,.txt,.csv,application/pdf,text/plain,text/markdown";
+  ".pdf,.md,.mdx,.txt,.csv,.png,.jpg,.jpeg,.webp,.gif,application/pdf,text/plain,text/markdown,image/png,image/jpeg,image/webp,image/gif";
 const MAX_BYTES = 10 * 1024 * 1024;
 
 type TemplateGenerateProps = {

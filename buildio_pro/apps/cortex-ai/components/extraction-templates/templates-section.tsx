@@ -44,7 +44,9 @@ export function ExtractionTemplatesSection() {
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<ConfirmAction | null>(null);
   const { data, isLoading } = useExtractionTemplates(page, PAGE_SIZE, status);
-  const { data: modelsData, isLoading: modelsLoading } = useChatModels();
+  const { data: modelsData, isLoading: modelsLoading } = useChatModels(
+    data?.exposeUserModelChoice === true,
+  );
   const create = useCreateExtractionTemplate();
   const update = useUpdateExtractionTemplate();
   const remove = useDeleteExtractionTemplate();
@@ -52,6 +54,7 @@ export function ExtractionTemplatesSection() {
   const permanent = usePermanentlyDeleteExtractionTemplate();
   const templates = data?.templates ?? [];
   const pageCount = data?.pageCount || 1;
+  const exposeModelChoice = data?.exposeUserModelChoice === true;
 
   const openCreate = () => {
     setError(null);
@@ -114,6 +117,7 @@ export function ExtractionTemplatesSection() {
 
   const columns = getTemplateColumns({
     status,
+    exposeModelChoice,
     onEdit: openEdit,
     onDelete: (template) =>
       setConfirm({ kind: "delete", template }),
@@ -207,6 +211,7 @@ export function ExtractionTemplatesSection() {
         pending={create.isPending || update.isPending}
         models={modelsData?.models ?? []}
         modelsLoading={modelsLoading}
+        exposeModelChoice={exposeModelChoice}
         onChange={setField}
         onGenerated={applySuggestion}
         onSave={save}

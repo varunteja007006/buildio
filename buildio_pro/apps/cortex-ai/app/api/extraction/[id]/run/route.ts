@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import { extractionVersions } from "@/lib/db/schema/extraction-versions";
 import { extractions } from "@/lib/db/schema/extractions";
+import { exposeUserExtractionModelChoice } from "@/lib/extraction/model-config";
 import {
   runExtraction,
   type TemplateSnapshot,
@@ -80,7 +81,7 @@ export async function POST(_request: Request, { params }: Params) {
         template,
         filename,
         filepath,
-        model: processing.model,
+        model: exposeUserExtractionModelChoice() ? processing.model : null,
       });
 
       const [{ nextVersion }] = await db

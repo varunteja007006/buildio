@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
+import { exposeUserExtractionModelChoice } from "@/lib/extraction/model-config";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
         page: 1,
         pageSize: 20,
         pageCount: 0,
+        exposeUserModelChoice: exposeUserExtractionModelChoice(),
       });
 
     const page = Math.max(
@@ -53,12 +55,16 @@ export async function GET(request: NextRequest) {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
+    const exposeModelChoice = exposeUserExtractionModelChoice();
     return NextResponse.json({
-      templates,
+      templates: exposeModelChoice
+        ? templates
+        : templates.map((template) => ({ ...template, defaultModel: null })),
       total,
       page,
       pageSize,
       pageCount: Math.ceil(total / pageSize),
+      exposeUserModelChoice: exposeModelChoice,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -88,6 +94,7 @@ export async function POST(request: NextRequest) {
         ? body.description.trim() || null
         : null;
     const defaultModel =
+      exposeUserExtractionModelChoice() &&
       typeof body?.defaultModel === "string"
         ? body.defaultModel.trim() || null
         : null;

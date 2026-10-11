@@ -58,6 +58,7 @@ type TemplateDialogProps = {
   pending: boolean;
   models: ChatModelOption[];
   modelsLoading: boolean;
+  exposeModelChoice: boolean;
   onChange: (field: keyof FormState, value: string) => void;
   onGenerated: (suggestion: TemplateSuggestion) => void;
   onSave: () => void;
@@ -71,6 +72,7 @@ export function TemplateDialog({
   pending,
   models,
   modelsLoading,
+  exposeModelChoice,
   onChange,
   onGenerated,
   onSave,
@@ -124,17 +126,19 @@ export function TemplateDialog({
               onChange={(event) => onChange("instructions", event.target.value)}
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="template-model">Default model</Label>
-            <ChatModelSelector
-              models={models}
-              value={form.defaultModel}
-              loading={modelsLoading}
-              className="w-full"
-              container={contentRef}
-              onSelect={(modelId) => onChange("defaultModel", modelId)}
-            />
-          </div>
+          {exposeModelChoice && (
+            <div className="grid gap-2">
+              <Label htmlFor="template-model">Default model</Label>
+              <ChatModelSelector
+                models={models}
+                value={form.defaultModel}
+                loading={modelsLoading}
+                className="w-full"
+                container={contentRef}
+                onSelect={(modelId) => onChange("defaultModel", modelId)}
+              />
+            </div>
+          )}
           <div className="grid gap-2">
             <Label htmlFor="template-schema">Output JSON schema</Label>
             <Textarea
