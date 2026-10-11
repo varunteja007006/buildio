@@ -56,7 +56,7 @@ const projectData = [
       `Buildio Pro is a type-safe full stack application built with the T3 Stack. TypeScript-first architecture ensures frontend and backend stay in sync, making it an ideal stack for AI-driven development.`,
       `Leverages tRPC for end-to-end type safety, Drizzle ORM for type-safe database queries, and PostgreSQL for reliable data storage.`,
     ],
-    project_github: "https://github.com/varunteja007006/Buildio/tree/main/buildio_pro",
+    project_github: "https://github.com/varunteja007006/buildio/tree/main/buildio_pro",
     project_link: "",
     toShow: true,
     projectStatus: COMPLETED,
@@ -116,7 +116,7 @@ const projectData = [
       `This application is built on the MERN Stack Framework, with JWT-based authentication for 
       enhanced security.`,
     ],
-    project_github: "https://github.com/varunteja007006/JobToday-ReactJS",
+    project_github: "https://github.com/varunteja007006/jobtoday",
     project_link: "",
     project_images: [jobtoday, jobtoday1],
     toShow: false,
@@ -142,7 +142,7 @@ const projectData = [
       `I have built it using Next JS and used various react libraries to demonstrate their usages and features.`,
       `There are many more micro projects that are built to get the understanding of various libraries like React Hook Form, Zustand, Zod, React Table (Tanstack Table), React Query (Tanstack Query), etc...`,
     ],
-    project_github: "https://github.com/varunteja007006/Practice_React_Next",
+    project_github: "https://github.com/varunteja007006/portfolio",
     project_link: "https://varunteja007006.netlify.app/",
     toShow: false,
     projectStatus: COMPLETED,
@@ -162,7 +162,7 @@ const projectData = [
       and delivering an efficient user experience.`,
     ],
     project_github:
-      "https://github.com/varunteja007006/Sportz-Management-BootstrapVersion-PHP",
+      "https://github.com/varunteja007006/sports-management",
     project_link: "",
     project_images: [sportsmanagement],
     toShow: true,
@@ -188,7 +188,7 @@ const projectData = [
       delivering exceptional performance and functionality.`,
       `It is a very basic app that taught me a lot about React and Node.`,
     ],
-    project_github: "https://github.com/varunteja007006/FitApp-ReactJS",
+    project_github: "https://github.com/varunteja007006/fitapp",
     project_link: "",
     project_images: [fit, fit1, fit2],
     toShow: false,
@@ -218,7 +218,7 @@ const projectData = [
       reliable and informative insights into the sentiment of the tweets analyzed.`,
     ],
     project_github:
-      "https://github.com/varunteja007006/Twitter-Sentiment-Analysis-on-Politicians-Django",
+      "https://github.com/varunteja007006/twitter-sentiment-analysis",
     project_link: "",
     project_images: [sentiment5, sentiment6],
     toShow: true,
@@ -239,7 +239,7 @@ const projectData = [
     project_description: [
       "Collabs: Unleash your potential through collaborative synergy! Our web app combines the power of Django and Materialize CSS to create an engaging platform where students come together to share skills and discover exciting projects. Connect with like-minded individuals, showcase your talents, and embark on a journey of innovation and growth. Join Collabs and unlock endless possibilities for collaboration and personal development!",
     ],
-    project_github: "https://github.com/varunteja007006/Collabs-Django",
+    project_github: "https://github.com/varunteja007006/collaboration-app",
     project_link: "",
     project_images: [collabs, collabs1, collabs2, collabs3, collabs4],
     toShow: false,
@@ -262,7 +262,7 @@ const projectData = [
     project_description: [
       "Empower your finances with our Bootstrap and Django-powered web app. Seamlessly track income and expenses, while elegant cards display salary, month-end balance, and total expenses. Engage with captivating visualizations like histograms, bar graphs, and pie charts. Effortlessly analyze and manage your money with the added convenience of generating CSV files. Upgrade your financial management with our sleek and feature-rich solution.",
     ],
-    project_github: "https://github.com/varunteja007006/Budget-Django",
+    project_github: "https://github.com/varunteja007006/budget-tracker",
     project_link: "",
     project_images: [budget, budget1, budget2, budget3, budget4],
     toShow: true,
@@ -272,7 +272,7 @@ const projectData = [
   // In Progress Projects
   {
     id: "project-open-templates",
-    project_title: `open_templates`,
+    project_title: `Project Templates`,
     project_subtitle: `My experimental project 🔬 to dive deep into the next js and django frameworks. 
     To understand some core concepts like middleware, server actions, web sockets, etc...`,
     project_badges: [
@@ -289,7 +289,7 @@ const projectData = [
       `On the Frontend part next js and using middleware, server actions, etc....`,
       `Docker to spin up both frontend and backend.`,
     ],
-    project_github: "https://github.com/varunteja007006/open_templates",
+    project_github: "https://github.com/varunteja007006/project-templates",
     project_link: "",
     toShow: false,
     projectStatus: INPROGRESS,
