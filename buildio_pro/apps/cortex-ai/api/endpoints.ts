@@ -81,6 +81,7 @@ export const endpoints = {
   },
   ingest: {
     run: "/ingest",
+    status: "/ingest/status",
   },
   extractions: {
     list: "/extraction",

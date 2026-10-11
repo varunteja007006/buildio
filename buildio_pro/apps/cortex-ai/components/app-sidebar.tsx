@@ -32,8 +32,9 @@ const navMain = [
     url: "/dashboard/documents",
     icon: <FileTextIcon />,
     items: [
-      { title: "All Documents", url: "/dashboard/documents" },
+      { title: "Documents", url: "/dashboard/documents" },
       { title: "Extraction", url: "/dashboard/documents/extraction-templates" },
+      { title: "Ingestion", url: "/dashboard/documents/ingestion" },
       { title: "Audit Logs", url: "/dashboard/documents/audit-logs" },
       { title: "Trash", url: "/dashboard/documents/trash" },
     ],

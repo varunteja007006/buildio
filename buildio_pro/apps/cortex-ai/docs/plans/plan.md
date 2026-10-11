@@ -11,4 +11,5 @@
 
 | filename | short desc | status |
 | --- | --- | --- |
+| [done/document-ingestion-page-2026-10-11.md](done/document-ingestion-page-2026-10-11.md) | Ingestion page: ingest queue monitoring (status/stats/errors/retry), row-click stats dialog | ✅ |
 | [done/document-extraction-2026-09-10.md](done/document-extraction-2026-09-10.md) | Document extraction + ingestion UI, templates, review/diff, audit logs, trash + cascades | ✅ |
