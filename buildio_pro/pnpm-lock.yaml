@@ -228,6 +228,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@workspace/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -5238,7 +5241,7 @@ packages:
       expo-sqlite: '>=14.0.0'
       gel: '>=2'
       knex: '*'
-      kysely: '>=0.28.12'
+      kysely: '>=0.28.17'
       mysql2: '>=2'
       pg: '>=8'
       postgres: '>=3'
@@ -6860,7 +6863,7 @@ packages:
     peerDependencies:
       '@remix-run/react': '>=2'
       '@tanstack/react-router': ^1
-      next: '>=15.5.10'
+      next: '>=15.6.0-canary.61'
       react: '>=18.2.0 || ^19.0.0-0'
       react-router: ^5 || ^6 || ^7 || ^8
       react-router-dom: ^5 || ^6 || ^7

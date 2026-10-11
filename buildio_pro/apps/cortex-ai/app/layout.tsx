@@ -15,7 +15,7 @@ const dmSansHeading = DM_Sans({
 
 const sourceSans3 = Source_Sans_3({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-app-sans",
 });
 
 const geistSans = Geist({
