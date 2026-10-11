@@ -31,8 +31,10 @@ import {
   useRunExtraction,
   useUpdateExtraction,
 } from "@/api/extractions/query";
+import { CharCount } from "@/components/char-count";
 import { CortexSwitch } from "@/components/cortex-switch";
 import { ExtractionVersionHistory } from "@/components/documents/extraction-version-history";
+import { EXTRACTION_CONTENT_MAX_LENGTH } from "@/lib/text-limits";
 import { cn } from "@/lib/utils";
 
 type ExtractionReviewDialogProps = {
@@ -145,7 +147,13 @@ export function ExtractionReviewDialog({
                 value={content}
                 onChange={(event) => setDraft(event.target.value)}
                 disabled={!canEdit}
+                maxLength={EXTRACTION_CONTENT_MAX_LENGTH}
                 className="scrollbar-elegant max-h-72 min-h-40 resize-y overflow-auto font-mono text-sm"
+              />
+              <CharCount
+                value={content}
+                maxLength={EXTRACTION_CONTENT_MAX_LENGTH}
+                className="text-right"
               />
               {dirty && (
                 <p className="text-xs text-muted-foreground">

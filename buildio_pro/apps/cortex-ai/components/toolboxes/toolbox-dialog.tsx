@@ -15,6 +15,7 @@ import { Label } from "@workspace/ui/components/label";
 import { useRef } from "react";
 
 import type { Toolbox } from "@/api/toolboxes/types";
+import { CharCount } from "@/components/char-count";
 import { toolCatalog } from "@/lib/agents/tool-catalog";
 import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "@/lib/text-limits";
 
@@ -92,6 +93,7 @@ export function ToolboxDialog({
               maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange({ name: event.target.value })}
             />
+            <CharCount value={form.name} maxLength={NAME_MAX_LENGTH} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="toolbox-description">Description</Label>
@@ -102,6 +104,10 @@ export function ToolboxDialog({
               onChange={(event) =>
                 onChange({ description: event.target.value })
               }
+            />
+            <CharCount
+              value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
             />
           </div>
           <div className="grid gap-2">

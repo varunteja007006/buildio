@@ -14,6 +14,7 @@ import { ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
 import { useState } from "react";
 
 import { upsertMessageFeedback } from "@/api/chat/api";
+import { CharCount } from "@/components/char-count";
 import { MAX_CHAT_FEEDBACK_LENGTH } from "@/lib/chat/constants";
 
 /**
@@ -125,9 +126,11 @@ export function MessageFeedback({
             value={comment}
             onChange={(event) => setComment(event.target.value)}
           />
-          <p className="text-right text-xs text-muted-foreground">
-            {comment.length} / {MAX_CHAT_FEEDBACK_LENGTH} characters
-          </p>
+          <CharCount
+            value={comment}
+            maxLength={MAX_CHAT_FEEDBACK_LENGTH}
+            className="text-right"
+          />
           {error ? (
             <p className="text-sm text-destructive">
               Could not save feedback. Please try again.

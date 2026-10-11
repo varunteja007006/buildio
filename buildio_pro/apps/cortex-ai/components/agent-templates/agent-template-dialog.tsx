@@ -15,6 +15,7 @@ import { Textarea } from "@workspace/ui/components/textarea";
 import { useRef } from "react";
 
 import type { AgentInstructionTemplate } from "@/api/agent-templates/types";
+import { CharCount } from "@/components/char-count";
 import {
   DESCRIPTION_MAX_LENGTH,
   INSTRUCTIONS_MAX_LENGTH,
@@ -90,6 +91,7 @@ export function AgentTemplateDialog({
               maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange({ name: event.target.value })}
             />
+            <CharCount value={form.name} maxLength={NAME_MAX_LENGTH} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="agent-template-description">Description</Label>
@@ -101,6 +103,10 @@ export function AgentTemplateDialog({
                 onChange({ description: event.target.value })
               }
             />
+            <CharCount
+              value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="agent-template-body">Instructions</Label>
@@ -111,6 +117,11 @@ export function AgentTemplateDialog({
               value={form.body}
               maxLength={INSTRUCTIONS_MAX_LENGTH}
               onChange={(event) => onChange({ body: event.target.value })}
+            />
+            <CharCount
+              value={form.body}
+              maxLength={INSTRUCTIONS_MAX_LENGTH}
+              className="text-right"
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}

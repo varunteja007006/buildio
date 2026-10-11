@@ -17,6 +17,7 @@ import { useRef } from "react";
 import type { AgentDetail } from "@/api/agents/types";
 import { AgentToolPicker } from "@/components/agents/agent-tool-picker";
 import { AgentTopicPicker } from "@/components/agents/agent-topic-picker";
+import { CharCount } from "@/components/char-count";
 import {
   DESCRIPTION_MAX_LENGTH,
   INSTRUCTIONS_MAX_LENGTH,
@@ -103,6 +104,7 @@ export function AgentDialog({
               maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange({ name: event.target.value })}
             />
+            <CharCount value={form.name} maxLength={NAME_MAX_LENGTH} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="agent-description">Description</Label>
@@ -111,6 +113,10 @@ export function AgentDialog({
               value={form.description}
               maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(event) => onChange({ description: event.target.value })}
+            />
+            <CharCount
+              value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
             />
           </div>
           <AgentTopicPicker
@@ -158,6 +164,11 @@ export function AgentDialog({
               onChange={(event) =>
                 onChange({ instructions: event.target.value })
               }
+            />
+            <CharCount
+              value={form.instructions}
+              maxLength={INSTRUCTIONS_MAX_LENGTH}
+              className="text-right"
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}

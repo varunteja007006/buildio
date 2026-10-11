@@ -18,6 +18,7 @@ import type {
   ExtractionTemplate,
   TemplateSuggestion,
 } from "@/api/extraction-templates/types";
+import { CharCount } from "@/components/char-count";
 import { ChatModelSelector } from "@/components/chat/chat-model-selector";
 import { TemplateGenerate } from "@/components/extraction-templates/template-generate";
 import type { ChatModelOption } from "@/lib/chat/models";
@@ -114,6 +115,7 @@ export function TemplateDialog({
               maxLength={NAME_MAX_LENGTH}
               onChange={(event) => onChange("name", event.target.value)}
             />
+            <CharCount value={form.name} maxLength={NAME_MAX_LENGTH} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="template-description">Description</Label>
@@ -122,6 +124,10 @@ export function TemplateDialog({
               value={form.description}
               maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(event) => onChange("description", event.target.value)}
+            />
+            <CharCount
+              value={form.description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
             />
           </div>
           <div className="grid gap-2">
@@ -133,6 +139,11 @@ export function TemplateDialog({
               value={form.instructions}
               maxLength={INSTRUCTIONS_MAX_LENGTH}
               onChange={(event) => onChange("instructions", event.target.value)}
+            />
+            <CharCount
+              value={form.instructions}
+              maxLength={INSTRUCTIONS_MAX_LENGTH}
+              className="text-right"
             />
           </div>
           {exposeModelChoice && (
@@ -158,6 +169,11 @@ export function TemplateDialog({
               value={form.outputSchema}
               maxLength={OUTPUT_SCHEMA_MAX_LENGTH}
               onChange={(event) => onChange("outputSchema", event.target.value)}
+            />
+            <CharCount
+              value={form.outputSchema}
+              maxLength={OUTPUT_SCHEMA_MAX_LENGTH}
+              className="text-right"
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}

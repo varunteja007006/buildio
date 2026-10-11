@@ -7,6 +7,7 @@ import { Label } from "@workspace/ui/components/label";
 import { AlertCircle, CheckCircle2, Loader2, PlugZap } from "lucide-react";
 
 import type { ProbeResult } from "@/api/connections/types";
+import { CharCount } from "@/components/char-count";
 
 export type DetailsFormState = {
   name: string;
@@ -75,6 +76,12 @@ export function ConnectionDetailsForm({
             maxLength={MAX_FIELD_LENGTHS[field.key]}
             onChange={(event) => onChange(field.key, event.target.value)}
           />
+          {MAX_FIELD_LENGTHS[field.key] ? (
+            <CharCount
+              value={form[field.key]}
+              maxLength={MAX_FIELD_LENGTHS[field.key]!}
+            />
+          ) : null}
         </div>
       ))}
       <div className="grid gap-2">
@@ -87,6 +94,10 @@ export function ConnectionDetailsForm({
           value={form.password}
           maxLength={MAX_FIELD_LENGTHS.password}
           onChange={(event) => onChange("password", event.target.value)}
+        />
+        <CharCount
+          value={form.password}
+          maxLength={MAX_FIELD_LENGTHS.password!}
         />
       </div>
       <div className="flex items-center gap-2">

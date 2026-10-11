@@ -23,7 +23,7 @@ import { useState } from "react";
 import { useCreateFolder } from "@/api/folders/query";
 import type { Folder } from "@/api/folders/types";
 import type { Topic } from "@/api/topics/types";
-import { cn } from "@/lib/utils";
+import { CharCount } from "@/components/char-count";
 
 const MAX_NAME_LENGTH = 150;
 
@@ -110,16 +110,7 @@ export function NewFolderDialog({
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />
-          <p
-            className={cn(
-              "text-xs",
-              name.length <= MAX_NAME_LENGTH
-                ? "text-primary"
-                : "text-destructive",
-            )}
-          >
-            {name.length} / {MAX_NAME_LENGTH}
-          </p>
+          <CharCount value={name} maxLength={MAX_NAME_LENGTH} />
           {createFolder.isError && (
             <p className="text-xs text-destructive">
               {createFolder.error?.message ?? "Could not create folder."}

@@ -40,6 +40,7 @@ import {
   useCreateWorkspace,
   useWorkspaces,
 } from "@/api/workspaces/query";
+import { CharCount } from "@/components/char-count";
 import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "@/lib/text-limits";
 import { cn } from "@/lib/utils";
 
@@ -209,6 +210,7 @@ export function WorkspaceSwitcher() {
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             />
+            <CharCount value={name} maxLength={NAME_MAX_LENGTH} />
             <Label htmlFor="workspace-description">Description</Label>
             <Input
               id="workspace-description"
@@ -217,6 +219,10 @@ export function WorkspaceSwitcher() {
               maxLength={DESCRIPTION_MAX_LENGTH}
               onChange={(e) => setDescription(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+            />
+            <CharCount
+              value={description}
+              maxLength={DESCRIPTION_MAX_LENGTH}
             />
             {create.isError && (
               <p className="text-xs text-destructive">

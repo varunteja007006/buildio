@@ -9,6 +9,7 @@ import {
   useAgentFeedback,
   useUpsertAgentFeedback,
 } from "@/api/agents/query";
+import { CharCount } from "@/components/char-count";
 import { FEEDBACK_COMMENT_MAX_LENGTH } from "@/lib/text-limits";
 
 export function AgentFeedbackSection({ agentId }: { agentId: string }) {
@@ -64,6 +65,11 @@ export function AgentFeedbackSection({ agentId }: { agentId: string }) {
             value={comment}
             maxLength={FEEDBACK_COMMENT_MAX_LENGTH}
             onChange={(event) => setComment(event.target.value)}
+          />
+          <CharCount
+            value={comment}
+            maxLength={FEEDBACK_COMMENT_MAX_LENGTH}
+            className="text-right"
           />
         </div>
         <Button onClick={submit} disabled={upsert.isPending}>

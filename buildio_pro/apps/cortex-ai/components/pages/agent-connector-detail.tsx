@@ -14,6 +14,7 @@ import {
 } from "@/api/connections/query";
 import { CONNECTOR_DESCRIPTION_MAX_LENGTH } from "@/api/connections/schema-contracts";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
+import { CharCount } from "@/components/char-count";
 import { StatusBadge } from "@/components/connections/connection-columns";
 import { ConnectorDescriptionDialog } from "@/components/pages/connector-description-dialog";
 import { ConnectorSchemaRefresh } from "@/components/pages/connector-schema-refresh";
@@ -117,6 +118,11 @@ export function AgentConnectorDetailPage({
             rows={5}
             placeholder="For example: This database contains sales orders. Use completed orders for revenue reporting; refunds are stored separately."
             aria-label="Connector explanation"
+          />
+          <CharCount
+            value={description}
+            maxLength={CONNECTOR_DESCRIPTION_MAX_LENGTH}
+            className="text-right"
           />
           <div className="flex flex-wrap gap-2">
             {connection.type === "postgres" && (

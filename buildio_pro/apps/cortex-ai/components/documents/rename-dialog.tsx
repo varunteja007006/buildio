@@ -13,7 +13,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { useState } from "react";
 
-import { cn } from "@/lib/utils";
+import { CharCount } from "@/components/char-count";
 
 const MAX_NAME_LENGTH = 150;
 
@@ -61,16 +61,7 @@ export function RenameDialog({
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />
-          <p
-            className={cn(
-              "text-xs",
-              name.length <= MAX_NAME_LENGTH
-                ? "text-primary"
-                : "text-destructive",
-            )}
-          >
-            {name.length} / {MAX_NAME_LENGTH}
-          </p>
+          <CharCount value={name} maxLength={MAX_NAME_LENGTH} />
           {error && <p className="text-xs text-destructive">{error}</p>}
         </div>
         <DialogFooter>
