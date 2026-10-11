@@ -65,7 +65,7 @@ export function getTemplateColumns({
           </Button>
           {status === "active" ? (
             <Button
-              variant="ghost"
+              variant="destructive"
               size="sm"
               onClick={() => onDelete(template)}
               disabled={deletePending}
@@ -82,7 +82,7 @@ export function getTemplateColumns({
                 Restore
               </Button>
               <Button
-                variant="ghost"
+                variant="destructive"
                 size="sm"
                 onClick={() => onPermanentDelete(template)}
                 disabled={permanentDeletePending}

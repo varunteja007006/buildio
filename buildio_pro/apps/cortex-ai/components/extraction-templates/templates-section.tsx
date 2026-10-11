@@ -137,7 +137,7 @@ export function ExtractionTemplatesSection() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <Button onClick={openCreate} disabled={status === "deleted"}>
           <Plus data-icon="inline-start" /> New template
         </Button>
