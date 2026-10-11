@@ -30,7 +30,7 @@ pnpm dev              # run all 6 apps
 pnpm dev:web          # run a single app (also dev:expense-tracker, dev:cortex-ai, dev:poker-planner, dev:housie-game, dev:scribble)
 pnpm build:<app>      # build a single app
 pnpm start:<app>      # start a production build
-pnpm format           # prettier --write (sorts imports)
+pnpm format           # format TypeScript and Markdown with Prettier
 ```
 
 See `AGENTS.md` for conventions: adding shadcn components, theme wiring, env setup, and deploy notes.
@@ -53,7 +53,7 @@ Components for the shared apps install into `packages/ui/src/components`:
 pnpm dlx shadcn@latest add button -c apps/web
 ```
 
-`cortex-ai` uses its own local `@/components/ui` instead (its `components.json` points `ui` at the app) — add components there with `-c apps/cortex-ai`.
+`cortex-ai` also uses the shared UI package. Add components with `-c apps/web`; do not target `apps/cortex-ai`.
 
 ## Packages
 

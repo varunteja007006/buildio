@@ -18,7 +18,7 @@ This is a pnpm 11.4 + Turborepo monorepo of Next.js 16 apps. Run commands from `
 - `apps/expense-tracker` is a tRPC + better-auth + Drizzle/Postgres/Valkey app.
 - `apps/cortex-ai` is an AI chat/RAG app using HTTP API modules, better-auth, Drizzle, and UploadThing.
 - `apps/poker-planner`, `apps/housie-game`, and `apps/scribble` are Convex-backed realtime games.
-- `packages/ui` is the shared UI registry. Search `packages/ui/src/components/` before creating UI; import it as `@workspace/ui/...`, never by relative path. Add missing shadcn components with `pnpm dlx shadcn@latest add <name> -c apps/web`, which installs into the shared package. `cortex-ai` uses the same shared UI package despite its stale `components.json`; do not install components with `-c apps/cortex-ai`.
+- `packages/ui` is the shared UI registry. Search `packages/ui/src/components/` before creating UI; import it as `@workspace/ui/...`, never by relative path. Add missing shadcn components with `pnpm dlx shadcn@latest add <name> -c apps/web`, which installs into the shared package. `cortex-ai` uses the same shared UI package; do not install components with `-c apps/cortex-ai`.
 - Workspace packages are consumed through `@workspace/*` exports. Keep new dependencies in the `catalog`/`react19` catalogs in `pnpm-workspace.yaml` rather than hardcoding catalog-managed versions.
 
 ## Data And Generated Code
