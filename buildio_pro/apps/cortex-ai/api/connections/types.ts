@@ -44,7 +44,55 @@ export type ProbeResult = {
 
 export type DeleteResponse = { success: boolean; id: string };
 
-export type ConnectorTable = { schema: string; name: string };
+export type ConnectorTrigger = {
+  name: string;
+  events: string[];
+  timing: "BEFORE" | "AFTER" | "INSTEAD OF";
+  rowLevel: boolean;
+  enabled: "enabled" | "disabled" | "replica" | "always";
+  functionSchema: string;
+  functionName: string;
+};
+
+export type ConnectorTable = {
+  schema: string;
+  name: string;
+  objectType:
+    | "table"
+    | "partitioned_table"
+    | "view"
+    | "materialized_view"
+    | "foreign_table"
+    | "collection";
+  triggers: ConnectorTrigger[];
+};
+
+export type ConnectorTableMetadata = {
+  storage: {
+    tableBytes: string;
+    indexBytes: string;
+    totalBytes: string;
+  } | null;
+  columns: {
+    name: string;
+    type: string;
+    nullable: boolean;
+    defaultValue: string | null;
+    comment: string | null;
+  }[];
+  indexes: {
+    name: string;
+    method: string;
+    unique: boolean;
+    primary: boolean;
+    definition: string;
+  }[];
+  constraints: {
+    name: string;
+    type: string;
+    definition: string;
+  }[];
+};
 
 export type ConnectorMetadata = {
   database: string;

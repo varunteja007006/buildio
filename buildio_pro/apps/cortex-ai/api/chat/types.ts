@@ -1,4 +1,5 @@
 import type { ChatModelOption } from "@/lib/chat/models";
+import type { SpeechSettings } from "@/lib/chat/speech-settings";
 
 export type { ChatModelOption };
 
@@ -6,6 +7,13 @@ export type { ChatModelOption };
 export type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
+};
+
+export type ChatAttachment = {
+  key: string;
+  filename: string;
+  mediaType: string;
+  size: number;
 };
 
 /** Response from GET /api/chat/models */
@@ -17,11 +25,13 @@ export type ChatModelsResponse = {
 /** Response from GET/PATCH /api/chat/preferences */
 export type ChatPreferencesResponse = {
   defaultModel: string;
+  speech: SpeechSettings;
 };
 
-/** Input for updating the user's default chat model */
+/** Input for updating the user's chat preferences */
 export type UpdateChatPreferencesInput = {
-  defaultModel: string;
+  defaultModel?: string;
+  speech?: SpeechSettings;
 };
 
 /** Payload sent to the chat API */
@@ -34,6 +44,7 @@ export type ChatRequest = {
 /** A single chat thread (conversation) */
 export type ChatThread = {
   id: string;
+  agentId?: string | null;
   title: string | null;
   createdAt: string;
   updatedAt: string;
@@ -48,6 +59,7 @@ export type ChatMessageRecord = {
   threadId: string;
   role: ChatMessage["role"];
   content: string;
+  attachments: ChatAttachment[];
   createdAt: string;
   updatedAt: string;
 };
@@ -55,6 +67,7 @@ export type ChatMessageRecord = {
 /** Client-side metadata carried on UI messages. */
 export type ChatMessageMetadata = {
   createdAt?: string;
+  attachments?: ChatAttachment[];
 };
 
 /** Response from GET /api/chat/threads */

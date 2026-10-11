@@ -2,6 +2,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@workspace/ui/components/sidebar";
+import { Suspense } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { DashboardHeader } from "@/components/dashboard-header";
@@ -16,7 +17,9 @@ export default function AuthenticatedLayout({
       <AppSidebar />
       <SidebarInset>
         <DashboardHeader />
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <Suspense fallback={null}>{children}</Suspense>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

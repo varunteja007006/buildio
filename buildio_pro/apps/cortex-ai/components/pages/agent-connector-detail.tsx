@@ -3,8 +3,7 @@
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { ArrowLeft, Loader2, Save, Sparkles, Table2 } from "lucide-react";
-import Link from "next/link";
+import { Loader2, Save, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +15,7 @@ import {
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { StatusBadge } from "@/components/connections/connection-columns";
 import { ConnectorDescriptionDialog } from "@/components/pages/connector-description-dialog";
+import { ConnectorTableBrowser } from "@/components/pages/connector-table-browser";
 
 type AgentConnectorDetailPageProps = { connectionId: string };
 
@@ -37,7 +37,7 @@ export function AgentConnectorDetailPage({
   const heading = supportsTables
     ? connection?.type === "mongodb"
       ? "Collections"
-      : "Tables"
+      : "Database objects"
     : "Tables";
 
   if (detail.isLoading)
@@ -67,26 +67,19 @@ export function AgentConnectorDetailPage({
         ]}
       />
       <div className="flex w-full flex-1 flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button variant="ghost" size="icon-sm" asChild>
-            <Link href="/dashboard/agent/connectors" aria-label="Back">
-              <ArrowLeft />
-            </Link>
-          </Button>
-          <div className="min-w-0">
-            <h1 className="flex items-center gap-2 truncate text-xl font-semibold">
-              {connection.name}
-              <Badge variant="secondary" className="capitalize">
-                {connection.type}
-              </Badge>
-              <StatusBadge status={connection.status} />
-            </h1>
-            <p className="truncate text-sm text-muted-foreground">
-              {connection.target}
-            </p>
-          </div>
+        <div className="min-w-0">
+          <h1 className="flex items-center gap-2 truncate text-xl font-semibold">
+            {connection.name}
+            <Badge variant="secondary" className="capitalize">
+              {connection.type}
+            </Badge>
+            <StatusBadge status={connection.status} />
+          </h1>
+          <p className="truncate text-sm text-muted-foreground">
+            {connection.target}
+          </p>
         </div>
-        <section className="flex max-w-2xl flex-col gap-2">
+        <section className="flex w-full flex-col gap-2">
           <div>
             <h2 className="text-sm font-medium">About this connector</h2>
             <p className="text-sm text-muted-foreground">
@@ -156,24 +149,15 @@ export function AgentConnectorDetailPage({
                 : "Unable to load tables."}
             </p>
           ) : (tables.data?.tables.length ?? 0) === 0 ? (
-            <p className="text-sm text-muted-foreground">No tables found.</p>
+            <p className="text-sm text-muted-foreground">
+              No database objects found.
+            </p>
           ) : (
-            <ul className="flex max-w-2xl flex-col gap-1 rounded-lg border p-2">
-              {tables.data?.tables.map((table) => (
-                <li
-                  key={`${table.schema}.${table.name}`}
-                  className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-                >
-                  <Table2 className="size-4 shrink-0 text-muted-foreground" />
-                  <span className="truncate font-medium">{table.name}</span>
-                  {table.schema !== "public" && (
-                    <span className="ml-auto truncate text-xs text-muted-foreground">
-                      {table.schema}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <ConnectorTableBrowser
+              connectionId={connectionId}
+              tables={tables.data?.tables ?? []}
+              postgres={connection.type === "postgres"}
+            />
           )}
         </section>
       </div>

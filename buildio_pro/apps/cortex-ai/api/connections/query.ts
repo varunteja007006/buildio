@@ -8,6 +8,7 @@ import {
   deleteConnection,
   getConnection,
   getConnections,
+  getConnectorTableDetails,
   getConnectorTables,
   permanentlyDeleteConnection,
   restoreConnection,
@@ -22,6 +23,8 @@ export const connectionKeys = {
   list: (page: number, pageSize: number, status: "active" | "deleted") =>
     ["connections", "list", page, pageSize, status] as const,
   tables: (id: string) => ["connections", "tables", id] as const,
+  tableDetails: (id: string, schema: string, name: string) =>
+    ["connections", "table-details", id, schema, name] as const,
   detail: (id: string) => ["connections", "detail", id] as const,
 };
 
@@ -48,6 +51,20 @@ export function useConnectionTables(id: string, enabled: boolean) {
     queryKey: connectionKeys.tables(id),
     queryFn: () => getConnectorTables(id),
     enabled,
+  });
+}
+
+export function useConnectionTableDetails(
+  id: string,
+  schema: string,
+  name: string,
+  enabled: boolean,
+) {
+  return useQuery({
+    queryKey: connectionKeys.tableDetails(id, schema, name),
+    queryFn: () => getConnectorTableDetails(id, schema, name),
+    enabled,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

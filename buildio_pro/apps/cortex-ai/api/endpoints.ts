@@ -6,6 +6,7 @@ export const endpoints = {
     threadRestore: (id: string) => `/chat/threads/${id}/restore`,
     messageFeedback: (threadId: string, messageId: string) =>
       `/chat/threads/${threadId}/messages/${messageId}/feedback`,
+    attachments: "/chat/attachments",
     models: "/chat/models",
     preferences: "/chat/preferences",
   },
@@ -73,6 +74,7 @@ export const endpoints = {
     permanent: (id: string) => `/connections/${id}/permanent`,
     check: (id: string) => `/connections/${id}/check`,
     tables: (id: string) => `/connections/${id}/tables`,
+    tableDetails: (id: string) => `/connections/${id}/tables/detail`,
     context: (id: string) => `/connections/${id}/context`,
     descriptionPreview: (id: string) =>
       `/connections/${id}/description/preview`,

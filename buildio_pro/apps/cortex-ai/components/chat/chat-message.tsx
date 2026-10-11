@@ -4,10 +4,13 @@ import { Bubble, BubbleContent } from "@workspace/ui/components/bubble";
 import { MessageScrollerItem } from "@workspace/ui/components/message-scroller";
 import { RelativeTime } from "@workspace/ui/components/relative-time";
 import { isToolUIPart, type UIMessage } from "ai";
+import { Paperclip } from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { ChatMessageMetadata } from "@/api/chat/types";
+import { MessageAudioButton } from "@/components/chat/message-audio-button";
 import { ToolCalls } from "@/components/chat/tool-calls";
+import { formatBytes } from "@/lib/file-upload.utils";
 
 type ChatMessageProps = {
   message: UIMessage<ChatMessageMetadata>;
@@ -30,6 +33,7 @@ export function ChatMessage({
   const toolParts = message.parts.filter(isToolUIPart);
   const textParts = message.parts.filter((part) => part.type === "text");
   const createdAt = message.metadata?.createdAt;
+  const attachments = message.metadata?.attachments ?? [];
   const modelLabel =
     modelId && labelForModel ? labelForModel(modelId) : undefined;
 
@@ -54,6 +58,24 @@ export function ChatMessage({
             variant={isUser ? "default" : "muted"}
           >
             <BubbleContent className="whitespace-pre-wrap">
+              {attachments.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {attachments.map((attachment) => (
+                    <span
+                      key={attachment.key}
+                      className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
+                    >
+                      <Paperclip className="size-3 shrink-0" />
+                      <span className="max-w-48 truncate">
+                        {attachment.filename}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {formatBytes(attachment.size)}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              )}
               {textParts.map((part, i) => (
                 <p key={i}>{part.text}</p>
               ))}
@@ -69,7 +91,16 @@ export function ChatMessage({
           </div>
         ) : null}
 
-        {children ? <div className="mt-1">{children}</div> : null}
+        {!isUser && textParts.length > 0 ? (
+          <div className="mt-1 flex items-center gap-1">
+            <MessageAudioButton
+              text={textParts.map((part) => part.text).join("\n")}
+            />
+            {children}
+          </div>
+        ) : children ? (
+          <div className="mt-1">{children}</div>
+        ) : null}
       </div>
     </MessageScrollerItem>
   );

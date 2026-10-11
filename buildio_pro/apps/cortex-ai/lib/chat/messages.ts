@@ -1,5 +1,6 @@
 import type { UIMessage } from "ai";
 
+import type { ChatAttachment, ChatMessageMetadata } from "@/api/chat/types";
 import { db } from "@/lib/db";
 import { chatMessages } from "@/lib/db/schema/messages";
 
@@ -14,8 +15,8 @@ export function getMessageText(message: UIMessage): string {
 
 /** The most recent user message, or null when there is none. */
 export function getLastUserMessage(
-  messages: UIMessage[],
-): UIMessage | null {
+  messages: UIMessage<ChatMessageMetadata>[],
+): UIMessage<ChatMessageMetadata> | null {
   for (let i = messages.length - 1; i >= 0; i--) {
     if (messages[i].role === "user") {
       return messages[i];
@@ -38,13 +39,14 @@ export function deriveThreadTitle(text: string): string {
 export async function persistUserMessage(
   threadId: string,
   message: UIMessage,
+  attachments: ChatAttachment[] = [],
 ): Promise<void> {
   const content = getMessageText(message);
-  if (!content) return;
+  if (!content && attachments.length === 0) return;
 
   await db
     .insert(chatMessages)
-    .values({ id: message.id, threadId, role: "user", content })
+    .values({ id: message.id, threadId, role: "user", content, attachments })
     .onConflictDoNothing();
 }
 

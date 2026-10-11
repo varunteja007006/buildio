@@ -1,6 +1,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
+import { MAX_CHAT_FEEDBACK_LENGTH } from "@/lib/chat/constants";
 import { db } from "@/lib/db";
 import { chatMessageFeedback } from "@/lib/db/schema/feedback";
 import { chatMessages } from "@/lib/db/schema/messages";
@@ -18,16 +19,22 @@ export async function PUT(request: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { threadId, messageId } = await params;
     const body = await request.json().catch(() => null);
-    const rating = body?.rating === "up" || body?.rating === "down"
-      ? body.rating
-      : null;
+    const rating =
+      body?.rating === "up" || body?.rating === "down" ? body.rating : null;
     if (!rating)
       return NextResponse.json(
         { error: "rating must be 'up' or 'down'" },
         { status: 400 },
       );
-    const comment =
-      typeof body?.comment === "string" ? body.comment.trim() || null : null;
+    const rawComment = typeof body?.comment === "string" ? body.comment : null;
+    if (rawComment && rawComment.length > MAX_CHAT_FEEDBACK_LENGTH)
+      return NextResponse.json(
+        {
+          error: `comment must be at most ${MAX_CHAT_FEEDBACK_LENGTH} characters`,
+        },
+        { status: 400 },
+      );
+    const comment = rawComment?.trim() || null;
 
     const [thread] = await db
       .select({ id: chatThreads.id, agentId: chatThreads.agentId })
@@ -54,10 +61,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
       )
       .limit(1);
     if (!message || message.role !== "assistant")
-      return NextResponse.json(
-        { error: "Message not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Message not found" }, { status: 404 });
 
     const [feedback] = await db
       .insert(chatMessageFeedback)

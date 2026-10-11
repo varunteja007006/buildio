@@ -6,6 +6,7 @@ import type {
   ConnectionInput,
   ConnectionPage,
   ConnectorTable,
+  ConnectorTableMetadata,
   ConnectorMetadata,
   DeleteResponse,
   ProbeResult,
@@ -84,6 +85,18 @@ export async function getConnectorTables(id: string) {
     endpoints.connections.tables(id),
   );
   return data;
+}
+
+export async function getConnectorTableDetails(
+  id: string,
+  schema: string,
+  name: string,
+) {
+  const { data } = await apiClient.get<{ details: ConnectorTableMetadata }>(
+    endpoints.connections.tableDetails(id),
+    { params: { schema, name } },
+  );
+  return data.details;
 }
 
 export async function updateConnectorContext(id: string, description: string) {

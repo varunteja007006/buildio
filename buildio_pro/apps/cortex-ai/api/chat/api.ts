@@ -2,6 +2,7 @@ import apiClient from "@/api/client";
 import { endpoints } from "@/api/endpoints";
 
 import type {
+  ChatAttachment,
   ChatModelsResponse,
   ChatPreferencesResponse,
   ChatRequest,
@@ -12,6 +13,55 @@ import type {
   RenameChatThreadInput,
   UpdateChatPreferencesInput,
 } from "./types";
+
+export async function uploadChatAttachments(
+  threadId: string,
+  files: File[],
+): Promise<ChatAttachment[]> {
+  const uploadedKeys: string[] = [];
+  try {
+    const attachments: ChatAttachment[] = [];
+    const setupResponse = await fetch(`/api${endpoints.chat.attachments}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        threadId,
+        files: files.map((file) => ({ filename: file.name, size: file.size })),
+      }),
+    });
+    const setup = await setupResponse.json();
+    if (!setupResponse.ok)
+      throw new Error(setup.error ?? "Upload setup failed");
+
+    for (const [index, file] of files.entries()) {
+      const upload = setup.uploads[index];
+      uploadedKeys.push(upload.key);
+      const uploadResponse = await fetch(upload.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": upload.mediaType },
+        body: file,
+      });
+      if (!uploadResponse.ok) throw new Error(`Failed to upload ${file.name}`);
+
+      attachments.push({
+        key: upload.key,
+        filename: file.name,
+        mediaType: upload.mediaType,
+        size: file.size,
+      });
+    }
+    return attachments;
+  } catch (error) {
+    if (uploadedKeys.length) {
+      await fetch(`/api${endpoints.chat.attachments}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ threadId, keys: uploadedKeys }),
+      }).catch(() => undefined);
+    }
+    throw error;
+  }
+}
 
 /**
  * Send a chat message and receive a streaming response.

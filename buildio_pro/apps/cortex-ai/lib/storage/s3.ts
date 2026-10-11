@@ -32,6 +32,15 @@ export function buildDocumentKey(workspaceId: string, filename: string) {
   return `documents/${workspaceId}/${randomUUID()}-${safeName}`;
 }
 
+export function buildChatAttachmentKey(
+  workspaceId: string,
+  threadId: string,
+  filename: string,
+) {
+  const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, "-");
+  return `chat-attachments/${workspaceId}/${threadId}/${randomUUID()}-${safeName}`;
+}
+
 export function getDocumentUploadUrl(key: string, contentType: string) {
   return getSignedUrl(
     client,

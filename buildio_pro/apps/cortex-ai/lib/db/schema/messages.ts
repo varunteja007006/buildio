@@ -1,5 +1,7 @@
 import { sql } from "drizzle-orm";
-import { text, timestamp, pgTable, index } from "drizzle-orm/pg-core";
+import { jsonb, text, timestamp, pgTable, index } from "drizzle-orm/pg-core";
+
+import type { ChatAttachment } from "@/api/chat/types";
 
 import { chatThreads } from "./threads";
 
@@ -14,6 +16,10 @@ export const chatMessages = pgTable(
       .references(() => chatThreads.id, { onDelete: "cascade" }),
     role: text("role", { enum: ["user", "assistant", "system"] }).notNull(),
     content: text("content").notNull(),
+    attachments: jsonb("attachments")
+      .$type<ChatAttachment[]>()
+      .notNull()
+      .default([]),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),

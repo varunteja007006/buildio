@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { text, timestamp, pgTable } from "drizzle-orm/pg-core";
+import { pgTable, real, text, timestamp } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
 import { getDefaultChatModelId } from "../../chat/models";
@@ -16,6 +16,11 @@ export const chatPreferences = pgTable("chat_preferences", {
     .notNull()
     // Runtime default from CHAT_DEFAULT_MODEL — no model id is baked into DDL.
     .$defaultFn(() => getDefaultChatModelId()),
+  speechVoiceURI: text("speech_voice_uri"),
+  speechLanguage: text("speech_language"),
+  speechRate: real("speech_rate").default(1).notNull(),
+  speechPitch: real("speech_pitch").default(1).notNull(),
+  speechVolume: real("speech_volume").default(1).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`now()`)
     .notNull(),

@@ -424,6 +424,7 @@ practical, a read-only login and display a warning when that cannot be confirmed
 - [ ] Review generated SQL for constraints, indexes, and delete behavior.
 - [ ] Apply the migration with `db:migrate` to the target development database.
 - [ ] Expand Postgres introspection for columns, comments, keys, and relationships.
+- [x] Introspect table triggers (name, events, timing, enabled state, and function).
 - [ ] Add deterministic snapshot hashing and normalized type categories.
 - [ ] Add bounded transactional upsert/removed-object reconciliation.
 - [ ] Add sync locking, timeout enforcement, sanitized errors, and sync history.
@@ -442,8 +443,20 @@ practical, a read-only login and display a warning when that cannot be confirmed
 ### Phase 3 - Connector context UI
 
 - [ ] Split the connector detail page into focused components.
+- [x] Remove the redundant back arrow; use the existing breadcrumbs for navigation.
+- [x] Use the available page width for schema/object browsing.
 - [ ] Add refresh status, counts, drift state, and refresh action.
-- [ ] Add searchable/filterable/paginated table browsing.
+- [x] Add searchable/filterable/paginated browsing for tables, partitioned tables,
+      views, materialized views, and foreign tables.
+- [x] Add schema, object-type, search, and system-schema filters;
+      hide system schemas by default and omit a database selector (one database per
+      connection).
+- [ ] Add a selected-only filter once table selection is persisted.
+- [x] Show trigger metadata in the selected table's details.
+- [x] Show table storage, column definitions, indexes, and constraints using
+      metadata queries only.
+- [x] Do not query or display table row counts; consider approximate catalog
+      estimates only if users later need them.
 - [ ] Add table description, synonyms, enablement, joins, and row-limit form.
 - [ ] Add column descriptions and operation/sensitive controls.
 - [ ] Add discovered and manual relationship management.

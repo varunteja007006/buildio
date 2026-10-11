@@ -24,6 +24,7 @@ import { MessageSquareIcon } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { uploadChatAttachments } from "@/api/chat/api";
 import {
   chatKeys,
   useChatModels,
@@ -46,7 +47,10 @@ function toUIMessages(
   return records.map((record) => ({
     id: record.id,
     role: record.role,
-    metadata: { createdAt: record.createdAt },
+    metadata: {
+      createdAt: record.createdAt,
+      ...(record.attachments.length ? { attachments: record.attachments } : {}),
+    },
     parts: [{ type: "text", text: record.content }],
   }));
 }
@@ -148,9 +152,12 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
     updatePreferences.mutate({ defaultModel: modelId });
   };
 
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string, files: File[]) => {
+    const attachments = files.length
+      ? await uploadChatAttachments(threadId, files)
+      : [];
     if (activeModel) turnModelsRef.current.push(activeModel);
-    sendMessage({ text });
+    await sendMessage({ text, metadata: { attachments } });
   };
 
   // Resolve which model produced the assistant message at the given index.
@@ -224,8 +231,7 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
                 {!threadLoading && messages.length === 0 && (
                   <div className="flex flex-1 items-center justify-center">
                     <p className="text-sm text-muted-foreground">
-                      Ask me anything — I&apos;ll search my knowledge base for
-                      the answer.
+                      Ask me anything.
                     </p>
                   </div>
                 )}
@@ -242,10 +248,7 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
                     labelForModel={labelForModel}
                   >
                     {m.role === "assistant" ? (
-                      <MessageFeedback
-                        threadId={threadId}
-                        messageId={m.id}
-                      />
+                      <MessageFeedback threadId={threadId} messageId={m.id} />
                     ) : null}
                   </ChatMessage>
                 ))}
@@ -267,6 +270,7 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
         {/* Input area */}
         <ChatComposer
           isStreaming={isStreaming}
+          attachmentsEnabled={!!threadData && !threadData.thread.agentId}
           onSend={handleSend}
           onStop={stop}
         />

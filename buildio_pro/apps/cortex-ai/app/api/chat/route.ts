@@ -1,25 +1,27 @@
 import {
   convertToModelMessages,
-  createUIMessageStream,
   createUIMessageStreamResponse,
   generateId,
   isStepCount,
   streamText,
-  tool,
   toUIMessageStream,
   type UIMessage,
 } from "ai";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
-import { createResource } from "@/lib/actions/resources";
+import type { ChatAttachment, ChatMessageMetadata } from "@/api/chat/types";
 import { getAgentChatContext } from "@/lib/agents/chat-context";
-import { findRelevantContent } from "@/lib/ai/embedding";
+import { buildAgentChatTools } from "@/lib/agents/chat-tools";
+import {
+  addChatAttachmentParts,
+  parseChatAttachments,
+} from "@/lib/chat/attachments";
 import {
   getLastUserQuery,
   recordBlockedChatAudit,
   recordChatAudit,
 } from "@/lib/chat/audit";
+import { MAX_CHAT_MESSAGE_LENGTH } from "@/lib/chat/constants";
 import { GUARDRAIL_REFUSAL, scanUserQuery } from "@/lib/chat/guardrail";
 import {
   deriveThreadTitle,
@@ -33,6 +35,7 @@ import {
   isWellFormedChatModelId,
 } from "@/lib/chat/models";
 import { getOrCreateChatPreferences } from "@/lib/chat/preferences";
+import { buildRefusalStream } from "@/lib/chat/stream";
 import { getThreadForUser, touchThread } from "@/lib/chat/threads";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
@@ -40,25 +43,8 @@ import { getActiveWorkspace } from "@/lib/workspaces";
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-const SYSTEM_PROMPT = `You are a helpful assistant. Check your knowledge base before answering any questions.
-Only respond to questions using information from tool calls.
-If no relevant information is found in the tool calls, respond, "Sorry, I don't know."`;
-
-function buildRefusalStream(messageId: string) {
-  return createUIMessageStream({
-    execute: ({ writer }) => {
-      writer.write({ type: "start", messageId });
-      writer.write({ type: "text-start", id: messageId });
-      writer.write({
-        type: "text-delta",
-        id: messageId,
-        delta: GUARDRAIL_REFUSAL,
-      });
-      writer.write({ type: "text-end", id: messageId });
-      writer.write({ type: "finish", finishReason: "content-filter" });
-    },
-  });
-}
+const SYSTEM_PROMPT =
+  "You are a helpful assistant. Answer clearly and accurately using the conversation for context. If you are unsure, say so.";
 
 export async function POST(req: Request) {
   const user = await getCurrentUser();
@@ -77,8 +63,13 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, model, threadId, agentId }: {
-    messages: UIMessage[];
+  const {
+    messages,
+    model,
+    threadId,
+    agentId,
+  }: {
+    messages: UIMessage<ChatMessageMetadata>[];
     model?: string;
     threadId?: string;
     agentId?: string;
@@ -127,12 +118,59 @@ export async function POST(req: Request) {
   const userQuery = userMessage
     ? getMessageText(userMessage)
     : getLastUserQuery(messages);
+  const userMessageLength = userMessage
+    ? userMessage.parts
+        .filter((part) => part.type === "text")
+        .map((part) => part.text)
+        .join("\n").length
+    : userQuery.length;
+
+  if (userMessageLength > MAX_CHAT_MESSAGE_LENGTH) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: `Message must be ${MAX_CHAT_MESSAGE_LENGTH.toLocaleString()} characters or fewer.`,
+      },
+      { status: 400 },
+    );
+  }
+
+  let attachments: ChatAttachment[] = [];
+  let modelMessages: Awaited<ReturnType<typeof convertToModelMessages>>;
+  const hasAttachments = messages.some(
+    (message) => (message.metadata?.attachments?.length ?? 0) > 0,
+  );
+  try {
+    attachments = parseChatAttachments(userMessage?.metadata?.attachments);
+    if (hasAttachments) {
+      if (!thread) throw new Error("Attachments require a chat thread");
+      if (thread.agentId)
+        throw new Error("Agent chats do not accept attachments");
+      const messagesWithAttachments = await addChatAttachmentParts(
+        messages,
+        workspace.id,
+        thread.id,
+      );
+      modelMessages = await convertToModelMessages(messagesWithAttachments);
+    } else {
+      modelMessages = await convertToModelMessages(messages);
+    }
+  } catch (error) {
+    console.error("Invalid chat attachment", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "One or more attachments are invalid or unavailable.",
+      },
+      { status: 400 },
+    );
+  }
 
   const guardrail = await scanUserQuery(userQuery);
 
   if (thread) {
     if (userMessage) {
-      await persistUserMessage(thread.id, userMessage);
+      await persistUserMessage(thread.id, userMessage, attachments);
     }
     await touchThread({
       threadId: thread.id,
@@ -148,11 +186,7 @@ export async function POST(req: Request) {
     const messageId = crypto.randomUUID();
 
     if (thread) {
-      await persistAssistantMessage(
-        thread.id,
-        messageId,
-        GUARDRAIL_REFUSAL,
-      );
+      await persistAssistantMessage(thread.id, messageId, GUARDRAIL_REFUSAL);
     }
 
     void recordBlockedChatAudit({
@@ -171,47 +205,21 @@ export async function POST(req: Request) {
     });
   }
 
-  const agentTools = agentContext?.toolKeys ?? [];
   const result = streamText({
     model: resolvedModel,
     system: agentContext
       ? `You are ${agentContext.name}, an AI agent. Follow these instructions:\n${agentContext.instructions}\n\nCheck your knowledge base before answering any questions. Only respond to questions using information from tool calls. If no relevant information is found in the tool calls, respond, "Sorry, I don't know."`
       : SYSTEM_PROMPT,
-    messages: await convertToModelMessages(messages),
+    messages: modelMessages,
     stopWhen: isStepCount(5),
-    include: { requestBody: true, requestMessages: true },
-    tools: {
-      ...(agentTools.includes("addResource")
-        ? {
-            addResource: tool({
-              description: `add a resource to your knowledge base.
-If the user provides a random piece of knowledge unprompted, use this tool without asking for confirmation.`,
-              inputSchema: z.object({
-                content: z
-                  .string()
-                  .describe("the content or resource to add to the knowledge base"),
-              }),
-              execute: async ({ content }) => createResource(content, workspace.id),
-            }),
-          }
-        : {}),
-      ...(agentTools.includes("getInformation")
-        ? {
-            getInformation: tool({
-              description: `get information from your knowledge base to answer questions.`,
-              inputSchema: z.object({
-                question: z.string().describe("the users question"),
-              }),
-              execute: async ({ question }) =>
-                findRelevantContent(
-                  question,
-                  workspace.id,
-                  agentContext?.topicIds,
-                ),
-            }),
-          }
-        : {}),
-    },
+    ...(hasAttachments
+      ? {}
+      : { include: { requestBody: true, requestMessages: true } }),
+    tools: buildAgentChatTools(
+      agentContext?.toolKeys ?? [],
+      workspace.id,
+      agentContext?.topicIds,
+    ),
     onEnd: (event) => {
       void recordChatAudit({
         userId: user.id,
@@ -237,11 +245,7 @@ If the user provides a random piece of knowledge unprompted, use this tool witho
         const content = getMessageText(responseMessage);
         if (!content) return;
         try {
-          await persistAssistantMessage(
-            thread.id,
-            responseMessage.id,
-            content,
-          );
+          await persistAssistantMessage(thread.id, responseMessage.id, content);
           await touchThread({
             threadId: thread.id,
             userId: user.id,
