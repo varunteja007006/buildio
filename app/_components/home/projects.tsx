@@ -89,16 +89,6 @@ export default function Projects() {
                     <CardTitle>
                       <span className="flex w-full flex-wrap items-center justify-between gap-2">
                         {item.project_title}
-                        <Badge
-                          variant={
-                            item.projectStatus === COMPLETED
-                              ? "default"
-                              : "outline"
-                          }
-                          className="font-semibold"
-                        >
-                          {item.projectStatus}
-                        </Badge>
                       </span>
                     </CardTitle>
                     <CardDescription className="py-2">
