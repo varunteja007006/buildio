@@ -28,4 +28,11 @@ export type TemplateInput = {
   defaultModel?: string;
 };
 
+export type TemplateSuggestion = {
+  name: string;
+  description: string;
+  instructions: string;
+  outputSchema: Record<string, unknown> | null;
+};
+
 export type DeleteResponse = { success: boolean; id: string };

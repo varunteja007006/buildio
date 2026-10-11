@@ -6,7 +6,27 @@ import type {
   ExtractionTemplate,
   TemplateInput,
   TemplatePage,
+  TemplateSuggestion,
 } from "./types";
+
+/** Suggest a template from a sample document; the file is never stored. */
+export async function generateTemplateSuggestion(
+  file: File,
+): Promise<TemplateSuggestion> {
+  const body = new FormData();
+  body.append("file", file);
+  const response = await fetch(`/api${endpoints.extractionTemplates.generate}`, {
+    method: "POST",
+    body,
+  });
+  const payload = (await response.json().catch(() => null)) as {
+    suggestion?: TemplateSuggestion;
+    error?: string;
+  } | null;
+  if (!response.ok || !payload?.suggestion)
+    throw new Error(payload?.error ?? "Unable to generate a template suggestion");
+  return payload.suggestion;
+}
 
 export async function getExtractionTemplates(
   page: number,

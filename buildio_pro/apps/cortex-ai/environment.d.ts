@@ -19,6 +19,9 @@ declare namespace NodeJS {
     AI_EMBEDDING_DIMENSIONS: string;
     CHAT_DEFAULT_MODEL: string;
 
+    /** Model used to draft extraction templates from a sample document. */
+    EXTRACTION_TEMPLATE_SUGGESTION_MODEL: string;
+
     // Chat guardrail (defaults to enabled; model required while enabled)
     CHAT_GUARDRAIL_ENABLED?: string;
     CHAT_GUARDRAIL_MODEL?: string;

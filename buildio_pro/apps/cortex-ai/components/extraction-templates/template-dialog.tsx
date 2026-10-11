@@ -14,8 +14,12 @@ import { Label } from "@workspace/ui/components/label";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { useRef } from "react";
 
-import type { ExtractionTemplate } from "@/api/extraction-templates/types";
+import type {
+  ExtractionTemplate,
+  TemplateSuggestion,
+} from "@/api/extraction-templates/types";
 import { ChatModelSelector } from "@/components/chat/chat-model-selector";
+import { TemplateGenerate } from "@/components/extraction-templates/template-generate";
 import type { ChatModelOption } from "@/lib/chat/models";
 
 export type FormState = {
@@ -55,6 +59,7 @@ type TemplateDialogProps = {
   models: ChatModelOption[];
   modelsLoading: boolean;
   onChange: (field: keyof FormState, value: string) => void;
+  onGenerated: (suggestion: TemplateSuggestion) => void;
   onSave: () => void;
   onClose: () => void;
 };
@@ -67,6 +72,7 @@ export function TemplateDialog({
   models,
   modelsLoading,
   onChange,
+  onGenerated,
   onSave,
   onClose,
 }: TemplateDialogProps) {
@@ -91,6 +97,7 @@ export function TemplateDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="scrollbar-elegant min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
+          <TemplateGenerate disabled={pending} onGenerated={onGenerated} />
           <div className="grid gap-2">
             <Label htmlFor="template-name">Name</Label>
             <Input

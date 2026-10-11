@@ -16,6 +16,7 @@ import {
 import type {
   ExtractionTemplate,
   TemplateInput,
+  TemplateSuggestion,
 } from "@/api/extraction-templates/types";
 import { DataTable } from "@/components/data-table";
 import { DeleteDialog } from "@/components/documents/delete-dialog";
@@ -67,6 +68,18 @@ export function ExtractionTemplatesSection() {
   };
   const setField = (field: keyof FormState, value: string) =>
     setForm((current) => ({ ...current, [field]: value }));
+  const applySuggestion = (suggestion: TemplateSuggestion) => {
+    setError(null);
+    setForm((current) => ({
+      ...current,
+      name: suggestion.name,
+      description: suggestion.description,
+      instructions: suggestion.instructions,
+      outputSchema: suggestion.outputSchema
+        ? JSON.stringify(suggestion.outputSchema, null, 2)
+        : "",
+    }));
+  };
   const save = async () => {
     let outputSchema: unknown = null;
     if (form.outputSchema.trim()) {
@@ -195,6 +208,7 @@ export function ExtractionTemplatesSection() {
         models={modelsData?.models ?? []}
         modelsLoading={modelsLoading}
         onChange={setField}
+        onGenerated={applySuggestion}
         onSave={save}
         onClose={closeDialog}
       />

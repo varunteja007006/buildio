@@ -28,6 +28,7 @@ export const endpoints = {
   },
   extractionTemplates: {
     list: "/extraction-templates",
+    generate: "/extraction-templates/generate",
     detail: (id: string) => `/extraction-templates/${id}`,
     restore: (id: string) => `/extraction-templates/${id}/restore`,
     permanent: (id: string) => `/extraction-templates/${id}/permanent`,

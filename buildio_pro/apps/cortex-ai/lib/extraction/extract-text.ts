@@ -28,18 +28,25 @@ export async function fetchDocumentFile(filepath: string): Promise<Uint8Array> {
   return getDocumentObject(filepath);
 }
 
-/** Load a document's file and classify it for extraction. */
-export async function loadDocumentFile(
+/** Classify raw bytes by extension; throws for formats extraction can't read. */
+export function classifyDocumentFile(
   filename: string,
-  filepath: string,
-): Promise<DocumentFile> {
+  bytes: Uint8Array,
+): DocumentFile {
   const extension = path.extname(filename).toLowerCase();
-  const bytes = await fetchDocumentFile(filepath);
   const isPdf = extension === ".pdf";
   if (!isPdf && !TEXT_EXTENSIONS.has(extension)) {
     throw new UnsupportedFileError(extension);
   }
   return { bytes, extension, isPdf };
+}
+
+/** Load a document's file and classify it for extraction. */
+export async function loadDocumentFile(
+  filename: string,
+  filepath: string,
+): Promise<DocumentFile> {
+  return classifyDocumentFile(filename, await fetchDocumentFile(filepath));
 }
 
 /**

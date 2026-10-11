@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createExtractionTemplate,
   deleteExtractionTemplate,
+  generateTemplateSuggestion,
   getExtractionTemplates,
   permanentlyDeleteExtractionTemplate,
   restoreExtractionTemplate,
@@ -79,4 +80,9 @@ export function usePermanentlyDeleteExtractionTemplate() {
     mutationFn: permanentlyDeleteExtractionTemplate,
     onSuccess: () => invalidateTemplates(queryClient),
   });
+}
+
+/** Draft a template suggestion from a sample doc; nothing is persisted. */
+export function useGenerateTemplateSuggestion() {
+  return useMutation({ mutationFn: generateTemplateSuggestion });
 }
