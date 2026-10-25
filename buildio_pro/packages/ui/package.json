@@ -95,7 +95,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@turbo/gen": "^2.10.12",
+    "@turbo/gen": "^2.11.10",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
