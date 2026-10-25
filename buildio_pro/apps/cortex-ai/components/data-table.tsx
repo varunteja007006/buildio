@@ -29,6 +29,16 @@ type DataTableProps<T> = {
   onRowClick?: (item: T) => void;
 };
 
+/** Clicks on interactive cell content (action buttons, popovers, links) must not trigger the row's onClick. */
+const INTERACTIVE_SELECTOR =
+  "button, a, input, select, textarea, label, [role='button'], [aria-haspopup]";
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element && target.closest(INTERACTIVE_SELECTOR) !== null
+  );
+}
+
 export function DataTable<T>({
   columns,
   data,
@@ -73,7 +83,15 @@ export function DataTable<T>({
               <TableRow
                 key={keyExtractor(item)}
                 className={onRowClick ? "cursor-pointer" : undefined}
-                onClick={onRowClick ? () => onRowClick(item) : undefined}
+                onClick={
+                  onRowClick
+                    ? (event) => {
+                        if (!isInteractiveTarget(event.target)) {
+                          onRowClick(item);
+                        }
+                      }
+                    : undefined
+                }
               >
                 {columns.map((col) => (
                   <TableCell key={col.header} className={col.cellClassName}>
