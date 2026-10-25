@@ -16,26 +16,26 @@
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
-    "@workspace/utils": "workspace:*",
-    "date-fns": "^4.4.0",
-    "lucide-react": "^1.52.0",
-    "motion": "^14.0.0",
+    "date-fns": "4.4.0",
+    "lucide-react": "1.52.0",
+    "motion": "14.0.0",
     "next": "catalog:",
-    "next-themes": "^0.4.6",
+    "next-themes": "0.4.6",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-icons": "^5.7.0",
-    "sonner": "^2.0.8",
-    "usehooks-ts": "^3.1.1"
+    "react-icons": "5.7.0",
+    "sonner": "2.0.8",
+    "usehooks-ts": "3.1.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^22.20.5",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.20.5",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@workspace/eslint-config": "workspace:^",
+    "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3"
+    "eslint": "9.39.5",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
   }
 }
