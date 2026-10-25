@@ -12,7 +12,8 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { useRef } from "react";
+import { Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import type { Toolbox } from "@/api/toolboxes/types";
 import { CharCount } from "@/components/char-count";
@@ -61,6 +62,21 @@ export function ToolboxDialog({
   onClose,
 }: ToolboxDialogProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState("");
+
+  // Reset the tool search when the dialog closes so reopening starts clean.
+  useEffect(() => {
+    if (!open) setQuery("");
+  }, [open]);
+
+  const visibleTools = toolCatalog.filter((entry) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      entry.name.toLowerCase().includes(q) ||
+      entry.description.toLowerCase().includes(q)
+    );
+  });
 
   const toggleTool = (toolKey: string, checked: boolean) => {
     onChange({
@@ -111,29 +127,51 @@ export function ToolboxDialog({
             />
           </div>
           <div className="grid gap-2">
-            <Label>Tools in toolbox</Label>
-            <div className="max-h-48 space-y-1 overflow-y-auto rounded-md border p-2">
-              {toolCatalog.map((entry) => (
-                <div key={entry.key} className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <Label>Tools in toolbox</Label>
+              <span className="text-xs text-muted-foreground">
+                {form.toolKeys.length} selected
+              </span>
+            </div>
+            <div className="relative">
+              <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search tools…"
+                className="pl-8"
+              />
+            </div>
+            <div className="scrollbar-elegant grid max-h-48 gap-2 overflow-y-auto">
+              {visibleTools.map((entry) => (
+                <label
+                  key={entry.key}
+                  htmlFor={`toolbox-tool-${entry.key}`}
+                  className="flex cursor-pointer items-start gap-3 rounded-lg border bg-background p-3 transition-colors hover:bg-accent/50 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5"
+                >
                   <Checkbox
                     id={`toolbox-tool-${entry.key}`}
+                    className="mt-0.5"
                     checked={form.toolKeys.includes(entry.key)}
                     onCheckedChange={(checked) =>
                       toggleTool(entry.key, checked === true)
                     }
                   />
-                  <Label
-                    htmlFor={`toolbox-tool-${entry.key}`}
-                    className="text-sm font-normal"
-                  >
-                    {entry.name}
-                    <span className="text-muted-foreground">
-                      {" "}
-                      — {entry.description}
+                  <span className="grid gap-0.5">
+                    <span className="text-sm leading-5 font-medium">
+                      {entry.name}
                     </span>
-                  </Label>
-                </div>
+                    <span className="text-xs leading-4 text-muted-foreground">
+                      {entry.description}
+                    </span>
+                  </span>
+                </label>
               ))}
+              {visibleTools.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  No tools match “{query.trim()}”.
+                </p>
+              )}
             </div>
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
