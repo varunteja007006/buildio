@@ -13,6 +13,11 @@ allowBuilds:
 
 catalog:
   '@ai-sdk/gateway': 4.0.126
+  '@elevenlabs/react': 1.19.1
+  '@react-three/drei': 10.7.9
+  '@react-three/fiber': 9.8.2
+  '@types/three': 0.186.0
+  three: 0.186.1
   '@aws-sdk/client-s3': 3.1156.0
   '@aws-sdk/s3-request-presigner': 3.1156.0
   '@base-ui-components/react': 1.0.0-rc.0

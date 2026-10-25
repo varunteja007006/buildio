@@ -9,7 +9,7 @@
 | [database-connectors-2026-09-15.md](database-connectors-2026-09-15.md) | External DB connectors: user creds, connect check before save, tables browse (Postgres), SQLite upload | In progress |
 | [database-connector-semantic-context-2026-09-27.md](database-connector-semantic-context-2026-09-27.md) | Postgres schema/object browsing, table stats, triggers, context, and safe AI tools | In progress |
 | [connector-table-explanations-2026-10-11.md](connector-table-explanations-2026-10-11.md) | App-owned table explanations, rename-safe identity, drift review, and AI context | In progress |
-| [elevenlabs-ui-components-2026-10-11.md](elevenlabs-ui-components-2026-10-11.md) | Add missing ElevenLabs audio/voice components to shared UI; reuse existing equivalents | Planned |
+| [done/elevenlabs-ui-components-2026-10-11.md](done/elevenlabs-ui-components-2026-10-11.md) | Add missing ElevenLabs audio/voice components to shared UI; reuse existing equivalents | ✅ |
 
 ## Done
 
