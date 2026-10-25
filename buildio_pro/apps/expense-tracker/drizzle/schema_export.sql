@@ -52,7 +52,6 @@ CREATE TABLE "account" (
 	"account_id" text NOT NULL,
 	"provider_id" text NOT NULL,
 	"user_id" text NOT NULL,
-	"issuer" text NOT NULL,
 	"access_token" text,
 	"refresh_token" text,
 	"id_token" text,
@@ -255,9 +254,16 @@ CREATE TABLE "financial_transaction" (
 	"category_id" text,
 	"is_recurring" boolean DEFAULT false NOT NULL,
 	"is_transfer" boolean DEFAULT false NOT NULL,
+	"is_emi" boolean DEFAULT false NOT NULL,
+	"emi_installment_number" integer,
+	"emi_total_installments" integer,
+	"international" boolean DEFAULT false NOT NULL,
+	"reward_points" numeric(19, 4),
 	"linked_transaction_id" text,
 	"extraction_confidence" numeric(5, 4),
 	"reviewed_at" timestamp,
+	"extraction_version" integer DEFAULT 1 NOT NULL,
+	"superseded_at" timestamp,
 	"transaction_hash" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -351,6 +357,7 @@ CREATE TABLE "statement_upload" (
 	"status" "statement_upload_status" DEFAULT 'pending' NOT NULL,
 	"uploaded_at" timestamp,
 	"processed_transactions_count" integer,
+	"extraction_version" integer DEFAULT 0 NOT NULL,
 	"processing_error" text,
 	"extraction_model" text,
 	"statement_metadata" jsonb,
@@ -460,8 +467,7 @@ ALTER TABLE "user_bank_account" ADD CONSTRAINT "user_bank_account_currency_id_cu
 ALTER TABLE "user_preferences" ADD CONSTRAINT "user_preferences_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
 ALTER TABLE "user_profile" ADD CONSTRAINT "user_profile_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
 ALTER TABLE "user_settings" ADD CONSTRAINT "user_settings_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
-CREATE UNIQUE INDEX "account_issuer_account_id_uidx" ON "account" USING btree ("issuer","account_id");
-CREATE UNIQUE INDEX "financial_transaction_user_id_hash_uidx" ON "financial_transaction" USING btree ("user_id","transaction_hash");
+CREATE UNIQUE INDEX "financial_transaction_user_id_hash_version_uidx" ON "financial_transaction" USING btree ("user_id","transaction_hash","extraction_version");
 CREATE INDEX "idx_financial_transaction_user_id" ON "financial_transaction" USING btree ("user_id");
 CREATE INDEX "idx_financial_transaction_bank_account_id" ON "financial_transaction" USING btree ("bank_account_id");
 CREATE INDEX "idx_financial_transaction_statement_upload_id" ON "financial_transaction" USING btree ("statement_upload_id");

@@ -57,6 +57,13 @@
       "when": 1788275597399,
       "tag": "20260901151317_blushing_thunderbolt_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792948388708,
+      "tag": "20261025171308_modern_wendell_rand",
+      "breakpoints": true
     }
   ]
 }
