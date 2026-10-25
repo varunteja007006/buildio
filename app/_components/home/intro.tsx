@@ -6,6 +6,7 @@ import { CloudDownload } from "lucide-react";
 
 import Image from "next/image";
 import ContactIcons from "./contact-icons";
+import { getExperienceYears } from "./experience-utils";
 import {
   SiJavascript,
   SiNextdotjs,
@@ -29,6 +30,8 @@ const expertise = [
 ];
 
 export default function Intro() {
+  const experienceYears = getExperienceYears();
+
   return (
     <section
       id="intro"
@@ -63,7 +66,7 @@ export default function Intro() {
           <div className="space-y-4 text-center max-w-prose mx-auto text-base leading-loose">
             <div>{`Hi 👋, I'm Varun,`}</div>
             <div className="max-w-prose">
-              {`Full Stack Engineer with 5+ years of experience building scalable web applications using Next.js, React, and Node.js. Specialized in rapid product development and AI-integrated systems, delivering production-grade solutions in compressed timelines.`}
+              {`Full Stack Engineer with ${experienceYears}+ years of experience building scalable web applications using Next.js, React, and Node.js. Specialized in rapid product development and AI-integrated systems, delivering production-grade solutions in compressed timelines.`}
             </div>
             <div className="max-w-prose">
               {`Currently at Renault Group, I'm pioneering AI-integrated SDLC workflows to accelerate enterprise product delivery — building full-stack applications that bring AI-powered insights to supplier risk, procurement, and sustainability.`}

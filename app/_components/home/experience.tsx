@@ -1,58 +1,26 @@
-export const dynamic = "force-dynamic";
-
 import React from "react";
-
-import {
-  addYears,
-  differenceInMonths,
-  differenceInYears,
-  parse,
-} from "date-fns";
 
 import { Card } from "@workspace/ui/components/card";
 
-import experienceData from "@/app/_components/home/data/experience";
 import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
 
-function parseDate(input: string): Date {
-  // Empty → treat as today (useful for current role)
-  if (!input) return new Date();
-
-  // Try strict ISO-like format first
-  let d = parse(input, "yyyy-MM-dd", new Date());
-  if (!isNaN(d.getTime())) return d;
-
-  // Fallback to non-zero-padded format
-  d = parse(input, "yyyy-M-d", new Date());
-  if (!isNaN(d.getTime())) return d;
-
-  // Final fallback to native Date parsing
-  d = new Date(input);
-  return d;
-}
-
-function calcExp(date1: string, date2: string) {
-  const resigningDate = parseDate(date1);
-  const joiningDate = parseDate(date2);
-
-  // Calculate the difference in years
-  let years = differenceInYears(resigningDate, joiningDate);
-  // Calculate the remaining months after accounting for the years
-  let months = differenceInMonths(resigningDate, addYears(joiningDate, years));
-
-  // Handle the case where months are negative
-  if (months < 0) {
-    years -= 1;
-    months += 12;
-  }
-  return `${years} year${years === 1 ? "" : "s"} ${months} month${months === 1 ? "" : "s"}`;
-}
+import {
+  calcExp,
+  formatTotalExperience,
+  parseDate,
+} from "./experience-utils";
+import experienceData from "./data/experience";
 
 export default function Experience() {
   return (
     <section id="experience" className="space-y-4">
-      <h3 className="text-xl font-semibold">Experience</h3>
+      <h3 className="text-xl font-semibold">
+        Experience{" "}
+        <span className="text-sm font-normal text-muted-foreground">
+          · {formatTotalExperience()} overall
+        </span>
+      </h3>
       <Card className="py-6 px-6">
         <ExperienceContext />
       </Card>
