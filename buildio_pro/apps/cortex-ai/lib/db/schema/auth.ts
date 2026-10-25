@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -43,7 +43,6 @@ export const account = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
-    issuer: text("issuer").notNull(),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -63,12 +62,6 @@ export const account = pgTable(
       .notNull()
       .$onUpdateFn(() => sql`now()`),
   },
-  (account) => [
-    uniqueIndex("account_issuer_account_id_uidx").on(
-      account.issuer,
-      account.accountId,
-    ),
-  ],
 );
 
 export const verification = pgTable("verification", {
