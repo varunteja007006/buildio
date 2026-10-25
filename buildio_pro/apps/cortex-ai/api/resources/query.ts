@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { getResources, createResource, deleteResource } from "./api";
+import { createResource, deleteResource, getResource, getResources } from "./api";
 import type { Resource, CreateResourceInput } from "./types";
 
 /** Query key factory for resources domain */
@@ -15,6 +15,15 @@ export function useResources() {
   return useQuery<Resource[]>({
     queryKey: resourceKeys.all,
     queryFn: getResources,
+  });
+}
+
+/** Fetch one resource's full content (on-demand; null id disables the query) */
+export function useResourceContent(id: string | null, enabled = true) {
+  return useQuery<Resource>({
+    queryKey: [...resourceKeys.all, "detail", id],
+    queryFn: () => getResource(id as string),
+    enabled: enabled && id !== null,
   });
 }
 

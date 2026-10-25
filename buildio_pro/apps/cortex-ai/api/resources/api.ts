@@ -8,6 +8,12 @@ export async function getResources(): Promise<Resource[]> {
   return data;
 }
 
+/** Fetch one resource's full content */
+export async function getResource(id: string): Promise<Resource> {
+  const { data } = await apiClient.get<Resource>(`/resources/${id}`);
+  return data;
+}
+
 /** Create a new resource (chunk + embed + store) */
 export async function createResource(
   input: CreateResourceInput,

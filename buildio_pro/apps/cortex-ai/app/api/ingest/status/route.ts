@@ -104,6 +104,7 @@ export async function GET(request: NextRequest) {
             and e.deleted_at is null
         )`,
         lastIngestedAt: resources.createdAt,
+        resourceId: resources.id,
         preview: sql<
           string | null
         >`left(${resources.content}, ${PREVIEW_LENGTH})`,

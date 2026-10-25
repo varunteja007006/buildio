@@ -27,6 +27,8 @@ export type IngestStatusRow = {
   hasApprovedExtraction: boolean;
   chunks: number;
   lastIngestedAt: string | null;
+  /** Active resource id; null when not ingested. */
+  resourceId: string | null;
   /** Preview of the active resource's content; null when not ingested. */
   preview: string | null;
   contentLength: number | null;

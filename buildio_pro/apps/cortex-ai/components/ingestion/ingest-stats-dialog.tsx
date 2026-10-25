@@ -14,6 +14,8 @@ import { DatabaseZap } from "lucide-react";
 import { useIngestDocuments } from "@/api/ingest/query";
 import type { IngestStatusRow } from "@/api/ingest/types";
 
+import { IngestContentPreview } from "./ingest-content-preview";
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border p-3">
@@ -87,10 +89,11 @@ export function IngestStatsDialog({
             />
           </div>
           {row.preview && (
-            <div className="rounded-md border bg-muted/40 p-3 text-xs whitespace-pre-wrap text-muted-foreground">
-              {row.preview}
-              {(row.contentLength ?? 0) > row.preview.length && "…"}
-            </div>
+            <IngestContentPreview
+              resourceId={row.resourceId}
+              preview={row.preview}
+              contentLength={row.contentLength}
+            />
           )}
           {row.lastIngestError && (
             <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs break-words text-destructive">
