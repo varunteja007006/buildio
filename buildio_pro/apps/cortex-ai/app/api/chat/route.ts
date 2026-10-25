@@ -11,7 +11,6 @@ import { NextResponse } from "next/server";
 
 import type { ChatAttachment, ChatMessageMetadata } from "@/api/chat/types";
 import { getAgentChatContext } from "@/lib/agents/chat-context";
-import { buildAgentChatTools } from "@/lib/agents/chat-tools";
 import {
   addChatAttachmentParts,
   parseChatAttachments,
@@ -208,18 +207,13 @@ export async function POST(req: Request) {
   const result = streamText({
     model: resolvedModel,
     system: agentContext
-      ? `You are ${agentContext.name}, an AI agent. Follow these instructions:\n${agentContext.instructions}\n\nCheck your knowledge base before answering any questions. Only respond to questions using information from tool calls. If no relevant information is found in the tool calls, respond, "Sorry, I don't know."`
+      ? `You are ${agentContext.name}, an AI agent. Follow these instructions:\n${agentContext.instructions}`
       : SYSTEM_PROMPT,
     messages: modelMessages,
     stopWhen: isStepCount(5),
     ...(hasAttachments
       ? {}
       : { include: { requestBody: true, requestMessages: true } }),
-    tools: buildAgentChatTools(
-      agentContext?.toolKeys ?? [],
-      workspace.id,
-      agentContext?.topicIds,
-    ),
     onEnd: (event) => {
       void recordChatAudit({
         userId: user.id,

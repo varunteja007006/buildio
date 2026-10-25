@@ -109,6 +109,12 @@ Schema lives in `lib/db/schema/agents.ts` (agents + joins), `toolboxes.ts`,
 
 ## Server tool catalog
 
+> **Update (2026-10-18):** the MVP knowledge-base tools (`getInformation`,
+> `addResource`) were removed — the catalog is now empty and the chat route
+> runs without tools. The catalog registry, toolboxes, and agent-tool
+> attachment UI/routes remain in place for the future connector-scoped tools.
+> Original design below.
+
 A single server-side registry (e.g. `lib/agents/tool-catalog.ts`) defines the
 workspace-available tools as `{ key, name, description, factory }` entries.
 MVP catalog: knowledge-base retrieval, resource search, connector schema list,
