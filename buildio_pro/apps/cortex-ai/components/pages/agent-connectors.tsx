@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { parseAsInteger, parseAsStringEnum, useQueryStates } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -35,10 +36,14 @@ import { DEFAULT_PORTS } from "@/lib/connectors/validation";
 
 const PAGE_SIZE = 10;
 
+const listFiltersParser = {
+  status: parseAsStringEnum(["active", "deleted"]).withDefault("active"),
+  page: parseAsInteger.withDefault(1),
+};
+
 export function AgentConnectorsPage() {
   const router = useRouter();
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<"active" | "deleted">("active");
+  const [{ status, page }, setListFilters] = useQueryStates(listFiltersParser);
   const [dialog, setDialog] = useState<Connection | null | undefined>(
     undefined,
   );
@@ -219,11 +224,8 @@ export function AgentConnectorsPage() {
           isLoading={isLoading}
           page={page}
           status={status}
-          onStatusChange={(next) => {
-            setStatus(next);
-            setPage(1);
-          }}
-          onPageChange={setPage}
+          onStatusChange={(next) => setListFilters({ status: next, page: 1 })}
+          onPageChange={(next) => setListFilters({ page: next })}
           onNew={openCreate}
           onRowClick={openTables}
         />

@@ -17,18 +17,11 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { CharCount } from "@/components/char-count";
 import { StatusBadge } from "@/components/connections/connection-columns";
 import { ConnectorDescriptionDialog } from "@/components/pages/connector-description-dialog";
+import { useConnectorSchemaFilters } from "@/components/pages/connector-schema-filters";
 import { ConnectorSchemaRefresh } from "@/components/pages/connector-schema-refresh";
-import { ConnectorTableBrowser, type SchemaBrowserFilters } from "@/components/pages/connector-table-browser";
+import { ConnectorTableBrowser } from "@/components/pages/connector-table-browser";
 
 type AgentConnectorDetailPageProps = { connectionId: string };
-
-const INITIAL_FILTERS: SchemaBrowserFilters = {
-  status: "active",
-  search: "",
-  schema: "all",
-  objectType: "all",
-  page: 1,
-};
 
 export function AgentConnectorDetailPage({
   connectionId,
@@ -37,7 +30,7 @@ export function AgentConnectorDetailPage({
   const connection = detail.data?.connection ?? null;
   const [description, setDescription] = useState("");
   const [generateOpen, setGenerateOpen] = useState(false);
-  const [filters, setFilters] = useState<SchemaBrowserFilters>(INITIAL_FILTERS);
+  const { filters, setFilters } = useConnectorSchemaFilters();
   const updateContext = useUpdateConnectorContext();
   useEffect(
     () => setDescription(connection?.description ?? ""),
@@ -189,9 +182,7 @@ export function AgentConnectorDetailPage({
                 page={schemaPage}
                 loading={schema.isFetching}
                 filters={filters}
-                onFiltersChange={(patch) =>
-                  setFilters((current) => ({ ...current, page: 1, ...patch }))
-                }
+                onFiltersChange={setFilters}
               />
             </div>
           )}
