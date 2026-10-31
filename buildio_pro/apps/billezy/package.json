@@ -13,8 +13,8 @@
     "clean": "git clean -xdf .cache .next .turbo node_modules"
   },
   "dependencies": {
-    "@workspace/ui": "workspace:*",
     "@workspace/games-convex-backend": "workspace:*",
+    "@workspace/ui": "workspace:*",
     "convex": "catalog:",
     "lucide-react": "catalog:",
     "next": "16.4.3",
@@ -24,6 +24,7 @@
     "sonner": "catalog:"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.16.5",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",

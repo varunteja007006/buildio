@@ -37,3 +37,5 @@ npm-debug.log*
 *.pem
 
 apps/secret-santa
+# Netlify
+.netlify/

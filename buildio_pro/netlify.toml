@@ -1,0 +1,11 @@
+[build]
+  base = "buildio_pro/apps/billezy"
+  command = "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter=billezy build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_PUBLIC_CONVEX_URL = "https://colorless-squirrel-700.convex.cloud"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
