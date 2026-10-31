@@ -9,14 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Input } from "@workspace/ui/components/input";
 import { useMutation } from "convex/react";
-import { Plus, Tag, Trash2, UserRound, X } from "lucide-react";
+import { Pencil, Plus, Tag, Trash2, UserRound } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { ParticipantPicker } from "@/components/participant-picker";
-import { formatMoney, parseAmountToCents } from "@/lib/settlement";
+import { ExpenseForm } from "@/components/expense-form";
+import { ParticipantShare } from "@/components/participant-share";
+import { formatMoney } from "@/lib/settlement";
 
 interface Member {
   id: string;
@@ -47,59 +47,55 @@ export function MemberExpenseCard({
   onDeleteExpense: (expenseId: string) => void;
 }) {
   const addExpense = useMutation(api.bills.addExpense);
-  const descriptionRef = useRef<HTMLInputElement>(null);
-  const amountRef = useRef<HTMLInputElement>(null);
+  const updateExpense = useMutation(api.billEdits.updateExpense);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
 
   const [isAdding, setIsAdding] = useState(false);
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [participantIds, setParticipantIds] = useState<Set<string>>(
-    () => new Set(members.map((m) => m.id)),
-  );
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalCents = expenses.reduce((sum, e) => sum + e.amountCents, 0);
 
-  const openForm = () => {
+  const openForm = (expense?: Expense) => {
+    setEditingExpense(expense ?? null);
     setIsAdding(true);
-    setParticipantIds(new Set(members.map((m) => m.id)));
-    requestAnimationFrame(() => descriptionRef.current?.focus());
   };
 
-  const resetForm = () => {
+  const closeForm = () => {
     setIsAdding(false);
-    setDescription("");
-    setAmount("");
+    setEditingExpense(null);
+    requestAnimationFrame(() => addButtonRef.current?.focus());
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const amountCents = parseAmountToCents(amount);
-    if (!description.trim()) {
-      descriptionRef.current?.focus();
-      return;
-    }
-    if (Number.isNaN(amountCents)) {
-      amountRef.current?.focus();
-      return;
-    }
-    if (participantIds.size === 0) {
-      toast.error("Pick who shares this expense.");
-      return;
-    }
-
+  const handleSubmit = async (values: {
+    description: string;
+    amountCents: number;
+    participantIds: Set<string>;
+  }) => {
     setIsSubmitting(true);
     try {
-      await addExpense({
-        groupId: groupId as Id<"bill_groups">,
-        description: description.trim(),
-        amountCents,
-        payerId: member.id as Id<"bill_members">,
-        participantIds: [...participantIds] as Id<"bill_members">[],
-      });
-      resetForm();
+      if (editingExpense) {
+        await updateExpense({
+          expenseId: editingExpense.id as Id<"bill_expenses">,
+          description: values.description,
+          amountCents: values.amountCents,
+          participantIds: [...values.participantIds] as Id<"bill_members">[],
+        });
+        toast.success("Expense updated");
+      } else {
+        await addExpense({
+          groupId: groupId as Id<"bill_groups">,
+          description: values.description,
+          amountCents: values.amountCents,
+          payerId: member.id as Id<"bill_members">,
+          participantIds: [...values.participantIds] as Id<"bill_members">[],
+        });
+      }
+      closeForm();
     } catch (error) {
-      toast.error("Failed to add the expense");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save the expense",
+      );
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -145,6 +141,15 @@ export function MemberExpenseCard({
             <Button
               variant="ghost"
               size="icon"
+              aria-label={`Edit ${expense.description}`}
+              onClick={() => openForm(expense)}
+              className="size-8 shrink-0 cursor-pointer text-muted-foreground opacity-60 hover:text-foreground group-hover:opacity-100"
+            >
+              <Pencil />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label={`Delete ${expense.description}`}
               onClick={() => onDeleteExpense(expense.id)}
               className="size-8 shrink-0 cursor-pointer text-muted-foreground opacity-60 hover:text-destructive group-hover:opacity-100"
@@ -155,57 +160,33 @@ export function MemberExpenseCard({
         ))}
 
         {isAdding ? (
-          <form
+          <ExpenseForm
+            key={editingExpense?.id ?? "new"}
+            members={members}
+            currency={currency}
+            initialValues={
+              editingExpense
+                ? {
+                    description: editingExpense.description,
+                    amount: String(editingExpense.amountCents / 100),
+                    participantIds: new Set(editingExpense.participantIds),
+                  }
+                : {
+                    description: "",
+                    amount: "",
+                    participantIds: new Set(members.map((m) => m.id)),
+                  }
+            }
+            submitLabel={editingExpense ? "Save" : "Add"}
+            isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
-            className="flex flex-wrap items-center gap-2 rounded-md border bg-muted/30 p-2"
-          >
-            <Input
-              ref={descriptionRef}
-              placeholder="What? e.g. Bus tickets"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={isSubmitting}
-              className="min-w-32 flex-1"
-              enterKeyHint="next"
-            />
-            <Input
-              ref={amountRef}
-              inputMode="decimal"
-              placeholder={currency === "₹" ? "Amount ₹" : `Amount ${currency}`}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              disabled={isSubmitting}
-              className="w-28 font-mono"
-            />
-            <ParticipantPicker
-              members={members}
-              selectedIds={participantIds}
-              onChange={setParticipantIds}
-              disabled={isSubmitting}
-            />
-            <Button
-              type="submit"
-              size="sm"
-              disabled={isSubmitting}
-              className="cursor-pointer"
-            >
-              Add
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label="Cancel"
-              onClick={resetForm}
-              className="size-8 cursor-pointer text-muted-foreground"
-            >
-              <X />
-            </Button>
-          </form>
+            onCancel={closeForm}
+          />
         ) : (
           <button
+            ref={addButtonRef}
             type="button"
-            onClick={openForm}
+            onClick={() => openForm()}
             className="flex w-full items-center justify-center gap-2 rounded-md py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
           >
             <Plus className="size-4" /> add expense
@@ -213,36 +194,5 @@ export function MemberExpenseCard({
         )}
       </CardContent>
     </Card>
-  );
-}
-
-function ParticipantShare({
-  count,
-  total,
-  names,
-}: {
-  count: number;
-  total: number;
-  names: string;
-}) {
-  if (count === total) {
-    return (
-      <span
-        title={`Shared by everyone (${names})`}
-        className="hidden shrink-0 items-center gap-1 text-xs text-muted-foreground sm:flex"
-      >
-        <UserRound className="size-3.5" />
-        all
-      </span>
-    );
-  }
-  return (
-    <span
-      title={`Shared by ${names}`}
-      className="hidden shrink-0 items-center gap-1 text-xs text-muted-foreground sm:flex"
-    >
-      <UserRound className="size-3.5" />
-      {count}
-    </span>
   );
 }
