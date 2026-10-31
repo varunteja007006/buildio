@@ -9,10 +9,14 @@
  */
 
 import type * as billEdits from "../billEdits.js";
+import type * as billHelpers from "../billHelpers.js";
+import type * as billPayments from "../billPayments.js";
+import type * as billTrash from "../billTrash.js";
 import type * as bills from "../bills.js";
 import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
 import type * as crons from "../crons.js";
+import type * as lib_billMath from "../lib/billMath.js";
 import type * as presence from "../presence.js";
 import type * as rooms from "../rooms.js";
 import type * as scribble from "../scribble.js";
@@ -29,10 +33,14 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   billEdits: typeof billEdits;
+  billHelpers: typeof billHelpers;
+  billPayments: typeof billPayments;
+  billTrash: typeof billTrash;
   bills: typeof bills;
   chat: typeof chat;
   cleanup: typeof cleanup;
   crons: typeof crons;
+  "lib/billMath": typeof lib_billMath;
   presence: typeof presence;
   rooms: typeof rooms;
   scribble: typeof scribble;

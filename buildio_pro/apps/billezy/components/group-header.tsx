@@ -51,7 +51,10 @@ export function GroupHeader({
     if (!trimmed) return;
     setIsRenaming(true);
     try {
-      await renameGroup({ groupId: groupId as Id<"bill_groups">, name: trimmed });
+      await renameGroup({
+        groupId: groupId as Id<"bill_groups">,
+        name: trimmed,
+      });
       toast.success("Group renamed");
       setRenameOpen(false);
     } catch (error) {
@@ -143,7 +146,7 @@ export function GroupHeader({
               <DialogTitle>Delete this group?</DialogTitle>
               <DialogDescription>
                 This permanently removes the group with all its members and
-                expenses. This cannot be undone.
+                expenses and repayment records. This cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

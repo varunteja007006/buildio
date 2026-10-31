@@ -9,16 +9,19 @@ import Link from "next/link";
 import React from "react";
 import { toast } from "sonner";
 
+import { ExpenseTrash } from "@/components/expense-trash";
 import { GroupHeader } from "@/components/group-header";
 import { MemberExpenseCard } from "@/components/member-expense-card";
 import { MembersCard } from "@/components/members-card";
 import { SettlementCard } from "@/components/settlement-card";
+import { TripSummary } from "@/components/trip-summary";
 
 export function GroupView({ groupId }: { groupId: string }) {
   const group = useQuery(api.bills.getGroup, {
     groupId: groupId as Id<"bill_groups">,
   });
   const deleteExpense = useMutation(api.bills.deleteExpense);
+  const restoreExpense = useMutation(api.billTrash.restoreExpense);
 
   if (group === undefined) {
     return (
@@ -45,8 +48,25 @@ export function GroupView({ groupId }: { groupId: string }) {
   }
 
   const handleDeleteExpense = (expenseId: string) => {
-    deleteExpense({ expenseId: expenseId as Id<"bill_expenses"> })
-      .then(() => toast.success("Expense removed"))
+    const args = {
+      groupId: groupId as Id<"bill_groups">,
+      expenseId: expenseId as Id<"bill_expenses">,
+    };
+    deleteExpense(args)
+      .then(() =>
+        toast.success("Expense moved to deleted expenses", {
+          action: {
+            label: "Undo",
+            onClick: () => {
+              restoreExpense(args).catch(() =>
+                toast.error(
+                  "Could not restore the expense. Try the deleted expenses section.",
+                ),
+              );
+            },
+          },
+        }),
+      )
       .catch((error) => {
         toast.error("Failed to remove the expense");
         console.error(error);
@@ -58,6 +78,22 @@ export function GroupView({ groupId }: { groupId: string }) {
       <GroupHeader groupId={groupId} name={group.name} />
 
       <MembersCard groupId={groupId} members={group.members} />
+
+      <TripSummary
+        members={group.members}
+        expenses={group.expenses}
+        payments={group.payments}
+        currency={group.currency}
+      />
+
+      <SettlementCard
+        groupId={groupId}
+        name={group.name}
+        members={group.members}
+        expenses={group.expenses}
+        payments={group.payments}
+        currency={group.currency}
+      />
 
       <div className="space-y-4">
         <h2 className="sr-only">Expenses per person</h2>
@@ -76,9 +112,9 @@ export function GroupView({ groupId }: { groupId: string }) {
         ))}
       </div>
 
-      <SettlementCard
+      <ExpenseTrash
+        groupId={groupId}
         members={group.members}
-        expenses={group.expenses}
         currency={group.currency}
       />
     </div>

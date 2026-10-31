@@ -2,6 +2,13 @@ import { v } from "convex/values";
 
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import {
+  expenseShape,
+  expenseView,
+  paymentShape,
+  paymentView,
+  validateExpense,
+} from "./billHelpers";
 
 const MAX_MEMBERS = 50;
 
@@ -61,15 +68,6 @@ const memberShape = v.object({
   name: v.string(),
 });
 
-const expenseShape = v.object({
-  id: v.id("bill_expenses"),
-  description: v.string(),
-  amountCents: v.number(),
-  payerId: v.id("bill_members"),
-  participantIds: v.array(v.id("bill_members")),
-  createdAt: v.number(),
-});
-
 /** Loads a group with all members and expenses, or null if it does not exist. */
 export const getGroup = query({
   args: { groupId: v.id("bill_groups") },
@@ -80,6 +78,7 @@ export const getGroup = query({
       createdAt: v.number(),
       members: v.array(memberShape),
       expenses: v.array(expenseShape),
+      payments: v.array(paymentShape),
     }),
     v.null(),
   ),
@@ -89,13 +88,17 @@ export const getGroup = query({
       return null;
     }
 
-    const [members, expenses] = await Promise.all([
+    const [members, expenses, payments] = await Promise.all([
       ctx.db
         .query("bill_members")
         .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
         .collect(),
       ctx.db
         .query("bill_expenses")
+        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+        .collect(),
+      ctx.db
+        .query("bill_payments")
         .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
         .collect(),
     ]);
@@ -108,15 +111,10 @@ export const getGroup = query({
         .sort((a, b) => a.created_at - b.created_at)
         .map((m) => ({ id: m._id, name: m.name })),
       expenses: expenses
+        .filter((e) => !e.deleted_at)
         .sort((a, b) => b.created_at - a.created_at)
-        .map((e) => ({
-          id: e._id,
-          description: e.description,
-          amountCents: e.amount_cents,
-          payerId: e.payer_id,
-          participantIds: e.participant_ids,
-          createdAt: e.created_at,
-        })),
+        .map(expenseView),
+      payments: payments.filter((p) => !p.voided_at).map(paymentView),
     };
   },
 });
@@ -166,39 +164,10 @@ export const addExpense = mutation({
   },
   returns: v.id("bill_expenses"),
   handler: async (ctx, args) => {
-    const description = args.description.trim();
-    if (description.length === 0) {
-      throw new Error("Description is required");
-    }
-    if (!Number.isInteger(args.amountCents) || args.amountCents <= 0) {
-      throw new Error("Amount must be a positive amount");
-    }
-    if (args.participantIds.length === 0) {
-      throw new Error("At least one participant is required");
-    }
-
-    const group = await ctx.db.get(args.groupId);
-    if (!group) {
-      throw new Error("Group not found");
-    }
-
-    const members = await ctx.db
-      .query("bill_members")
-      .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
-      .collect();
-    const memberIds = new Set(members.map((m) => m._id));
-    if (!memberIds.has(args.payerId)) {
-      throw new Error("Payer must be a member of the group");
-    }
-    for (const participantId of args.participantIds) {
-      if (!memberIds.has(participantId)) {
-        throw new Error("Participants must be members of the group");
-      }
-    }
-
+    await validateExpense(ctx, args);
     return await ctx.db.insert("bill_expenses", {
       groupId: args.groupId,
-      description,
+      description: args.description.trim(),
       amount_cents: args.amountCents,
       payer_id: args.payerId,
       participant_ids: args.participantIds,
@@ -207,16 +176,17 @@ export const addExpense = mutation({
   },
 });
 
-/** Removes a single expense. */
+/** Moves an expense to trash; recoverable until explicitly deleted permanently. */
 export const deleteExpense = mutation({
-  args: { expenseId: v.id("bill_expenses") },
+  args: { groupId: v.id("bill_groups"), expenseId: v.id("bill_expenses") },
   returns: v.null(),
   handler: async (ctx, args) => {
     const expense = await ctx.db.get(args.expenseId);
-    if (!expense) {
+    if (!expense || expense.groupId !== args.groupId) {
       throw new Error("Expense not found");
     }
-    await ctx.db.delete(args.expenseId);
+    if (!expense.deleted_at)
+      await ctx.db.patch(args.expenseId, { deleted_at: Date.now() });
     return null;
   },
 });
@@ -231,7 +201,7 @@ export const deleteGroup = mutation({
       throw new Error("Group not found");
     }
 
-    const [members, expenses] = await Promise.all([
+    const [members, expenses, payments] = await Promise.all([
       ctx.db
         .query("bill_members")
         .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
@@ -240,11 +210,16 @@ export const deleteGroup = mutation({
         .query("bill_expenses")
         .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
         .collect(),
+      ctx.db
+        .query("bill_payments")
+        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
+        .collect(),
     ]);
 
     for (const expense of expenses) {
       await ctx.db.delete(expense._id);
     }
+    for (const payment of payments) await ctx.db.delete(payment._id);
     for (const member of members) {
       await ctx.db.delete(member._id);
     }

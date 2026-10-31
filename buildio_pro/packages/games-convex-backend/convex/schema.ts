@@ -119,9 +119,20 @@ export default defineSchema({
     payer_id: v.id("bill_members"),
     participant_ids: v.array(v.id("bill_members")), // who shares this expense
     created_at: v.number(),
+    deleted_at: v.optional(v.number()),
   })
     .index("by_group", ["groupId"])
+    .index("by_group_and_deleted_at", ["groupId", "deleted_at"])
     .index("by_payer", ["payer_id"]),
+
+  bill_payments: defineTable({
+    groupId: v.id("bill_groups"),
+    from_id: v.id("bill_members"),
+    to_id: v.id("bill_members"),
+    amount_cents: v.number(),
+    created_at: v.number(),
+    voided_at: v.optional(v.number()),
+  }).index("by_group", ["groupId"]),
 
   scribble_game_state: defineTable({
     room_code: v.string(),

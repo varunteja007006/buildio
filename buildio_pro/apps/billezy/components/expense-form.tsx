@@ -58,6 +58,7 @@ export function ExpenseForm({
       return;
     }
     if (Number.isNaN(amountCents)) {
+      toast.error("Enter a positive amount with up to two decimal places.");
       amountRef.current?.focus();
       return;
     }

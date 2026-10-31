@@ -12,24 +12,15 @@ export function ParticipantShare({
   total: number;
   names: string;
 }) {
-  if (count === total) {
-    return (
-      <span
-        title={`Shared by everyone (${names})`}
-        className="hidden shrink-0 items-center gap-1 text-xs text-muted-foreground sm:flex"
-      >
-        <UserRound className="size-3.5" />
-        all
-      </span>
-    );
-  }
   return (
     <span
       title={`Shared by ${names}`}
-      className="hidden shrink-0 items-center gap-1 text-xs text-muted-foreground sm:flex"
+      className="order-last flex w-full items-start gap-1 text-xs text-muted-foreground sm:order-none sm:w-auto sm:max-w-48"
     >
-      <UserRound className="size-3.5" />
-      {count}
+      <UserRound className="mt-0.5 size-3.5 shrink-0" />
+      <span className="break-words">
+        {count === total ? "Everyone" : names}
+      </span>
     </span>
   );
 }

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation } from "./_generated/server";
+import { validateExpense } from "./billHelpers";
 
 /** Renames a bill group. */
 export const renameGroup = mutation({
@@ -79,6 +80,16 @@ export const removeMember = mutation({
       );
     }
 
+    const payments = await ctx.db
+      .query("bill_payments")
+      .withIndex("by_group", (q) => q.eq("groupId", member.groupId))
+      .collect();
+    if (
+      payments.some((p) => p.from_id === member._id || p.to_id === member._id)
+    ) {
+      throw new Error("Members with repayment history cannot be removed");
+    }
+
     const members = await ctx.db
       .query("bill_members")
       .withIndex("by_group", (q) => q.eq("groupId", member.groupId))
@@ -95,6 +106,7 @@ export const removeMember = mutation({
 /** Updates an expense's description, amount, or participants. Payer never changes. */
 export const updateExpense = mutation({
   args: {
+    groupId: v.id("bill_groups"),
     expenseId: v.id("bill_expenses"),
     description: v.string(),
     amountCents: v.number(),
@@ -102,35 +114,17 @@ export const updateExpense = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const description = args.description.trim();
-    if (description.length === 0) {
-      throw new Error("Description is required");
-    }
-    if (!Number.isInteger(args.amountCents) || args.amountCents <= 0) {
-      throw new Error("Amount must be a positive amount");
-    }
-    if (args.participantIds.length === 0) {
-      throw new Error("At least one participant is required");
-    }
-
     const expense = await ctx.db.get(args.expenseId);
-    if (!expense) {
+    if (!expense || expense.groupId !== args.groupId || expense.deleted_at) {
       throw new Error("Expense not found");
     }
-
-    const members = await ctx.db
-      .query("bill_members")
-      .withIndex("by_group", (q) => q.eq("groupId", expense.groupId))
-      .collect();
-    const memberIds = new Set(members.map((m) => m._id));
-    for (const participantId of args.participantIds) {
-      if (!memberIds.has(participantId)) {
-        throw new Error("Participants must be members of the group");
-      }
-    }
-
+    await validateExpense(
+      ctx,
+      { ...args, payerId: expense.payer_id },
+      expense._id,
+    );
     await ctx.db.patch(args.expenseId, {
-      description,
+      description: args.description.trim(),
       amount_cents: args.amountCents,
       participant_ids: args.participantIds,
     });

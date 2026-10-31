@@ -76,6 +76,7 @@ export function MemberExpenseCard({
     try {
       if (editingExpense) {
         await updateExpense({
+          groupId: groupId as Id<"bill_groups">,
           expenseId: editingExpense.id as Id<"bill_expenses">,
           description: values.description,
           amountCents: values.amountCents,
@@ -122,7 +123,7 @@ export function MemberExpenseCard({
         {expenses.map((expense) => (
           <div
             key={expense.id}
-            className="group flex items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/50"
+            className="group flex flex-wrap items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/50"
           >
             <p className="min-w-0 flex-1 truncate text-sm">
               {expense.description}
