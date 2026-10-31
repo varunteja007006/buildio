@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as bills from "../bills.js";
 import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
 import type * as crons from "../crons.js";
@@ -26,6 +27,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  bills: typeof bills;
   chat: typeof chat;
   cleanup: typeof cleanup;
   crons: typeof crons;

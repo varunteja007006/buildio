@@ -99,6 +99,30 @@ export default defineSchema({
     created_at: v.number(),
   }).index("by_room_code", ["room_code"]),
 
+  // Group expense splitting (bill-splitter app)
+  bill_groups: defineTable({
+    name: v.string(),
+    currency: v.string(), // currency symbol, e.g. "$" or "€"
+    created_at: v.number(),
+  }).index("by_created_at", ["created_at"]),
+
+  bill_members: defineTable({
+    groupId: v.id("bill_groups"),
+    name: v.string(),
+    created_at: v.number(),
+  }).index("by_group", ["groupId"]),
+
+  bill_expenses: defineTable({
+    groupId: v.id("bill_groups"),
+    description: v.string(),
+    amount_cents: v.number(), // integer cents to avoid float drift
+    payer_id: v.id("bill_members"),
+    participant_ids: v.array(v.id("bill_members")), // who shares this expense
+    created_at: v.number(),
+  })
+    .index("by_group", ["groupId"])
+    .index("by_payer", ["payer_id"]),
+
   scribble_game_state: defineTable({
     room_code: v.string(),
     status: v.union(
