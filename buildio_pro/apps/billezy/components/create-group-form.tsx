@@ -28,27 +28,39 @@ export function CreateGroupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const memberInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const prevMemberCount = useRef(memberNames.length);
+  const pendingFocusIndex = useRef<number | null>(null);
 
   useEffect(() => {
-    if (memberNames.length > prevMemberCount.current) {
-      memberInputRefs.current[memberNames.length - 1]?.focus();
-    }
-    prevMemberCount.current = memberNames.length;
-  }, [memberNames.length]);
+    if (pendingFocusIndex.current === null) return;
+    memberInputRefs.current[pendingFocusIndex.current]?.focus();
+    pendingFocusIndex.current = null;
+  });
 
   const setMemberName = (index: number, value: string) => {
     setMemberNames((prev) => prev.map((n, i) => (i === index ? value : n)));
   };
 
   const removeMemberName = (index: number) => {
-    setMemberNames((prev) =>
-      prev.length <= 2 ? prev : prev.filter((_, i) => i !== index),
-    );
+    setMemberNames((prev) => {
+      if (prev.length <= 2) return prev;
+      pendingFocusIndex.current = Math.min(index, prev.length - 2);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const addMemberName = () => {
+    pendingFocusIndex.current = memberNames.length;
     setMemberNames((prev) => [...prev, ""]);
+  };
+
+  const advanceToNextMember = (index: number) => {
+    const next = memberInputRefs.current[index + 1];
+    if (next) {
+      next.focus();
+    } else {
+      pendingFocusIndex.current = index;
+      addMemberName();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,6 +119,12 @@ export function CreateGroupForm() {
                 placeholder={`Member ${index + 1} name`}
                 value={memberName}
                 onChange={(e) => setMemberName(index, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    advanceToNextMember(index);
+                  }
+                }}
                 disabled={isSubmitting}
                 className="flex-1"
               />
