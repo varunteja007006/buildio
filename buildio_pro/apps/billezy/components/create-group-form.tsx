@@ -13,7 +13,7 @@ import {
 import { useMutation } from "convex/react";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const CURRENCIES = ["$", "€", "£", "₹", "¥"];
@@ -26,6 +26,16 @@ export function CreateGroupForm() {
   const [currency, setCurrency] = useState("$");
   const [memberNames, setMemberNames] = useState<string[]>(["", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const memberInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const prevMemberCount = useRef(memberNames.length);
+
+  useEffect(() => {
+    if (memberNames.length > prevMemberCount.current) {
+      memberInputRefs.current[memberNames.length - 1]?.focus();
+    }
+    prevMemberCount.current = memberNames.length;
+  }, [memberNames.length]);
 
   const setMemberName = (index: number, value: string) => {
     setMemberNames((prev) => prev.map((n, i) => (i === index ? value : n)));
@@ -91,6 +101,9 @@ export function CreateGroupForm() {
           {memberNames.map((memberName, index) => (
             <div key={index} className="flex items-center gap-2">
               <Input
+                ref={(el) => {
+                  memberInputRefs.current[index] = el;
+                }}
                 placeholder={`Member ${index + 1} name`}
                 value={memberName}
                 onChange={(e) => setMemberName(index, e.target.value)}
