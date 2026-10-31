@@ -39,3 +39,6 @@ npm-debug.log*
 apps/secret-santa
 # Netlify
 .netlify/
+
+# Local-only Netlify config (dashboard settings drive git builds)
+netlify.toml

@@ -24,7 +24,6 @@
     "sonner": "catalog:"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.16.5",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
