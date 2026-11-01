@@ -15,10 +15,16 @@ export function GroupArchive({
   expiresAt,
 }: {
   groupId: string;
-  expiresAt: number;
+  expiresAt?: number;
 }) {
   const convex = useConvex();
   const [isExporting, setIsExporting] = useState(false);
+
+  const expiry =
+    typeof expiresAt === "number" && Number.isFinite(expiresAt)
+      ? new Date(expiresAt)
+      : null;
+  const hasExpiry = expiry !== null && !Number.isNaN(expiry.getTime());
 
   const download = async () => {
     if (isExporting) return;
@@ -54,11 +60,18 @@ export function GroupArchive({
   return (
     <aside className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/30 p-3">
       <p className="min-w-0 flex-1 text-xs text-muted-foreground">
-        Automatically deleted after six months, on or shortly after{" "}
-        <time dateTime={new Date(expiresAt).toISOString()}>
-          {new Date(expiresAt).toLocaleDateString()}
-        </time>
-        . Save an offline copy for your records.
+        {hasExpiry ? (
+          <>
+            Automatically deleted after six months, on or shortly after{" "}
+            <time dateTime={expiry!.toISOString()}>
+              {expiry!.toLocaleDateString()}
+            </time>
+            .{" "}
+          </>
+        ) : (
+          "Automatically deleted after six months. "
+        )}
+        Save an offline copy for your records.
       </p>
       <Button
         variant="outline"
