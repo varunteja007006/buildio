@@ -176,6 +176,9 @@ importers:
       '@workspace/games-convex-backend':
         specifier: workspace:*
         version: link:../../packages/games-convex-backend
+      '@workspace/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui

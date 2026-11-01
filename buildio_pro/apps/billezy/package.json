@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@workspace/games-convex-backend": "workspace:*",
+    "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",
     "convex": "catalog:",
     "lucide-react": "catalog:",

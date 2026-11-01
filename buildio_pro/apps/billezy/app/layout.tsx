@@ -5,7 +5,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 
-import "@workspace/ui/globals.css";
+import "./globals.css";
 
 import { Providers } from "@/components/providers";
 import { ThemeToggle } from "@/components/theme-toggle";

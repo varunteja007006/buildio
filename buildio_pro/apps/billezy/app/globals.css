@@ -1,0 +1,5 @@
+/* Import the UI library styles */
+@import "../node_modules/@workspace/ui/src/styles/globals.css";
+
+/* Import the theme styles — swap this file to change the app palette */
+@import "../node_modules/@workspace/theme/ocean-breeze.css";
