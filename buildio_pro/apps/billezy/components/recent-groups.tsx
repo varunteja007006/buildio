@@ -39,12 +39,6 @@ export function RecentGroups() {
               className="min-w-0 flex-1 rounded-sm py-3 text-sm hover:underline focus-visible:outline-2"
             >
               <span className="block truncate font-medium">{group.name}</span>
-              <span className="text-xs text-muted-foreground">
-                Last visited {new Date(group.visitedAt).toLocaleDateString()} ·
-                {group.expiresAt <= Date.now()
-                  ? " Expired"
-                  : ` Deletes ${new Date(group.expiresAt).toLocaleDateString()}`}
-              </span>
             </Link>
             <Button
               variant="ghost"

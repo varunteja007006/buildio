@@ -5,31 +5,53 @@ import { billExpiresAt, purgeBillRecordsBatch } from "../../../packages/games-co
 import { renderGroupArchive } from "../lib/group-archive.ts";
 import { forgetGroup, readRecentGroups, rememberGroup } from "../lib/recent-groups.ts";
 
-test("recent bills persist, deduplicate, update names, stay bounded, and forget locally", (t) => {
+test("recent bills stay capped, newest first, update names, and forget locally", (t) => {
   const values = new Map();
   globalThis.window = { localStorage: {
     getItem: (key) => values.get(key) ?? null,
     setItem: (key, value) => values.set(key, value),
   } };
   t.after(() => delete globalThis.window);
-  let now = 1000;
-  t.mock.method(Date, "now", () => now++);
   for (let i = 0; i < 60; i++)
-    rememberGroup({ groupId: `bill${i}`, name: `Trip ${i}`, expiresAt: 100000 });
+    rememberGroup({ groupId: `bill${i}`, name: `Trip ${i}` });
   let groups = readRecentGroups();
-  assert.equal(groups.length, 50);
-  assert.equal(groups[0].groupId, "bill59");
-  assert.equal(groups.at(-1).groupId, "bill10");
-  rememberGroup({ groupId: "bill20", name: "Renamed trip", expiresAt: 200000 });
+  assert.equal(groups.length, 50); // capped
+  assert.deepEqual(groups[0], { groupId: "bill59", name: "Trip 59" }); // newest first
+  assert.deepEqual(groups.at(-1), { groupId: "bill10", name: "Trip 10" });
+  assert.ok(groups.every((group) => !("visitedAt" in group || "expiresAt" in group)));
+  rememberGroup({ groupId: "bill20", name: "Renamed trip" });
   groups = readRecentGroups();
-  assert.equal(groups.length, 50);
-  assert.equal(groups[0].groupId, "bill20");
-  assert.equal(groups[0].name, "Renamed trip");
-  assert.equal(groups[0].expiresAt, 200000);
+  assert.equal(groups.length, 50); // revisiting moves it to the front, not duplicates
+  assert.deepEqual(groups[0], { groupId: "bill20", name: "Renamed trip" });
   assert.equal(groups.filter((group) => group.groupId === "bill20").length, 1);
   forgetGroup("bill20");
   assert.equal(readRecentGroups().length, 49);
   assert.ok(readRecentGroups().every((group) => group.groupId !== "bill20"));
+});
+
+test("legacy entries keep their array order, lose extra fields, and dedupe to the first occurrence", (t) => {
+  const values = new Map();
+  globalThis.window = { localStorage: {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+  } };
+  t.after(() => delete globalThis.window);
+  values.set("billezy.recent-groups.v1", JSON.stringify([
+    // Old entries carry visitedAt/expiresAt; the read ignores them instead of sorting.
+    { groupId: "bill1", name: "Old trip", visitedAt: 10, expiresAt: 20 },
+    { groupId: "bill2", name: "Older trip", visitedAt: 20, expiresAt: 10 },
+    { groupId: "bill1", name: "Duplicate trip", visitedAt: 99, expiresAt: 1 },
+  ]));
+  assert.deepEqual(readRecentGroups(), [
+    { groupId: "bill1", name: "Old trip" }, // first occurrence wins, extra fields stripped
+    { groupId: "bill2", name: "Older trip" }, // stays second: recency is array position
+  ]);
+  rememberGroup({ groupId: "bill3", name: "New trip" });
+  assert.deepEqual(JSON.parse(values.get("billezy.recent-groups.v1")), [
+    { groupId: "bill3", name: "New trip" },
+    { groupId: "bill1", name: "Old trip" },
+    { groupId: "bill2", name: "Older trip" },
+  ]); // the next write slims the stored legacy entries
 });
 
 test("corrupt, unsafe, and blocked browser storage never breaks bills", (t) => {
@@ -40,14 +62,21 @@ test("corrupt, unsafe, and blocked browser storage never breaks bills", (t) => {
   } };
   t.after(() => delete globalThis.window);
   assert.deepEqual(readRecentGroups(), []);
-  raw = JSON.stringify([null, {}, { groupId: "../../bad", name: "Bad", visitedAt: 1, expiresAt: 2 }]);
-  assert.deepEqual(readRecentGroups(), []);
+  raw = JSON.stringify([
+    null, 5, "no", [], { no: "ids" },
+    { groupId: "../../bad", name: "Bad" },
+    { groupId: "bill0" }, { groupId: "bill1", name: 7 },
+    { groupId: "bill1", name: "Trip", visitedAt: 999, expiresAt: 1 },
+  ]);
+  assert.deepEqual(readRecentGroups(), [{ groupId: "bill1", name: "Trip" }]);
   raw = '{"not":"an array"}';
   assert.deepEqual(readRecentGroups(), []);
-  assert.doesNotThrow(() => rememberGroup({ groupId: "bill1", name: "Trip", expiresAt: 2 }));
+  raw = JSON.stringify([{ groupId: "bill1", name: "Trip" }]);
+  assert.doesNotThrow(() => rememberGroup({ groupId: "bill2", name: "Trip 2" }));
+  assert.deepEqual(readRecentGroups(), [{ groupId: "bill1", name: "Trip" }]); // failed writes keep stored entries
   Object.defineProperty(globalThis.window, "localStorage", { get() { throw new Error("Blocked"); } });
   assert.deepEqual(readRecentGroups(), []);
-  assert.doesNotThrow(() => rememberGroup({ groupId: "bill1", name: "Trip", expiresAt: 2 }));
+  assert.doesNotThrow(() => rememberGroup({ groupId: "bill1", name: "Trip" }));
   assert.doesNotThrow(() => forgetGroup("bill1"));
 });
 

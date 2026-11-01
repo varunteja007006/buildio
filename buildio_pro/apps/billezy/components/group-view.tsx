@@ -28,7 +28,7 @@ export function GroupView({ groupId }: { groupId: string }) {
   useEffect(() => {
     if (group === null) forgetGroup(groupId);
     else if (group)
-      rememberGroup({ groupId, name: group.name, expiresAt: group.expiresAt });
+      rememberGroup({ groupId, name: group.name });
   }, [group, groupId]);
 
   if (group === undefined) {

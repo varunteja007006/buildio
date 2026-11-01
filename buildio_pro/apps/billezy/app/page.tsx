@@ -6,7 +6,7 @@ export default function Page() {
     <main className="flex min-h-screen flex-col items-center px-3 py-6 sm:px-4 sm:py-10">
       <div className="w-full max-w-xl flex flex-col items-center gap-4 sm:gap-6">
         <div className="text-center space-y-2">
-          <h1 className="text-primary text-3xl font-bold sm:text-4xl">
+          <h1 className="text-heading text-3xl font-bold sm:text-4xl">
             Billezy
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base">

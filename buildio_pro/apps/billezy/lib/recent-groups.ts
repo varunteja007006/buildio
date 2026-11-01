@@ -1,10 +1,11 @@
 export interface RecentGroup {
   groupId: string;
   name: string;
-  visitedAt: number;
-  expiresAt: number;
 }
 
+// Key stays at "v1": legacy entries may carry extra fields that are ignored on
+// read and dropped on the next write. Array order is the recency order, with
+// the newest entry first.
 const KEY = "billezy.recent-groups.v1";
 const LIMIT = 50;
 
@@ -19,28 +20,24 @@ export function readRecentGroups(): RecentGroup[] {
         const valid =
           typeof item.groupId === "string" &&
           /^[a-z0-9]{1,128}$/i.test(item.groupId) &&
-          typeof item.name === "string" &&
-          typeof item.visitedAt === "number" &&
-          Number.isFinite(item.visitedAt) &&
-          typeof item.expiresAt === "number" &&
-          Number.isFinite(item.expiresAt);
+          typeof item.name === "string";
         if (!valid || seen.has(item.groupId)) return false;
         seen.add(item.groupId);
         return true;
       })
-      .sort((a, b) => b.visitedAt - a.visitedAt)
+      .map(({ groupId, name }) => ({ groupId, name }))
       .slice(0, LIMIT);
   } catch {
     return [];
   }
 }
 
-export function rememberGroup(group: Omit<RecentGroup, "visitedAt">): void {
+export function rememberGroup(group: RecentGroup): void {
   try {
     const groups = readRecentGroups().filter(
       (item) => item.groupId !== group.groupId,
     );
-    groups.unshift({ ...group, visitedAt: Date.now() });
+    groups.unshift({ groupId: group.groupId, name: group.name });
     window.localStorage.setItem(KEY, JSON.stringify(groups.slice(0, LIMIT)));
   } catch {
     // Browsers can block storage or run out of quota; bills must still work.
