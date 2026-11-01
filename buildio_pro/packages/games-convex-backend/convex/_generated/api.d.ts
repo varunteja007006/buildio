@@ -15,6 +15,7 @@ import type * as billPayments from "../billPayments.js";
 import type * as billRetention from "../billRetention.js";
 import type * as billTrash from "../billTrash.js";
 import type * as bills from "../bills.js";
+import type * as bookTopics from "../bookTopics.js";
 import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
 import type * as crons from "../crons.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   billRetention: typeof billRetention;
   billTrash: typeof billTrash;
   bills: typeof bills;
+  bookTopics: typeof bookTopics;
   chat: typeof chat;
   cleanup: typeof cleanup;
   crons: typeof crons;

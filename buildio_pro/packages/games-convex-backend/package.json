@@ -10,8 +10,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "convex": "catalog:",
-        "@convex-dev/presence": "^0.4.0"
+        "@convex-dev/presence": "^0.4.0",
+        "convex": "catalog:"
     },
     "devDependencies": {
         "typescript": "catalog:"
