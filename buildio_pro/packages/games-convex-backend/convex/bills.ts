@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import {
@@ -9,6 +10,7 @@ import {
   paymentView,
   validateExpense,
 } from "./billHelpers";
+import { billExpiresAt, purgeBillRecordsBatch } from "./lib/billRetention";
 
 const MAX_MEMBERS = 50;
 
@@ -76,6 +78,7 @@ export const getGroup = query({
       name: v.string(),
       currency: v.string(),
       createdAt: v.number(),
+      expiresAt: v.number(),
       members: v.array(memberShape),
       expenses: v.array(expenseShape),
       payments: v.array(paymentShape),
@@ -107,6 +110,7 @@ export const getGroup = query({
       name: group.name,
       currency: group.currency,
       createdAt: group.created_at,
+      expiresAt: billExpiresAt(group.created_at),
       members: members
         .sort((a, b) => a.created_at - b.created_at)
         .map((m) => ({ id: m._id, name: m.name })),
@@ -191,7 +195,7 @@ export const deleteExpense = mutation({
   },
 });
 
-/** Deletes a group together with its members and expenses. */
+/** Removes the link immediately and purges all related records in bounded batches. */
 export const deleteGroup = mutation({
   args: { groupId: v.id("bill_groups") },
   returns: v.null(),
@@ -201,29 +205,12 @@ export const deleteGroup = mutation({
       throw new Error("Group not found");
     }
 
-    const [members, expenses, payments] = await Promise.all([
-      ctx.db
-        .query("bill_members")
-        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
-        .collect(),
-      ctx.db
-        .query("bill_expenses")
-        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
-        .collect(),
-      ctx.db
-        .query("bill_payments")
-        .withIndex("by_group", (q) => q.eq("groupId", args.groupId))
-        .collect(),
-    ]);
-
-    for (const expense of expenses) {
-      await ctx.db.delete(expense._id);
-    }
-    for (const payment of payments) await ctx.db.delete(payment._id);
-    for (const member of members) {
-      await ctx.db.delete(member._id);
-    }
     await ctx.db.delete(args.groupId);
+    if (!(await purgeBillRecordsBatch(ctx, args.groupId))) {
+      await ctx.scheduler.runAfter(0, internal.billRetention.expireAndPurge, {
+        groupId: args.groupId,
+      });
+    }
     return null;
   },
 });

@@ -34,4 +34,11 @@ crons.interval(
   internal.cleanup.deleteOldTeamReactions,
 );
 
+crons.interval(
+  "delete bill groups after six months",
+  { hours: 24 },
+  internal.billRetention.deleteExpiredGroups,
+  {},
+);
+
 export default crons;
