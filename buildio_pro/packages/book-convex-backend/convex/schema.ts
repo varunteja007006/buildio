@@ -14,4 +14,13 @@ export default defineSchema({
   })
     .index("by_name", ["name"])
     .index("by_created_at", ["created_at"]),
+  // Nested folders for organizing book content; a missing parent_id marks a
+  // main (top-level) folder.
+  book_folders: defineTable({
+    name: v.string(),
+    parent_id: v.optional(v.id("book_folders")),
+    created_at: v.number(),
+  })
+    .index("by_parent", ["parent_id"])
+    .index("by_created_at", ["created_at"]),
 });

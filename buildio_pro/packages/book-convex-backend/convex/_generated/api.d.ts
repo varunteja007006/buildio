@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as bookFolders from "../bookFolders.js";
 import type * as bookTopics from "../bookTopics.js";
 import type * as http from "../http.js";
 
@@ -20,6 +21,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  bookFolders: typeof bookFolders;
   bookTopics: typeof bookTopics;
   http: typeof http;
 }>;
