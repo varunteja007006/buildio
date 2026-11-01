@@ -14,6 +14,7 @@
     "dev:scribble": "turbo dev --filter=scribble",
     "dev:cortex-ai": "turbo dev --filter=cortex-ai",
     "dev:billezy": "turbo dev --filter=billezy",
+    "dev:book": "turbo dev --filter=book",
     "build:web": "turbo build --filter=web",
     "build:poker-planner": "turbo build --filter=poker-planner",
     "build:housie-game": "turbo build --filter=housie-game",
@@ -21,6 +22,7 @@
     "build:expense-tracker": "turbo build --filter=expense-tracker",
     "build:cortex-ai": "turbo build --filter=cortex-ai",
     "build:billezy": "turbo build --filter=billezy",
+    "build:book": "turbo build --filter=book",
     "start:web": "pnpm --filter=web start",
     "start:poker-planner": "pnpm --filter=poker-planner start",
     "start:housie-game": "pnpm --filter=housie-game start",
@@ -28,6 +30,7 @@
     "start:expense-tracker": "pnpm --filter=expense-tracker start",
     "start:cortex-ai": "pnpm --filter=cortex-ai start",
     "start:billezy": "pnpm --filter=billezy start",
+    "start:book": "pnpm --filter=book start",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
     "clean:all": "turbo run clean && git clean -xdf node_modules"
