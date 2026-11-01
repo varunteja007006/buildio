@@ -46,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="apple-mobile-web-app-title" content="buildio.pro" />
+        <meta name="apple-mobile-web-app-title" content="Billezy" />
       </head>
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
