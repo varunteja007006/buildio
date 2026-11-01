@@ -12,7 +12,6 @@ import {
   BookMarkedIcon,
   BookOpenIcon,
   BookmarkIcon,
-  NotebookPenIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,7 +22,6 @@ const items = [
   { title: "Currently Reading", url: "/home/reading", icon: BookOpenIcon },
   { title: "Want to Read", url: "/home/wishlist", icon: BookmarkIcon },
   { title: "Finished", url: "/home/finished", icon: BadgeCheckIcon },
-  { title: "Notes", url: "/home/notes", icon: NotebookPenIcon },
 ];
 
 export function NavMain() {
@@ -31,7 +29,7 @@ export function NavMain() {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Reading</SidebarGroupLabel>
+      <SidebarGroupLabel>Organize</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>

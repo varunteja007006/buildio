@@ -3,6 +3,8 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
 
+import { ConvexClientProvider } from "@/components/convex-provider";
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider
@@ -12,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       enableColorScheme
     >
-      {children}
+      <ConvexClientProvider>{children}</ConvexClientProvider>
     </NextThemesProvider>
   );
 }

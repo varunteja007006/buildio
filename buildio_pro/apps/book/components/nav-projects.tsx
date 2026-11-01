@@ -7,15 +7,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
-import { ChartColumnIcon, HeartIcon, StarIcon } from "lucide-react";
+import { HeartIcon, NotebookPenIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 
 const items = [
   { title: "Favourites", url: "/home/favourites", icon: HeartIcon },
-  { title: "Reviews", url: "/home/reviews", icon: StarIcon },
-  { title: "Stats", url: "/home/stats", icon: ChartColumnIcon },
+  { title: "All Notes", url: "/home/notes", icon: NotebookPenIcon },
 ];
 
 export function NavProjects() {
