@@ -38,7 +38,15 @@ This is a pnpm 11.4 + Turborepo monorepo of Next.js 16 apps. Run commands from `
 
 ## Deployment
 
-Railway definitions are the `*-railway.toml` files at the workspace root. They use `pnpm build:<app>` and `pnpm start:<app>`; the Convex game builds run `npx convex deploy` first.
+- `billezy` is deployed on **Netlify** (not Railway): the Netlify site builds from the pushed repo, `netlify.toml` is local-only, and the root `.gitignore` keeps the local `.netlify` folder out of git. The site config points `NEXT_PUBLIC_CONVEX_URL` at the production Convex deployment `next-condor-138.convex.cloud`.
+- The `*-railway.toml` files remain the definitions for the Convex game apps (`pnpm build:<app>` and `pnpm start:<app>`, running `npx convex deploy` first).
+
+### Deploying Convex changes manually
+
+- `packages/games-convex-backend/.env.local` sets `CONVEX_DEPLOYMENT` to the dev deployment (`colorless-squirrel-700`) — that is the deployment `convex dev` keeps in sync.
+- `npx convex deploy` from `packages/games-convex-backend` does NOT deploy to the dev deployment: when `CONVEX_DEPLOYMENT` is set, the CLI targets the project's default **production** deployment (`next-condor-138.convex.cloud`). No `--prod` flag or `CONVEX_DEPLOY_KEY` is needed locally.
+- That push triggers a Y/n confirmation which aborts in non-interactive shells ("Cannot prompt for input in non-interactive terminals"). `yes | npx convex deploy` does NOT bypass it (the CLI checks `stdin.isTTY`); there is no `--yes` flag and no `script` binary. Run it under a pseudo-TTY that answers the prompt: `python3 /home/varun/Documents/workspace/github/scripts/convex-deploy-prod.py`.
+- The deploy typechecks the functions and regenerates `convex/_generated/`; check `git status` afterwards and fold any generated-file diffs into a commit before pushing.
 
 ## End-to-end CRUD
 
