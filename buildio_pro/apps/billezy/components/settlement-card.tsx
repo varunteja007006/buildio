@@ -129,16 +129,16 @@ export function SettlementCard({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-wrap flex-row items-center justify-between gap-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
+    <Card className="gap-3 py-4">
+      <CardHeader className="flex flex-wrap flex-row items-center justify-between gap-2 px-4">
+        <CardTitle className="flex items-center gap-2 text-base">
           <HandCoins className="size-5" /> How to settle up
         </CardTitle>
         <Button variant="outline" size="sm" onClick={copySummary}>
           <Copy /> Copy summary
         </Button>
       </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-3 px-4">
         <p className="text-sm text-muted-foreground">
           Pay outside Billezy, then record it here. Anyone with this link can
           record or undo payments; these are not bank-verified. Editing or

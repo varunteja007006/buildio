@@ -120,6 +120,11 @@ test(
           paginationOpts: { numItems: 20, cursor: null },
         });
       assert.equal((await listTrash()).page[0].id, expenseId);
+      const archived = await call("query", "billArchive:getGroup", { groupId });
+      assert.equal(archived.expenses[0]._id, expenseId);
+      assert.ok(archived.expenses[0].deleted_at);
+      assert.equal(archived.payments[0]._id, paymentId);
+      assert.ok(archived.expenses.every((expense) => expense.groupId === groupId));
       await assert.rejects(() =>
         mutate("billTrash:restoreExpense", {
           groupId: other.groupId,
@@ -131,6 +136,8 @@ test(
       assert.equal((await listTrash()).page.length, 0);
       await mutate("billPayments:undoPayment", { groupId, paymentId });
       assert.equal((await read()).payments.length, 0);
+      const afterUndo = await call("query", "billArchive:getGroup", { groupId });
+      assert.ok(afterUndo.payments[0].voided_at);
       await mutate("billEdits:updateExpense", {
         groupId,
         expenseId,

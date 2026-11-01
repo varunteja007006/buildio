@@ -6,15 +6,17 @@ import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { toast } from "sonner";
 
 import { ExpenseTrash } from "@/components/expense-trash";
+import { GroupArchive } from "@/components/group-archive";
 import { GroupHeader } from "@/components/group-header";
 import { MemberExpenseCard } from "@/components/member-expense-card";
 import { MembersCard } from "@/components/members-card";
 import { SettlementCard } from "@/components/settlement-card";
 import { TripSummary } from "@/components/trip-summary";
+import { forgetGroup, rememberGroup } from "@/lib/recent-groups";
 
 export function GroupView({ groupId }: { groupId: string }) {
   const group = useQuery(api.bills.getGroup, {
@@ -23,9 +25,15 @@ export function GroupView({ groupId }: { groupId: string }) {
   const deleteExpense = useMutation(api.bills.deleteExpense);
   const restoreExpense = useMutation(api.billTrash.restoreExpense);
 
+  useEffect(() => {
+    if (group === null) forgetGroup(groupId);
+    else if (group)
+      rememberGroup({ groupId, name: group.name, expiresAt: group.expiresAt });
+  }, [group, groupId]);
+
   if (group === undefined) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-3">
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="h-40 w-full" />
         <Skeleton className="h-64 w-full" />
@@ -74,8 +82,10 @@ export function GroupView({ groupId }: { groupId: string }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <GroupHeader groupId={groupId} name={group.name} />
+
+      <GroupArchive groupId={groupId} expiresAt={group.expiresAt} />
 
       <MembersCard groupId={groupId} members={group.members} />
 
@@ -95,7 +105,7 @@ export function GroupView({ groupId }: { groupId: string }) {
         currency={group.currency}
       />
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <h2 className="sr-only">Expenses per person</h2>
         {group.members.map((member) => (
           <MemberExpenseCard

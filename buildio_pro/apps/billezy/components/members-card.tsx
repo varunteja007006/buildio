@@ -3,7 +3,12 @@
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { Button } from "@workspace/ui/components/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { useMutation } from "convex/react";
 import { Check, Pencil, UserRound, X } from "lucide-react";
@@ -103,13 +108,11 @@ export function MembersCard({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">
-          Members ({members.length})
-        </CardTitle>
+    <Card className="gap-3 py-4">
+      <CardHeader className="px-4">
+        <CardTitle className="text-base">Members ({members.length})</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 px-4">
         <ul className="flex flex-wrap gap-2">
           {members.map((member) =>
             editingId === member.id ? (

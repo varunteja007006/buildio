@@ -34,27 +34,27 @@ export function TripSummary({
   }));
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="gap-3 py-4">
+      <CardHeader className="gap-1 px-4">
         <CardTitle>Trip summary</CardTitle>
-        <p className="text-3xl font-bold font-mono">
+        <p className="text-2xl font-bold font-mono">
           {money(sumCents(expenses.map((e) => e.amountCents)))}
         </p>
         <p className="text-sm text-muted-foreground">
           Total spent · {members.length} people · {expenses.length} expenses
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 px-4">
         <p className="text-sm text-muted-foreground">
           Already paid means expenses paid to shops, restaurants, etc. Your
           share is your actual trip cost. Repayments only change what remains to
           settle.
         </p>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           {summaries.map((summary) => (
             <section
               key={summary.memberId}
-              className="min-w-0 rounded-lg border p-4 space-y-3"
+              className="min-w-0 rounded-lg border p-3 space-y-2"
             >
               <h3 className="font-semibold break-words">
                 {members.find((m) => m.id === summary.memberId)?.name}

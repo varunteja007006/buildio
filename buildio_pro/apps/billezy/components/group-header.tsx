@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
+import { forgetGroup } from "@/lib/recent-groups";
+
 export function GroupHeader({
   groupId,
   name,
@@ -71,6 +73,7 @@ export function GroupHeader({
     setIsDeleting(true);
     try {
       await deleteGroup({ groupId: groupId as Id<"bill_groups"> });
+      forgetGroup(groupId);
       toast.success("Group deleted");
       router.push("/");
     } catch (error) {
@@ -83,9 +86,11 @@ export function GroupHeader({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <h1 className="text-3xl font-bold">{name}</h1>
-      <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <h1 className="min-w-0 break-words text-xl font-bold sm:text-2xl">
+        {name}
+      </h1>
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant="outline"
           size="sm"

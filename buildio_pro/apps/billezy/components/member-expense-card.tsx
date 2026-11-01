@@ -106,10 +106,10 @@ export function MemberExpenseCard({
   const memberNameById = new Map(members.map((m) => [m.id, m.name]));
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-base">
-          <span className="flex items-center gap-2">
+    <Card className="gap-2 py-4">
+      <CardHeader className="px-4">
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
+          <span className="flex min-w-0 items-center gap-2 break-words">
             <UserRound className="size-5 text-muted-foreground" />
             {member.name}
           </span>
@@ -119,11 +119,11 @@ export function MemberExpenseCard({
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-1">
+      <CardContent className="space-y-1 px-4">
         {expenses.map((expense) => (
           <div
             key={expense.id}
-            className="group flex flex-wrap items-center gap-2 rounded-md px-2 py-2 hover:bg-muted/50"
+            className="group flex flex-wrap items-center gap-1 rounded-md px-1 py-1 hover:bg-muted/50"
           >
             <p className="min-w-0 flex-1 truncate text-sm">
               {expense.description}

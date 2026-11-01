@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { currencyForLocale } from "@/lib/currency";
+
 const CURRENCIES = ["$", "€", "£", "₹", "¥"];
 
 export function CreateGroupForm() {
@@ -29,6 +31,10 @@ export function CreateGroupForm() {
 
   const memberInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pendingFocusIndex = useRef<number | null>(null);
+
+  useEffect(() => {
+    setCurrency(currencyForLocale(navigator.language));
+  }, []);
 
   useEffect(() => {
     if (pendingFocusIndex.current === null) return;
@@ -90,7 +96,7 @@ export function CreateGroupForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-xl border bg-card p-6 space-y-5 shadow-sm"
+      className="w-full rounded-xl border bg-card p-4 space-y-3 shadow-sm"
     >
       <div className="space-y-2">
         <label className="text-sm font-medium" htmlFor="group-name">
@@ -157,9 +163,9 @@ export function CreateGroupForm() {
         </p>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-2">
         <Select value={currency} onValueChange={setCurrency}>
-          <SelectTrigger className="w-28" aria-label="Currency">
+          <SelectTrigger className="w-20 sm:w-28" aria-label="Currency">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -172,11 +178,10 @@ export function CreateGroupForm() {
         </Select>
         <Button
           type="submit"
-          size="lg"
           disabled={isSubmitting}
-          className="cursor-pointer"
+          className="min-w-0 flex-1 cursor-pointer"
         >
-          Start new calculation
+          Create split
         </Button>
       </div>
     </form>
