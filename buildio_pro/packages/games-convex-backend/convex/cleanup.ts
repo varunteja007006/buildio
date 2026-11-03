@@ -97,6 +97,40 @@ export const deleteOldScribbleLines = internalMutation({
   },
 });
 
+// Delete Secret Santa data (games, assignments, wishlist items) older than
+// 21 days, mirroring the story cleanup cadence.
+export const deleteOldSantaData = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async ({ db }) => {
+    const cutoff = Date.now() - 21 * DAY_MS;
+
+    const oldGames = await db
+      .query("santa_games")
+      .withIndex("by_created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+    for (const game of oldGames) {
+      await db.delete(game._id);
+    }
+
+    const oldAssignments = await db
+      .query("santa_assignments")
+      .withIndex("by_created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+    for (const assignment of oldAssignments) {
+      await db.delete(assignment._id);
+    }
+
+    const oldItems = await db
+      .query("santa_wishlist_items")
+      .withIndex("by_created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+    for (const item of oldItems) {
+      await db.delete(item._id);
+    }
+  },
+});
+
 // Delete team reactions older than 24 hours (previously deleted ALL
 // reactions every hour).
 export const deleteOldTeamReactions = internalMutation({

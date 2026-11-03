@@ -35,6 +35,12 @@ crons.interval(
 );
 
 crons.interval(
+  "prune old secret santa data",
+  { hours: 24 },
+  internal.cleanup.deleteOldSantaData,
+);
+
+crons.interval(
   "delete bill groups after six months",
   { hours: 24 },
   internal.billRetention.deleteExpiredGroups,

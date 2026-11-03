@@ -134,6 +134,40 @@ export default defineSchema({
     voided_at: v.optional(v.number()),
   }).index("by_group", ["groupId"]),
 
+  // Secret Santa game (one doc per room)
+  santa_games: defineTable({
+    room_id: v.id("rooms"),
+    status: v.union(v.literal("lobby"), v.literal("drawn")),
+    drawn_at: v.optional(v.number()),
+    created_at: v.number(),
+  })
+    .index("by_room", ["room_id"])
+    .index("by_created_at", ["created_at"]),
+
+  // One doc per santa -> recipient pair, regenerated on every draw
+  santa_assignments: defineTable({
+    room_id: v.id("rooms"),
+    santa_user_id: v.id("users"),
+    recipient_user_id: v.id("users"),
+    created_at: v.number(),
+  })
+    .index("by_room", ["room_id"])
+    .index("by_room_and_santa", ["room_id", "santa_user_id"])
+    .index("by_created_at", ["created_at"]),
+
+  // Gift ideas added by a participant for their own wishlist
+  santa_wishlist_items: defineTable({
+    room_id: v.id("rooms"),
+    owner_user_id: v.id("users"),
+    item_text: v.string(),
+    item_link: v.optional(v.string()),
+    item_image: v.optional(v.string()),
+    created_at: v.number(),
+  })
+    .index("by_room", ["room_id"])
+    .index("by_room_and_owner", ["room_id", "owner_user_id"])
+    .index("by_created_at", ["created_at"]),
+
   scribble_game_state: defineTable({
     room_code: v.string(),
     status: v.union(
