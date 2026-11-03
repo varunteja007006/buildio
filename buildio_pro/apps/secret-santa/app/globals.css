@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Import the UI library styles */
+@import "../node_modules/@workspace/ui/src/styles/globals.css";
+
+/* Import the theme styles */
+@import "../node_modules/@workspace/theme/base.css";
