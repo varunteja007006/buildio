@@ -1,0 +1,104 @@
+import React from "react";
+
+import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
+import { CloudDownload } from "lucide-react";
+
+import Image from "next/image";
+import ContactIcons from "./contact-icons";
+import { getExperienceYears } from "./experience-utils";
+import {
+  SiJavascript,
+  SiNextdotjs,
+  SiPostgresql,
+  SiTailwindcss,
+  SiTypescript,
+} from "react-icons/si";
+import { FaNodeJs, FaReact, FaPython } from "react-icons/fa";
+import { SiExpressvpn } from "react-icons/si";
+
+const expertise = [
+  { name: "JavaScript", icon: SiJavascript },
+  { name: "TypeScript", icon: SiTypescript },
+  { name: "Next JS", icon: SiNextdotjs },
+  { name: "React JS", icon: FaReact },
+  { name: "Node JS", icon: FaNodeJs },
+  { name: "Express JS", icon: SiExpressvpn },
+  { name: "Python", icon: FaPython },
+  { name: "PostgreSQL", icon: SiPostgresql },
+  { name: "Tailwind CSS", icon: SiTailwindcss },
+];
+
+export default function Intro() {
+  const experienceYears = getExperienceYears();
+
+  return (
+    <section
+      id="intro"
+      className="min-h-[calc(100vh-15rem)] flex flex-col items-center justify-center"
+    >
+      <Card>
+        {/* <Card className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center space-y-4"> */}
+        <div className="flex flex-col items-start gap-10 px-6 lg:flex-row">
+          <div className="flex w-full flex-col items-center gap-5 lg:w-1/3">
+            <Image
+              alt="profile"
+              src={"/profile.webp"}
+              width={400}
+              height={400}
+              className="h-auto w-full rounded-lg"
+              unoptimized={true}
+              priority={true}
+            />
+            <div>
+              <Button
+                variant={"outline"}
+                className="text-base font-bold"
+                asChild
+              >
+                <a download href="/resume_varun.pdf">
+                  <CloudDownload /> Download Resume
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-4 text-center max-w-prose mx-auto text-base leading-loose">
+            <div>{`Hi 👋, I'm Varun,`}</div>
+            <div className="max-w-prose">
+              {`Full Stack Engineer with ${experienceYears}+ years of experience building scalable web applications using Next.js, React, and Node.js. Specialized in rapid product development and AI-integrated systems, delivering production-grade solutions in compressed timelines.`}
+            </div>
+            <div className="max-w-prose">
+              {`Currently at Renault Group, I'm pioneering AI-integrated SDLC workflows to accelerate enterprise product delivery — building full-stack applications that bring AI-powered insights to supplier risk, procurement, and sustainability.`}
+            </div>
+
+            <div className="flex flex-row gap-4 items-center flex-wrap justify-center">
+              {expertise.map((item) => {
+                return (
+                  <div
+                    key={item.name}
+                    className="flex shadow-xs flex-row gap-2 items-center border border-primary/10 hover:border-primary/50 hover:bg-primary/10 cursor-pointer px-2 py-1 rounded-lg"
+                  >
+                    <item.icon />
+                    {item.name}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-row justify-center">
+              <blockquote className="relative p-2 font-semibold pl-8 bg-accent/30 border-l-4 border-accent text-accent-foreground italic rounded-md max-w-prose">
+                I believe in scalable architecture, clean code, and continuous
+                learning.
+              </blockquote>
+            </div>
+
+            <div>
+              <ContactIcons />
+            </div>
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Varun Teja K",
+  "short_name": "Varun",
+  "description": "Personal site of Varun Teja K",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5a4",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/profile.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}
