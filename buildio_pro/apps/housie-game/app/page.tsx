@@ -1,3 +1,4 @@
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Dices } from "lucide-react";
 
 import HousieNumGenerator from "@/components/housie-num-generator";
@@ -26,6 +27,7 @@ export default function Page() {
       </main>
 
       {/* Footer */}
+      <MoreAppsFooter current="housie-game" />
       <footer className="text-center mt-10 text-gray-500 p-4 text-sm border-t border-gray-800">
         © {new Date().getFullYear()} Buildio.pro — Crafted with ❤️
       </footer>

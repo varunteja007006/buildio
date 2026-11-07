@@ -1,3 +1,4 @@
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 
@@ -16,6 +17,7 @@ export default function Page() {
           <Link href="/home">Open my library</Link>
         </Button>
       </main>
+      <MoreAppsFooter current="book" />
       <footer className="border-t border-border p-4 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} Buildio.pro
       </footer>

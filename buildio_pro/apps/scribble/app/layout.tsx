@@ -1,3 +1,4 @@
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <main className="min-h-[(calc(100vh-20rem))]">{children}</main>
+          <MoreAppsFooter current="scribble" />
           <Toaster />
         </Providers>
       </body>

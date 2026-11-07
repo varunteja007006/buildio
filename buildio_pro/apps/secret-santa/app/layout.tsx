@@ -1,3 +1,4 @@
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
@@ -35,6 +36,7 @@ export default function RootLayout({
             <Navbar />
             <main className="min-h-[(calc(100vh-20rem))]">{children}</main>
           </div>
+          <MoreAppsFooter current="secret-santa" />
           <Toaster />
         </Providers>
       </body>

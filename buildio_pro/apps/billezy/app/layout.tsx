@@ -1,3 +1,4 @@
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Button } from "@workspace/ui/components/button";
 import { Toaster } from "@workspace/ui/components/sonner";
 import { ExternalLink, House } from "lucide-react";
@@ -72,6 +73,7 @@ export default function RootLayout({
             <ThemeToggle />
           </header>
           {children}
+          <MoreAppsFooter current="billezy" />
           <Toaster />
         </Providers>
       </body>

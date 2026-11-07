@@ -113,6 +113,7 @@
   "exports": {
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.mjs",
+    "./apps": "./src/apps.ts",
     "./lib/*": [
       "./src/lib/*.ts",
       "./src/lib/*.tsx"

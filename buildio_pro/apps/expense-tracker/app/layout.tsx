@@ -1,3 +1,4 @@
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 import { DM_Sans, Space_Mono } from "next/font/google";
@@ -40,6 +41,7 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
+        <MoreAppsFooter current="expense-tracker" />
         <Toaster />
       </body>
     </html>
