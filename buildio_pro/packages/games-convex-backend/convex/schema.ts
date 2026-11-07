@@ -139,6 +139,8 @@ export default defineSchema({
     room_id: v.id("rooms"),
     status: v.union(v.literal("lobby"), v.literal("drawn")),
     drawn_at: v.optional(v.number()),
+    min_budget: v.optional(v.number()), // suggested minimum gift spend
+    max_budget: v.optional(v.number()), // suggested maximum gift spend
     created_at: v.number(),
   })
     .index("by_room", ["room_id"])

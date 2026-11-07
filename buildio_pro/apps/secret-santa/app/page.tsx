@@ -21,9 +21,9 @@ export default function Page() {
   return (
     <div className="flex flex-col items-center gap-5 justify-center min-h-[calc(100vh-10rem)]">
       {/* Hero */}
-      <div>
-        <h1 className="text-primary text-center text-5xl">
-          🎅 Welcome to Secret Santa
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="font-bold text-primary text-center text-5xl">
+          Secret Santa
         </h1>
         <p className="text-muted-foreground mt-3 text-center text-sm">
           Create a room, invite your friends, run the draw and share wishlists.
@@ -31,7 +31,9 @@ export default function Page() {
         {userToken && (
           <div className="mt-4">
             <Button asChild>
-              <Link href="/rooms">Go to Rooms</Link>
+              <Link href="/rooms" className="hover:cursor-pointer">
+                Go to Rooms
+              </Link>
             </Button>
           </div>
         )}

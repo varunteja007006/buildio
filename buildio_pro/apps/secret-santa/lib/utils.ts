@@ -1,3 +1,5 @@
+export const MAX_BUDGET_VALUE = 100_000_000;
+
 export function getEmojiForUserId(userId: string): string {
   // Simple hash function to generate a consistent emoji for a user ID.
   // see https://stackoverflow.com/a/7616484

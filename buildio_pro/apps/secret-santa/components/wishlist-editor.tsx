@@ -19,6 +19,7 @@ import { toast } from "sonner";
 
 import { WishItemRow } from "@/components/wish-item-row";
 import { useLinkPreviews } from "@/hooks/use-link-previews";
+import { getErrorMessage } from "@/lib/convex-errors";
 import { useUserStore } from "@/lib/store/user.store";
 
 export function WishlistEditor() {
@@ -54,9 +55,7 @@ export function WishlistEditor() {
       setItemText("");
       setItemLink("");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to add item";
-      toast.error(message);
+      toast.error(getErrorMessage(error, "Failed to add item"));
       console.error(error);
     } finally {
       setIsAdding(false);
@@ -71,9 +70,7 @@ export function WishlistEditor() {
         itemId,
       });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to remove item";
-      toast.error(message);
+      toast.error(getErrorMessage(error, "Failed to remove item"));
       console.error(error);
     }
   };
@@ -83,36 +80,57 @@ export function WishlistEditor() {
       <CardHeader>
         <CardTitle className="text-primary">My Wishlist 📝</CardTitle>
         <CardDescription>
-          Add gift ideas. Only you and your Secret Santa can see this list.
+          Gift ideas for your Santa to sniff out. Only you two can see this
+          list.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <form onSubmit={handleAdd} className="space-y-2">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Eg: A cozy blanket"
-              value={itemText}
-              onChange={(e) => setItemText(e.target.value)}
-              maxLength={200}
-              disabled={isAdding}
-            />
+        <form onSubmit={handleAdd}>
+          <div className="overflow-hidden rounded-xl border shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+            <div className="flex items-center">
+              <label
+                htmlFor="wish-item"
+                className="w-24 shrink-0 border-r border-input px-3 text-sm text-muted-foreground"
+              >
+                Name
+              </label>
+              <Input
+                id="wish-item"
+                placeholder="Eg: A cozy blanket"
+                value={itemText}
+                onChange={(e) => setItemText(e.target.value)}
+                maxLength={200}
+                disabled={isAdding}
+                className="rounded-none border-0 bg-transparent shadow-none focus-visible:border-transparent focus-visible:ring-0 dark:bg-transparent"
+              />
+            </div>
+            <div className="flex items-center border-t border-input">
+              <label
+                htmlFor="wish-link"
+                className="w-24 shrink-0 border-r border-input px-3 text-sm text-muted-foreground"
+              >
+                Link
+              </label>
+              <Input
+                id="wish-link"
+                type="url"
+                placeholder="Optional — eg: https://www.amazon.in/..."
+                value={itemLink}
+                onChange={(e) => setItemLink(e.target.value)}
+                maxLength={500}
+                disabled={isAdding}
+                className="rounded-none border-0 bg-transparent shadow-none focus-visible:border-transparent focus-visible:ring-0 dark:bg-transparent"
+              />
+            </div>
             <Button
               type="submit"
-              size="icon"
               disabled={isAdding || !itemText.trim()}
-              className="cursor-pointer"
+              className="w-full cursor-pointer rounded-none border-t"
             >
               <ListPlus />
+              Add to wishlist
             </Button>
           </div>
-          <Input
-            type="url"
-            placeholder="Product link (optional) — eg: https://www.amazon.in/..."
-            value={itemLink}
-            onChange={(e) => setItemLink(e.target.value)}
-            maxLength={500}
-            disabled={isAdding}
-          />
         </form>
 
         {items && items.length > 0 ? (
@@ -128,7 +146,7 @@ export function WishlistEditor() {
           </ul>
         ) : (
           <p className="text-sm text-muted-foreground">
-            No items yet. Add your first wish!
+            Nothing here yet — drop your first wish! 🌟
           </p>
         )}
       </CardContent>

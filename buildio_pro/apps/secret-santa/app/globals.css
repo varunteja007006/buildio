@@ -4,4 +4,8 @@
 @import "../node_modules/@workspace/ui/src/styles/globals.css";
 
 /* Import the theme styles */
-@import "../node_modules/@workspace/theme/base.css";
+@import "../node_modules/@workspace/theme/shopify-red.css";
+
+@theme inline {
+  --font-sans: var(--font-cozy), ui-sans-serif, system-ui, sans-serif;
+}

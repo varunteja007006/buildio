@@ -40,12 +40,12 @@ export function RecipientWishlist({
         <CardTitle className="flex items-center gap-2 text-primary">
           <Eye className="size-5" />
           {myRecipientUsername
-            ? `${myRecipientUsername}'s Wishlist`
+            ? `${myRecipientUsername}'s wishlist 🎁`
             : "Recipient's Wishlist"}
         </CardTitle>
         <CardDescription>
           {myRecipientUsername
-            ? `Gift ideas from the person you are gifting 🎄`
+            ? `Sneak a peek before you shop 🛍️`
             : "Visible once the draw is complete."}
         </CardDescription>
       </CardHeader>
@@ -65,7 +65,7 @@ export function RecipientWishlist({
             No wishlist items yet. Time for some detective work! 🔍
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Loading wishlist...</p>
+          <p className="text-sm text-muted-foreground">Loading wishlist… ⏳</p>
         )}
       </CardContent>
     </Card>

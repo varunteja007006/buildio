@@ -1,10 +1,18 @@
 import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
+import { Nunito } from "next/font/google";
 
 import { Navbar } from "@/components/navbar";
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
+
+const nunito = Nunito({
+  variable: "--font-cozy",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Secret Santa",
@@ -21,10 +29,12 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-title" content="Secret Santa" />
       </head>
-      <body className="font-sans antialiased">
+      <body className={`${nunito.variable} font-sans antialiased`}>
         <Providers>
-          <Navbar />
-          <main className="min-h-[(calc(100vh-20rem))]">{children}</main>
+          <div className="md:max-w-6xl w-full mx-auto">
+            <Navbar />
+            <main className="min-h-[(calc(100vh-20rem))]">{children}</main>
+          </div>
           <Toaster />
         </Providers>
       </body>

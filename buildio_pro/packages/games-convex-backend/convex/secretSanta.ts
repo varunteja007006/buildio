@@ -10,6 +10,8 @@ const MAX_ITEM_LINK_LENGTH = 500;
 const MAX_ITEMS_PER_PERSON = 20;
 const MIN_PARTICIPANTS = 2;
 const MAX_PARTICIPANTS = 500;
+// Sanity cap so budgets stay reasonable in the UI.
+const MAX_BUDGET_VALUE = 100_000_000;
 
 async function getRoomOrThrow(ctx: QueryCtx, roomCode: string) {
   const room = await ctx.db
@@ -104,6 +106,8 @@ export const getGameState = query({
     ),
     status: v.union(v.literal("lobby"), v.literal("drawn")),
     drawn_at: v.optional(v.number()),
+    min_budget: v.optional(v.number()),
+    max_budget: v.optional(v.number()),
     participants: v.array(
       v.object({
         user_id: v.id("users"),
@@ -217,6 +221,8 @@ export const getGameState = query({
       },
       status,
       drawn_at: game?.drawn_at,
+      min_budget: game?.min_budget,
+      max_budget: game?.max_budget,
       participants,
       my_recipient: myRecipient,
     };
@@ -342,6 +348,118 @@ export const resetDraw = mutation({
 
     await ctx.db.patch(game._id, { status: "lobby", drawn_at: undefined });
     return null;
+  },
+});
+
+// Owner-only gift budget (min and max). Editable at ANY game status — after
+// the draw it still tells each santa how much to spend.
+export const setBudget = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+    minBudget: v.number(),
+    maxBudget: v.number(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { room, userId } = await requireRoomMember(
+      ctx,
+      args.roomCode,
+      args.userToken,
+    );
+    if (room.ownerId !== userId) {
+      throw new Error("Only the room owner can set the budget");
+    }
+
+    const budgets = [args.minBudget, args.maxBudget];
+    for (const budget of budgets) {
+      if (!Number.isFinite(budget)) {
+        throw new Error("Budget values can't be negative");
+      }
+      if (budget < 0) {
+        throw new Error("Budget values can't be negative");
+      }
+      if (budget > MAX_BUDGET_VALUE) {
+        throw new Error("Budget values are capped at 100,000,000");
+      }
+    }
+    if (args.minBudget > args.maxBudget) {
+      throw new Error("Minimum budget can't be higher than the maximum");
+    }
+
+    const game = await getGame(ctx, room._id);
+    if (!game) throw new Error("The game hasn't been initialized yet");
+
+    await ctx.db.patch(game._id, {
+      min_budget: args.minBudget,
+      max_budget: args.maxBudget,
+    });
+    return null;
+  },
+});
+
+// Owner-only removal of a participant. Kicking after a draw invalidates every
+// assignment, so the game drops back to the lobby and must be redrawn.
+export const kickParticipant = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+    targetUserId: v.id("users"),
+  },
+  returns: v.object({
+    kicked: v.boolean(),
+    draw_reset: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const { room, userId } = await requireRoomMember(
+      ctx,
+      args.roomCode,
+      args.userToken,
+    );
+    if (room.ownerId !== userId) {
+      throw new Error("Only the room owner can kick participants");
+    }
+    if (args.targetUserId === room.ownerId) {
+      throw new Error("The room owner can't be kicked");
+    }
+
+    const membership = await ctx.db
+      .query("teams")
+      .withIndex("by_room_and_user", (q) =>
+        q.eq("roomId", room._id).eq("userId", args.targetUserId),
+      )
+      .unique();
+    if (!membership) throw new Error("That user is not a participant");
+
+    const teams = await ctx.db
+      .query("teams")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .take(MAX_PARTICIPANTS);
+    if (teams.length - 1 < MIN_PARTICIPANTS) {
+      throw new Error(
+        `Kicking would drop the room below the ${MIN_PARTICIPANTS}-participant minimum`,
+      );
+    }
+
+    await ctx.db.delete(membership._id);
+
+    // A drawn game is invalid once someone leaves, so reset it like the
+    // owner just hit reset.
+    let drawReset = false;
+    const game = await getGame(ctx, room._id);
+    if (game && game.status === "drawn") {
+      const assignments = await ctx.db
+        .query("santa_assignments")
+        .withIndex("by_room", (q) => q.eq("room_id", room._id))
+        .collect();
+      for (const assignment of assignments) {
+        await ctx.db.delete(assignment._id);
+      }
+      await ctx.db.patch(game._id, { status: "lobby", drawn_at: undefined });
+      drawReset = true;
+    }
+
+    return { kicked: true, draw_reset: drawReset };
   },
 });
 

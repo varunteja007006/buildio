@@ -40,7 +40,7 @@ export default function RoomPage() {
   if (!user?.id) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
-        <p>Loading user...</p>
+        <p>Loading… 🎄</p>
       </div>
     );
   }
@@ -49,13 +49,17 @@ export default function RoomPage() {
   const myRecipientUsername = gameState?.my_recipient?.username;
 
   return (
-    <div className="flex w-full flex-col gap-2 p-1 md:px-2 md:py-4 min-h-[calc(100vh-10rem)]">
+    <div className="flex w-full flex-col gap-4 space-y-4 p-2 md:p-8 min-h-[calc(100vh-10rem)]">
       <RoomHeader />
 
-      <div className="grid flex-1 grid-cols-1 gap-3 lg:grid-cols-3">
-        <div className="space-y-3 lg:col-span-2">
+      <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
           {isOwner ? (
-            <DrawControl status={gameState?.status ?? "lobby"} />
+            <DrawControl
+              status={gameState?.status ?? "lobby"}
+              minBudget={gameState?.min_budget}
+              maxBudget={gameState?.max_budget}
+            />
           ) : null}
           <MyMatchCard
             status={isDrawn ? "drawn" : "lobby"}
@@ -67,7 +71,7 @@ export default function RoomPage() {
           <WishlistEditor />
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Participants />
         </div>
       </div>

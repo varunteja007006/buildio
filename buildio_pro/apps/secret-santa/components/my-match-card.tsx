@@ -24,22 +24,22 @@ export function MyMatchCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-primary">
           <Gift className="size-5" />
-          My Match
+          My match 🎁
         </CardTitle>
         <CardDescription>
-          Only you can see who you are gifting 🤫
+          Only you can see who you&apos;re gifting 🤫
         </CardDescription>
       </CardHeader>
       <CardContent>
         {isDrawn && myRecipientUsername ? (
           <div className="flex flex-col items-start gap-2">
             <p className="text-sm text-muted-foreground">
-              You are the Secret Santa for
+              You&apos;re the Secret Santa for
             </p>
             <div className="flex items-center gap-2">
               <Badge
                 variant="default"
-                className="text-base font-bold capitalize"
+                className="rounded-full px-4 py-1 text-lg font-bold capitalize"
               >
                 🎁 {myRecipientUsername}
               </Badge>
@@ -53,8 +53,8 @@ export function MyMatchCard({
             <Snowflake className="size-4" />
             <p>
               {isDrawn
-                ? "Waiting for your match..."
-                : "The draw hasn't happened yet. Ask the host to run it!"}
+                ? "Waiting for your match… ❄️"
+                : "The draw hasn't happened yet — nudge the host! ✨"}
             </p>
           </div>
         )}
