@@ -39,5 +39,5 @@ npm-debug.log*
 # Netlify
 .netlify/
 
-# Local-only Netlify config (dashboard settings drive git builds)
-netlify.toml
+# Local-only root Netlify config (dashboard settings drive git builds)
+/netlify.toml
