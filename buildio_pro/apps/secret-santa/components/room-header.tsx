@@ -7,6 +7,7 @@ import { Copy } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
+import { ShareBtn } from "@/components/atoms/share-btn";
 import { useUserStore } from "@/lib/store/user.store";
 
 export function RoomHeader() {
@@ -40,6 +41,7 @@ export function RoomHeader() {
         <Copy />
         Copy room code
       </CopyBtn>
+      <ShareBtn size={"icon-sm"} variant="outline" />
     </div>
   );
 }

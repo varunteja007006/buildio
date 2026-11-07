@@ -12,6 +12,7 @@ import { Play, Settings } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
+import { ShareBtn } from "@/components/atoms/share-btn";
 import { GameSettingsDialog } from "@/components/game-settings-dialog";
 import { useUserStore } from "@/lib/store/user.store";
 
@@ -57,6 +58,7 @@ export function RoomHeader() {
         )}
 
         <CopyBtn text={roomCode as string} size={"icon-sm"} variant="outline" />
+        <ShareBtn size={"icon-sm"} variant="outline" />
       </div>
     </div>
   );

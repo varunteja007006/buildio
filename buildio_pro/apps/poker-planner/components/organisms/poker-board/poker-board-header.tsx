@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
+import { ShareBtn } from "@/components/atoms/share-btn";
 import { useUserStore } from "@/lib/store/user.store";
 
 export function PokerBoardHeader() {
@@ -35,6 +36,7 @@ export function PokerBoardHeader() {
           <Copy className="mr-2" />
           Copy Room Code
         </CopyBtn>
+        <ShareBtn size="icon-sm" variant="outline" />
       </div>
     </div>
   );
