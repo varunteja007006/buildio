@@ -1,12 +1,10 @@
-import React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
 import { CloudDownload } from "lucide-react";
-
 import Image from "next/image";
-import ContactIcons from "./contact-icons";
-import { getExperienceYears } from "./experience-utils";
+import React from "react";
+import { FaNodeJs, FaReact, FaPython } from "react-icons/fa";
 import {
   SiJavascript,
   SiNextdotjs,
@@ -14,8 +12,10 @@ import {
   SiTailwindcss,
   SiTypescript,
 } from "react-icons/si";
-import { FaNodeJs, FaReact, FaPython } from "react-icons/fa";
 import { SiExpressvpn } from "react-icons/si";
+
+import ContactIcons from "./contact-icons";
+import { getExperienceYears } from "./experience-utils";
 
 const expertise = [
   { name: "JavaScript", icon: SiJavascript },

@@ -1,11 +1,11 @@
-import * as React from "react";
+import { Card } from "@workspace/ui/components/card";
 import {
   Table,
   TableBody,
   TableCell,
   TableRow,
 } from "@workspace/ui/components/table";
-import { Card } from "@workspace/ui/components/card";
+import * as React from "react";
 
 import contactData from "@/app/_components/home/data/contact";
 

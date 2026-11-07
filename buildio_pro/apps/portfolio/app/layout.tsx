@@ -1,10 +1,13 @@
+import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 import { Comic_Neue } from "next/font/google";
-import { Toaster } from "@workspace/ui/components/sonner";
-import { Footer } from "./_components/footer/Footer";
-import { Navbar } from "./_components/nav/Navbar";
+
 import BloomContainer from "@/components/bloom-container";
 import { Providers } from "@/components/providers";
+
+import { Footer } from "./_components/footer/Footer";
+import { Navbar } from "./_components/nav/Navbar";
+
 import "@workspace/ui/globals.css";
 
 const comicNeue = Comic_Neue({ weight: "400", subsets: ["latin"] });

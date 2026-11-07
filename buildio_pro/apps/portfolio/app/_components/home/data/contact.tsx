@@ -1,8 +1,8 @@
-import { HiOutlineLocationMarker } from "react-icons/hi";
-import { FiPhone } from "react-icons/fi";
 import { AiOutlineMail } from "react-icons/ai";
-import { SiGithub } from "react-icons/si";
+import { FiPhone } from "react-icons/fi";
+import { HiOutlineLocationMarker } from "react-icons/hi";
 import { ImLinkedin2 } from "react-icons/im";
+import { SiGithub } from "react-icons/si";
 
 const contactData = [
   {

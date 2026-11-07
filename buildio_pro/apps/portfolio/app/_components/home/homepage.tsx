@@ -1,12 +1,13 @@
 import * as React from "react";
-import ContactMe from "./contact-me";
-import Certifications from "./certifications";
+
 import Academics from "./academics";
+import Certifications from "./certifications";
+import ContactMe from "./contact-me";
 import Experience from "./experience";
 import Intro from "./intro";
-import Skills from "./skill";
-import Projects from "./projects";
 import Languages from "./languages";
+import Projects from "./projects";
+import Skills from "./skill";
 
 export default function Homepage() {
   return (

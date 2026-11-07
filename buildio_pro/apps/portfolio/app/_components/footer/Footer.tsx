@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import ContactIcons from "../home/contact-icons";
 
 export function Footer() {

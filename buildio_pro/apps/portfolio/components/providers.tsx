@@ -1,7 +1,9 @@
 "use client";
 
-import * as React from "react";
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import * as React from "react";
+
 
 export function Providers({
   children,
@@ -16,7 +18,7 @@ export function Providers({
       disableTransitionOnChange
       enableColorScheme
     >
-      {children}
+      <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
     </NextThemesProvider>
   );
 }

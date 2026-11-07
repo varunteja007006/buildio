@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -8,11 +7,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
-import { toast } from "sonner";
-
 import { cn } from "@workspace/ui/lib/utils";
-import contactData from "@/app/_components/home/data/contact";
+import React from "react";
+import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
+
+import contactData from "@/app/_components/home/data/contact";
+
 
 export default function ContactIcons({
   className,

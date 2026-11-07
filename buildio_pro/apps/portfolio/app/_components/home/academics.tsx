@@ -1,4 +1,3 @@
-import React from "react";
 
 import {
   Card,
@@ -9,6 +8,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { CircularProgress } from "@workspace/ui/components/progress-08";
+import React from "react";
 
 import academicData from "@/app/_components/home/data/academic";
 

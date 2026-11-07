@@ -1,3 +1,5 @@
+import { BsFiletypeScss, BsOpenai } from "react-icons/bs";
+import { DiVisualstudio, DiMsqlServer, DiHeroku } from "react-icons/di";
 import {
   FaReact,
   FaLinux,
@@ -10,6 +12,7 @@ import {
   FaAws,
   FaDocker,
 } from "react-icons/fa";
+import { GiTortoise } from "react-icons/gi";
 import {
   SiJavascript,
   SiTypescript,
@@ -38,9 +41,6 @@ import {
   SiGooglegemini,
   SiJest,
 } from "react-icons/si";
-import { BsFiletypeScss, BsOpenai } from "react-icons/bs";
-import { GiTortoise } from "react-icons/gi";
-import { DiVisualstudio, DiMsqlServer, DiHeroku } from "react-icons/di";
 
 // Go, Rust, C
 // React Native, Expo, Electron

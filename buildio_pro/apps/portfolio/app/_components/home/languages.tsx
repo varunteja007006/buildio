@@ -1,7 +1,7 @@
+import { Badge } from "@workspace/ui/components/badge";
 import React from "react";
 
 import languagesData from "@/app/_components/home/data/languages";
-import { Badge } from "@workspace/ui/components/badge";
 
 export default function Languages() {
   return (

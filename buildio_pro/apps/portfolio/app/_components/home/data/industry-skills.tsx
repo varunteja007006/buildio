@@ -1,7 +1,7 @@
 import { FaServer, FaProjectDiagram } from "react-icons/fa";
 import { GrCycle } from "react-icons/gr";
-import { TbMathFunction } from "react-icons/tb";
 import { LuBrainCircuit } from "react-icons/lu";
+import { TbMathFunction } from "react-icons/tb";
 
 const industrySkillsData = [
   {

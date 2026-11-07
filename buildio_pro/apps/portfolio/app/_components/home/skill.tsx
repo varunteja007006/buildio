@@ -1,6 +1,6 @@
+import { Card, CardTitle } from "@workspace/ui/components/card";
 import * as React from "react";
 
-import { Card, CardTitle } from "@workspace/ui/components/card";
 import industrySkillsData from "@/app/_components/home/data/industry-skills";
 import technicalSkillsData from "@/app/_components/home/data/technical-skills";
 

@@ -1,16 +1,15 @@
-import React from "react";
 
 import { Card } from "@workspace/ui/components/card";
-
 import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
+import React from "react";
 
+import experienceData from "./data/experience";
 import {
   calcExp,
   formatTotalExperience,
   parseDate,
 } from "./experience-utils";
-import experienceData from "./data/experience";
 
 export default function Experience() {
   return (
