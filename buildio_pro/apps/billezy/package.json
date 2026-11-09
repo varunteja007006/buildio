@@ -19,7 +19,7 @@
     "@workspace/ui": "workspace:*",
     "convex": "catalog:",
     "lucide-react": "catalog:",
-    "next": "16.4.3",
+    "next": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
