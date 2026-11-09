@@ -1,5 +1,5 @@
-import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import { Button } from "@workspace/ui/components/button";
+import { MoreAppsFooter } from "@workspace/ui/components/more-apps";
 import Link from "next/link";
 
 import { ThemeToggle } from "@/components/theme-toggle";
