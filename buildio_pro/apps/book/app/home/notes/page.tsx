@@ -14,7 +14,7 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { NotesEditor } from "@/components/notes/notes-editor";
+import { Bookshelf } from "@/components/books/bookshelf";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function NotesPage() {
@@ -46,14 +46,7 @@ export default function NotesPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Book notes</h1>
-            <p className="text-sm text-muted-foreground">
-              Block-style notes per book, stored locally in your browser. Export
-              as Markdown.
-            </p>
-          </div>
-          <NotesEditor />
+          <Bookshelf />
         </div>
       </SidebarInset>
     </SidebarProvider>

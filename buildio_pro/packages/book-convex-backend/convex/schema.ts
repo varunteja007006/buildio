@@ -27,4 +27,13 @@ export default defineSchema({
   })
     .index("by_parent", ["parent_id"])
     .index("by_created_at", ["created_at"]),
+  // Books are global for now until auth is set up in the app;
+  // user scoping will be re-added then. `doc` is the JSON-encoded
+  // BlockNote document and is absent until the first save.
+  books: defineTable({
+    title: v.string(),
+    doc: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_created", ["createdAt"]),
 });
