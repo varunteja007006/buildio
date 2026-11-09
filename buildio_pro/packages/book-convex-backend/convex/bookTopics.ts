@@ -8,7 +8,7 @@ const DEFAULT_TOPIC_NAME = "Second Brain";
 /** Upper bound for the list scan; book topics are few. */
 const MAX_TOPICS = 200;
 
-/** Lists every topic with the default topic first, then by creation time. */
+/** Lists topics with the default first, then favorites, then by creation time. */
 export const list = query({
   args: {},
   returns: v.array(
@@ -17,6 +17,7 @@ export const list = query({
       name: v.string(),
       createdAt: v.number(),
       isDefault: v.boolean(),
+      isFavorite: v.boolean(),
     }),
   ),
   handler: async (ctx) => {
@@ -27,13 +28,21 @@ export const list = query({
       .take(MAX_TOPICS);
     const sorted = [
       ...topics.filter((topic) => topic.is_default === true),
-      ...topics.filter((topic) => topic.is_default !== true),
+      ...topics.filter(
+        (topic) =>
+          topic.is_default !== true && topic.is_favorite === true,
+      ),
+      ...topics.filter(
+        (topic) =>
+          topic.is_default !== true && topic.is_favorite !== true,
+      ),
     ];
     return sorted.map((topic) => ({
       id: topic._id,
       name: topic.name,
       createdAt: topic.created_at,
       isDefault: topic.is_default === true,
+      isFavorite: topic.is_favorite === true,
     }));
   },
 });
@@ -112,6 +121,22 @@ export const remove = mutation({
     }
 
     await ctx.db.delete(args.id);
+    return null;
+  },
+});
+
+/** Marks or unmarks a topic as a favorite. */
+export const setFavorite = mutation({
+  args: { id: v.id("book_topics"), favorite: v.boolean() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const topic = await ctx.db.get(args.id);
+    if (topic === null) {
+      throw new Error("Topic not found");
+    }
+    if (topic.is_favorite !== args.favorite) {
+      await ctx.db.patch(args.id, { is_favorite: args.favorite });
+    }
     return null;
   },
 });

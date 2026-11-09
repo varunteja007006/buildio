@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar";
 import { useMutation, useQuery } from "convex/react";
-import { BookHeartIcon, ChevronsUpDown, Plus, Trash2 } from "lucide-react";
+import { BookHeartIcon, ChevronsUpDown, Plus, Star, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AddTopicDialog } from "@/components/add-topic-dialog";
@@ -30,11 +30,21 @@ export function TopicSwitcher() {
   const { isMobile } = useSidebar();
   const topics = useQuery(api.bookTopics.list);
   const ensureDefault = useMutation(api.bookTopics.ensureDefault);
+  const setFavorite = useMutation(api.bookTopics.setFavorite);
   const [addTopicOpen, setAddTopicOpen] = useState(false);
   const [topicToDelete, setTopicToDelete] = useState<{
     id: Id<"book_topics">;
     name: string;
   } | null>(null);
+
+  const toggleFavorite = useCallback(
+    (topicId: Id<"book_topics">, favorite: boolean) => {
+      void setFavorite({ id: topicId, favorite }).catch((error) => {
+        console.error("Failed to update topic favorite", error);
+      });
+    },
+    [setFavorite],
+  );
 
   // Selected topic persists in localStorage; missing/stale ids fall back to null.
   const [activeTopicId, setActiveTopicId] = useState<string | null>(() => {
@@ -150,6 +160,28 @@ export function TopicSwitcher() {
                   <BookHeartIcon className="size-3.5 shrink-0" />
                 </div>
                 {topic.name}
+                <button
+                  type="button"
+                  aria-label={`${topic.isFavorite ? "Unfavorite" : "Favorite"} topic ${topic.name}`}
+                  className={`rounded-sm p-0.5 opacity-60 transition-colors hover:opacity-100 focus-visible:outline-visible ${
+                    topic.isFavorite
+                      ? "text-amber-500"
+                      : "text-muted-foreground hover:text-amber-500"
+                  }`}
+                  onClick={(event) => {
+                    // Keep this click from selecting the topic.
+                    event.stopPropagation();
+                    toggleFavorite(topic.id, !topic.isFavorite);
+                  }}
+                  onKeyDown={(event) => {
+                    // Keep Enter/Space from also selecting the topic.
+                    event.stopPropagation();
+                  }}
+                >
+                  <Star
+                    className={`size-3.5 ${topic.isFavorite ? "fill-current" : ""}`}
+                  />
+                </button>
                 {topic.isDefault ? null : (
                   <button
                     type="button"

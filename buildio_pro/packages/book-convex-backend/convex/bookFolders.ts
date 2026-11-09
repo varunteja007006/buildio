@@ -90,6 +90,7 @@ export const list = query({
       name: v.string(),
       parentId: v.union(v.id("book_folders"), v.null()),
       createdAt: v.number(),
+      isFavorite: v.boolean(),
     }),
   ),
   handler: async (ctx) => {
@@ -103,6 +104,7 @@ export const list = query({
       name: folder.name,
       parentId: folder.parent_id ?? null,
       createdAt: folder.created_at,
+      isFavorite: folder.is_favorite === true,
     }));
   },
 });
@@ -231,6 +233,22 @@ export const remove = mutation({
     }
     for (const id of toDelete) {
       await ctx.db.delete(id);
+    }
+    return null;
+  },
+});
+
+/** Marks or unmarks a folder as a favorite. */
+export const setFavorite = mutation({
+  args: { id: v.id("book_folders"), favorite: v.boolean() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const folder = await ctx.db.get(args.id);
+    if (folder === null) {
+      throw new ConvexError("Folder not found");
+    }
+    if (folder.is_favorite !== args.favorite) {
+      await ctx.db.patch(args.id, { is_favorite: args.favorite });
     }
     return null;
   },

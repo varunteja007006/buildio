@@ -8,6 +8,7 @@ export type FolderListItem = {
   name: string;
   parentId: FolderId | null;
   createdAt: number;
+  isFavorite: boolean;
 };
 
 /** A folder placed in the tree; main folders are depth 1. */
@@ -54,7 +55,13 @@ function assignDepth(node: FolderNode, depth: number): void {
 }
 
 function sortRecursively(nodes: FolderNode[]): void {
-  nodes.sort((a, b) => a.createdAt - b.createdAt);
+  // Favorites first, then creation order within each group.
+  nodes.sort((a, b) => {
+    if (a.isFavorite !== b.isFavorite) {
+      return a.isFavorite ? -1 : 1;
+    }
+    return a.createdAt - b.createdAt;
+  });
   for (const node of nodes) {
     sortRecursively(node.children);
   }

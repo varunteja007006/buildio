@@ -11,6 +11,8 @@ export default defineSchema({
     // Present and true only on the auto-created default topic; optional so
     // pre-existing documents without the field still validate on read.
     is_default: v.optional(v.boolean()),
+    // Optional favorite flag; pre-favorite documents read as unfavored.
+    is_favorite: v.optional(v.boolean()),
   })
     .index("by_name", ["name"])
     .index("by_created_at", ["created_at"]),
@@ -20,6 +22,8 @@ export default defineSchema({
     name: v.string(),
     parent_id: v.optional(v.id("book_folders")),
     created_at: v.number(),
+    // Optional favorite flag; pre-favorite documents read as unfavored.
+    is_favorite: v.optional(v.boolean()),
   })
     .index("by_parent", ["parent_id"])
     .index("by_created_at", ["created_at"]),
