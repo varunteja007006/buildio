@@ -18,8 +18,6 @@ export function ConvexClientProvider({
   return (
     <ConvexBetterAuthProvider
       client={convex}
-      // @ts-expect-error upstream better-auth useSession types resolve to `never`
-      // with the convex plugin — get-convex/better-auth#420, runtime unaffected
       authClient={authClient}
       initialToken={initialToken}
     >

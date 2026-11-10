@@ -10,8 +10,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@convex-dev/better-auth": "0.12.6",
-        "better-auth": "~1.6.15",
+        "@convex-dev/better-auth": "0.13.0",
+        "better-auth": "1.7.18",
         "convex": "catalog:"
     },
     "devDependencies": {
