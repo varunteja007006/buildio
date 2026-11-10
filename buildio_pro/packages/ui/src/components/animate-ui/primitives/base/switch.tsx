@@ -1,6 +1,6 @@
 'use client';
 
-import { Switch as SwitchPrimitives } from '@base-ui-components/react/switch';
+import { Switch as SwitchPrimitives } from '@base-ui/react/switch';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import {

@@ -20,7 +20,7 @@ catalog:
   three: 0.186.1
   '@aws-sdk/client-s3': 3.1164.0
   '@aws-sdk/s3-request-presigner': 3.1164.0
-  '@base-ui-components/react': 1.0.0-rc.0
+  '@base-ui/react': 1.9.0
   '@blocknote/core': 0.57.0
   '@blocknote/mantine': 0.57.0
   '@blocknote/react': 0.57.0

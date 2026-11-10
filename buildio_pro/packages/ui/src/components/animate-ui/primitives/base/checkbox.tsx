@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
+import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import {

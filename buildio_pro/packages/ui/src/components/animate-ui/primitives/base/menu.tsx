@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu as MenuPrimitive } from '@base-ui-components/react/menu';
+import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { useDataState } from '@workspace/ui/hooks/use-data-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';

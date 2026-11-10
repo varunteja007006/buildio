@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertDialog as AlertDialogPrimitive } from '@base-ui-components/react/alert-dialog';
+import { AlertDialog as AlertDialogPrimitive } from '@base-ui/react/alert-dialog';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react';

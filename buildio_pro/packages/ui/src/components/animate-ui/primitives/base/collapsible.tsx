@@ -1,6 +1,6 @@
 'use client';
 
-import { Collapsible as CollapsiblePrimitive } from '@base-ui-components/react/collapsible';
+import { Collapsible as CollapsiblePrimitive } from '@base-ui/react/collapsible';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react';

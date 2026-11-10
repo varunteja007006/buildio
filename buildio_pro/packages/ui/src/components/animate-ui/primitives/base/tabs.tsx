@@ -1,6 +1,6 @@
 'use client';
 
-import { Tabs as TabsPrimitive } from '@base-ui-components/react/tabs';
+import { Tabs as TabsPrimitive } from '@base-ui/react/tabs';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import {

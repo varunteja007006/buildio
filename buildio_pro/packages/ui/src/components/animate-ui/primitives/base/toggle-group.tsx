@@ -1,7 +1,7 @@
 'use client';
 
-import { Toggle as TogglePrimitive } from '@base-ui-components/react/toggle';
-import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui-components/react/toggle-group';
+import { Toggle as TogglePrimitive } from '@base-ui/react/toggle';
+import { ToggleGroup as ToggleGroupPrimitive } from '@base-ui/react/toggle-group';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react';

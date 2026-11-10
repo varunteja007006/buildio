@@ -1,6 +1,6 @@
 'use client';
 
-import { Popover as PopoverPrimitive } from '@base-ui-components/react/popover';
+import { Popover as PopoverPrimitive } from '@base-ui/react/popover';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react';

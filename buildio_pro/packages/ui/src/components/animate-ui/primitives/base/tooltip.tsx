@@ -1,6 +1,6 @@
 'use client';
 
-import { Tooltip as TooltipPrimitive } from '@base-ui-components/react/tooltip';
+import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import {

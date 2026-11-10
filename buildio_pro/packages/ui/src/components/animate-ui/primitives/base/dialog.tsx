@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog as DialogPrimitive } from '@base-ui-components/react/dialog';
+import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { useControlledState } from '@workspace/ui/hooks/use-controlled-state';
 import { getStrictContext } from '@workspace/ui/lib/get-strict-context';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react';
