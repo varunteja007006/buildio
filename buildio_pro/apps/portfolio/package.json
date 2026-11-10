@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
+    "@workspace/theme": "workspace:*",
     "date-fns": "4.4.0",
     "lucide-react": "catalog:",
     "motion": "14.0.0",

@@ -8,7 +8,7 @@ import { Providers } from "@/components/providers";
 import { Footer } from "./_components/footer/Footer";
 import { Navbar } from "./_components/nav/Navbar";
 
-import "@workspace/ui/globals.css";
+import "./globals.css";
 
 const comicNeue = Comic_Neue({ weight: "400", subsets: ["latin"] });
 

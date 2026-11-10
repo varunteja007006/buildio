@@ -858,6 +858,9 @@ importers:
 
   apps/portfolio:
     dependencies:
+      '@workspace/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
