@@ -16,7 +16,7 @@
     "@workspace/theme": "workspace:*",
     "date-fns": "4.4.0",
     "lucide-react": "catalog:",
-    "motion": "14.0.0",
+    "motion": "14.11.1",
     "next": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:react19",
