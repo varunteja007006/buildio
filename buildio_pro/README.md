@@ -13,6 +13,7 @@ apps/
   housie-game         Realtime housie/bingo game (Convex)
   scribble            Realtime drawing game (Convex)
   book                Books / reading tracker app (placeholder scaffold)
+  portfolio           Personal portfolio site (Next.js, no backend)
 packages/
   ui                  Shared shadcn/ui components + Tailwind v4 setup
   theme               Theme CSS files
@@ -27,8 +28,8 @@ Run everything from this directory (`buildio_pro/`).
 
 ```bash
 pnpm install          # install deps
-pnpm dev              # run all 7 apps
-pnpm dev:web          # run a single app (also dev:expense-tracker, dev:cortex-ai, dev:poker-planner, dev:housie-game, dev:scribble, dev:book)
+pnpm dev              # run all apps
+pnpm dev:web          # run a single app (also dev:expense-tracker, dev:cortex-ai, dev:poker-planner, dev:housie-game, dev:scribble, dev:book, ...)
 pnpm build:<app>      # build a single app
 pnpm start:<app>      # start a production build
 pnpm format           # format TypeScript and Markdown with Prettier
