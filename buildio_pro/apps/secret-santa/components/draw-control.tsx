@@ -22,10 +22,12 @@ import { MAX_BUDGET_VALUE } from "@/lib/utils";
 
 export function DrawControl({
   status,
+  pendingParticipants,
   minBudget,
   maxBudget,
 }: Readonly<{
   status: "lobby" | "drawn";
+  pendingParticipants: number;
   minBudget?: number;
   maxBudget?: number;
 }>) {
@@ -121,12 +123,22 @@ export function DrawControl({
         </CardTitle>
         <CardDescription>
           {status === "drawn"
-            ? "Snow is settled — redraw 🎲 or head back to the lobby ⛄️"
+            ? pendingParticipants > 0
+              ? `${pendingParticipants} new ${
+                  pendingParticipants === 1
+                    ? "participant"
+                    : "participants"
+                } joined since the draw 🎲 redraw to match them in!`
+              : "Snow is settled ⛄️ Redraw unlocks when someone new joins; Reset reshuffles instead."
             : "Everyone here? Time to shuffle the names! Everyone gets a secret recipient (never themselves 🤝)"}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
-        <Button onClick={handleRunDraw} className="cursor-pointer">
+        <Button
+          onClick={handleRunDraw}
+          disabled={status === "drawn" && pendingParticipants === 0}
+          className="cursor-pointer"
+        >
           <Sparkles className="size-4" />
           {status === "drawn" ? "Redraw" : "Run the draw"}
         </Button>

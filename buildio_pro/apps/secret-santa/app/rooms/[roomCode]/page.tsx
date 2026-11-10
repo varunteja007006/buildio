@@ -57,6 +57,7 @@ export default function RoomPage() {
           {isOwner ? (
             <DrawControl
               status={gameState?.status ?? "lobby"}
+              pendingParticipants={gameState?.pending_participants ?? 0}
               minBudget={gameState?.min_budget}
               maxBudget={gameState?.max_budget}
             />

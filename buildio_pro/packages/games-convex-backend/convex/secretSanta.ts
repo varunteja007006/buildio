@@ -46,6 +46,26 @@ export async function requireRoomMember(
   return { room, userId: user.id };
 }
 
+// All santa_assignments docs for a room, in creation order.
+async function listAssignments(ctx: QueryCtx, roomId: Id<"rooms">) {
+  return ctx.db
+    .query("santa_assignments")
+    .withIndex("by_room", (q) => q.eq("room_id", roomId))
+    .collect();
+}
+
+// Ids of everyone covered by a set of assignments (both santas and recipients).
+function coveredUserIds(
+  assignments: Doc<"santa_assignments">[],
+): Set<string> {
+  const covered = new Set<string>();
+  for (const assignment of assignments) {
+    covered.add(assignment.santa_user_id);
+    covered.add(assignment.recipient_user_id);
+  }
+  return covered;
+}
+
 async function getGame(ctx: QueryCtx, roomId: Id<"rooms">) {
   return ctx.db
     .query("santa_games")
@@ -106,6 +126,7 @@ export const getGameState = query({
     ),
     status: v.union(v.literal("lobby"), v.literal("drawn")),
     drawn_at: v.optional(v.number()),
+    pending_participants: v.number(),
     min_budget: v.optional(v.number()),
     max_budget: v.optional(v.number()),
     participants: v.array(
@@ -129,6 +150,7 @@ export const getGameState = query({
         success: false,
         message: user.message || "User not found",
         status: "lobby" as const,
+        pending_participants: 0,
         participants: [],
       };
     }
@@ -142,6 +164,7 @@ export const getGameState = query({
         success: false,
         message: "Room not found",
         status: "lobby" as const,
+        pending_participants: 0,
         participants: [],
       };
     }
@@ -157,6 +180,7 @@ export const getGameState = query({
         success: false,
         message: "User not authorized to view this room",
         status: "lobby" as const,
+        pending_participants: 0,
         participants: [],
       };
     }
@@ -185,6 +209,15 @@ export const getGameState = query({
           is_owner: member._id === room.ownerId,
         });
       }
+    }
+
+    // Participants who joined after the last draw and are not matched yet.
+    let pendingParticipants = 0;
+    if (status === "drawn") {
+      const covered = coveredUserIds(await listAssignments(ctx, room._id));
+      pendingParticipants = teams.filter(
+        (team) => !covered.has(team.userId),
+      ).length;
     }
 
     // Each santa sees only their own recipient.
@@ -221,6 +254,7 @@ export const getGameState = query({
       },
       status,
       drawn_at: game?.drawn_at,
+      pending_participants: pendingParticipants,
       min_budget: game?.min_budget,
       max_budget: game?.max_budget,
       participants,
@@ -255,8 +289,9 @@ export const initializeGame = mutation({
   },
 });
 
-// Owner-only draw (or re-draw: existing assignments are deleted first).
-// Builds a fair random derangement and bulk-inserts the assignments.
+// Owner-only draw. A redraw is rejected unless at least one participant joined
+// after the last draw and isn't covered by it. Builds a fair random
+// derangement and bulk-inserts the assignments.
 export const runDraw = mutation({
   args: {
     roomCode: v.string(),
@@ -291,13 +326,24 @@ export const runDraw = mutation({
     }
 
     const memberIds = teams.map((team) => team.userId);
-    const perm = derange(memberIds.length);
 
     // Re-draw support: drop the previous round before inserting new pairs.
-    const oldAssignments = await ctx.db
-      .query("santa_assignments")
-      .withIndex("by_room", (q) => q.eq("room_id", room._id))
-      .collect();
+    const oldAssignments = await listAssignments(ctx, room._id);
+
+    // A redraw only makes sense when someone new joined after the last draw.
+    // Reject it while every current member is already covered by the draw.
+    if (game.status === "drawn") {
+      const covered = coveredUserIds(oldAssignments);
+      if (memberIds.every((id) => covered.has(id))) {
+        return {
+          success: false,
+          message:
+            "No new participants since the last draw — use Reset to reshuffle",
+        };
+      }
+    }
+
+    const perm = derange(memberIds.length);
     for (const assignment of oldAssignments) {
       await ctx.db.delete(assignment._id);
     }
