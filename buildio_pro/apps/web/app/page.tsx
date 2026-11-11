@@ -1,4 +1,5 @@
 import { AppGrid } from "@/components/app-grid";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const GITHUB_URL = "https://github.com/varunteja007006/buildio";
 
@@ -12,7 +13,7 @@ export default function Page() {
             Buildio.pro
           </span>
         </h1>
-        <nav className="space-x-6 text-sm">
+        <nav className="flex items-center gap-6 text-sm">
           <a
             href="#apps"
             className="text-gray-400 transition hover:text-white"
@@ -27,6 +28,7 @@ export default function Page() {
           >
             GitHub
           </a>
+          <ThemeToggle />
         </nav>
       </header>
 

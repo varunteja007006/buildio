@@ -13,12 +13,16 @@
     "clean": "git clean -xdf .cache .next .turbo node_modules"
   },
   "dependencies": {
+    "@tanstack/react-table": "8.21.3",
     "@workspace/ui": "workspace:*",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
+    "nuqs": "2.10.2",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "recharts": "3.10.1",
+    "sonner": "2.0.8"
   },
   "devDependencies": {
     "@types/node": "catalog:",
