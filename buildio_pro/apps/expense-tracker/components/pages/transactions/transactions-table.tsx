@@ -29,7 +29,8 @@ interface TransactionsTableProps {
   transactions: TransactionRow[];
   isLoading: boolean;
   selectedIds: Set<string>;
-  selectAllChecked: boolean | "indeterminate";
+  selectAllChecked: boolean;
+  selectAllIndeterminate: boolean;
   onToggleSelectAll: () => void;
   onToggleSelect: (id: string) => void;
   onReview: (transaction: TransactionRow) => void;
@@ -40,6 +41,7 @@ export function TransactionsTable({
   isLoading,
   selectedIds,
   selectAllChecked,
+  selectAllIndeterminate,
   onToggleSelectAll,
   onToggleSelect,
   onReview,
@@ -52,6 +54,7 @@ export function TransactionsTable({
             <TableHead className="w-10">
               <Checkbox
                 checked={selectAllChecked}
+                indeterminate={selectAllIndeterminate}
                 onCheckedChange={onToggleSelectAll}
                 aria-label="Select all transactions"
               />

@@ -12,7 +12,7 @@ function CortexSwitch({
   return (
     <UiSwitch
       className={cn(
-        "data-[state=checked]:bg-accent data-[state=checked]:shadow-md",
+        "data-checked:bg-accent data-checked:shadow-md",
         className,
       )}
       {...props}

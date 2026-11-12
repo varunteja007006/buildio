@@ -152,7 +152,7 @@ function FolderTrigger({
         <span className="truncate">{node.name}</span>
         {favoriteMark}
         {hasChildren ? (
-          <ChevronRightIcon className="ml-auto size-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+          <ChevronRightIcon className="ml-auto size-4 shrink-0 transition-transform duration-200 group-data-open/collapsible:rotate-90" />
         ) : null}
       </SidebarMenuButton>
     );
@@ -168,7 +168,7 @@ function FolderTrigger({
             so folder icons stay aligned at every depth. */}
         <ChevronRightIcon
           className={cn(
-            "size-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90",
+            "size-4 shrink-0 transition-transform duration-200 group-data-open/collapsible:rotate-90",
             !hasChildren && "invisible",
           )}
         />
@@ -206,7 +206,7 @@ export function FolderRow({
           hovering one nested row never reveals another row's actions. */}
       <div className="group/folder-row relative">
         {hasChildren ? (
-          <CollapsibleTrigger asChild>{trigger}</CollapsibleTrigger>
+          <CollapsibleTrigger render={trigger} />
         ) : (
           trigger
         )}
@@ -236,13 +236,13 @@ export function FolderRow({
       open={open}
       onOpenChange={setOpen}
       className="group/collapsible"
-      asChild
-    >
-      {topLevel ? (
-        <SidebarMenuItem>{content}</SidebarMenuItem>
-      ) : (
-        <SidebarMenuSubItem>{content}</SidebarMenuSubItem>
-      )}
-    </Collapsible>
+      render={
+        topLevel ? (
+          <SidebarMenuItem>{content}</SidebarMenuItem>
+        ) : (
+          <SidebarMenuSubItem>{content}</SidebarMenuSubItem>
+        )
+      }
+    />
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
@@ -35,6 +34,35 @@ interface ReasoningContextValue {
 }
 
 const ReasoningContext = createContext<ReasoningContextValue | null>(null);
+
+/** Minimal controlled/uncontrolled state hook (replaces the Radix hook). */
+function useControllableState<T>({
+  prop,
+  defaultProp,
+  onChange,
+}: {
+  prop?: T;
+  defaultProp?: T;
+  onChange?: (value: T) => void;
+}) {
+  const isControlled = prop !== undefined;
+  const [internal, setInternal] = useState<T>(defaultProp as T);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+  const value = isControlled ? prop : internal;
+  const setValue = useCallback(
+    (next: T) => {
+      if (!isControlled) {
+        setInternal(next);
+      }
+      onChangeRef.current?.(next);
+    },
+    [isControlled]
+  );
+  return [value, setValue] as const;
+}
 
 export const useReasoning = () => {
   const context = useContext(ReasoningContext);
@@ -211,7 +239,7 @@ export const ReasoningContent = memo(
     <CollapsibleContent
       className={cn(
         "mt-4 text-sm",
-        "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-muted-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
+        "data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-top-2 text-muted-foreground outline-none",
         className
       )}
       {...props}

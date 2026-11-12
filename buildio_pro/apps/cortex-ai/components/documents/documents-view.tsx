@@ -150,9 +150,8 @@ export function DocumentsView() {
     <div className="flex w-full flex-col gap-2.5">
       <div className="flex items-center justify-between gap-2">
         <ToggleGroup
-          type="single"
-          value={view}
-          onValueChange={(value) => value && setView(value as ViewMode)}
+          value={[view]}
+          onValueChange={(value) => value[0] && setView(value[0] as ViewMode)}
         >
           <ToggleGroupItem value="tree" aria-label="Tree view">
             <ListTree className="size-4" />

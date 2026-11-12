@@ -50,7 +50,7 @@ export function FormsSection() {
             <label key={label} className="flex items-center gap-2 text-sm leading-none">
               <Checkbox
                 defaultChecked={index < 2}
-                checked={index === 2 ? "indeterminate" : undefined}
+                indeterminate={index === 2}
               />
               {label}
             </label>

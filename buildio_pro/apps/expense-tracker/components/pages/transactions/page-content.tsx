@@ -122,14 +122,9 @@ export function TransactionsPageContent() {
   const pageSelectedCount = transactions.filter((transaction) =>
     selectedIds.has(transaction.id),
   ).length;
-  const selectAllChecked: boolean | "indeterminate" =
-    transactions.length === 0
-      ? false
-      : pageSelectedCount === transactions.length
-        ? true
-        : pageSelectedCount > 0
-          ? "indeterminate"
-          : false;
+  const selectAllChecked = transactions.length === 0 ? false : pageSelectedCount === transactions.length;
+  const selectAllIndeterminate =
+    pageSelectedCount > 0 && pageSelectedCount < transactions.length;
 
   const selectedStatement = statementsData?.data.find(
     (statement) => statement.id === filters.statementUploadId,
@@ -204,6 +199,7 @@ export function TransactionsPageContent() {
             isLoading={isLoading}
             selectedIds={selectedIds}
             selectAllChecked={selectAllChecked}
+            selectAllIndeterminate={selectAllIndeterminate}
             onToggleSelectAll={toggleSelectAll}
             onToggleSelect={toggleSelect}
             onReview={(transaction) => setReviewing(transaction)}

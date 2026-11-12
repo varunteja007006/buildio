@@ -122,7 +122,7 @@ export function ToolCalls({ parts }: { parts: ToolPart[] }) {
       <CollapsibleTrigger className="group flex w-full items-center gap-2 px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground">
         <WrenchIcon className="size-3.5" />
         <span className="font-medium">{label}</span>
-        <ChevronDownIcon className="ml-auto size-3.5 transition-transform group-data-[state=open]:rotate-180" />
+        <ChevronDownIcon className="ml-auto size-3.5 transition-transform group-data-panel-open:rotate-180" />
       </CollapsibleTrigger>
       <CollapsibleContent>
         <div className="divide-y border-t">

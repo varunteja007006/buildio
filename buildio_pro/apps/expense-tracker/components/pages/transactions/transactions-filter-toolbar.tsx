@@ -62,26 +62,25 @@ export function TransactionsFilterToolbar({
       />
 
       <ToggleGroup
-        type="single"
         variant="outline"
         size="sm"
-        value={filters.direction || "all"}
+        value={filters.direction ? [filters.direction] : ["all"]}
         onValueChange={(value) => {
-          if (!value) return;
-          onDirectionChange(value === "all" ? "" : value);
+          if (!value[0]) return;
+          onDirectionChange(value[0] === "all" ? "" : value[0]);
         }}
       >
         <ToggleGroupItem value="all">All</ToggleGroupItem>
         <ToggleGroupItem
           value="debit"
-          className="gap-1 data-[state=on]:text-red-600"
+          className="gap-1 data-pressed:text-red-600"
         >
           <ArrowUpRight className="size-3.5" />
           Debit
         </ToggleGroupItem>
         <ToggleGroupItem
           value="credit"
-          className="gap-1 data-[state=on]:text-green-600"
+          className="gap-1 data-pressed:text-green-600"
         >
           <ArrowDownRight className="size-3.5" />
           Credit
@@ -93,7 +92,7 @@ export function TransactionsFilterToolbar({
         size="sm"
         pressed={filters.markForReviewOnly}
         onPressedChange={onReviewOnlyChange}
-        className="gap-1.5 data-[state=on]:border-amber-500/60 data-[state=on]:bg-amber-500/10 data-[state=on]:text-amber-700 dark:data-[state=on]:text-amber-400"
+        className="gap-1.5 data-pressed:border-amber-500/60 data-pressed:bg-amber-500/10 data-pressed:text-amber-700 dark:data-pressed:text-amber-400"
       >
         <CircleAlert className="size-3.5" />
         Needs review

@@ -1,10 +1,10 @@
 "use client";
 
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import type { LucideIcon } from "lucide-react";
 import { BrainIcon, ChevronDownIcon, DotIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import {
@@ -22,6 +22,35 @@ interface ChainOfThoughtContextValue {
 const ChainOfThoughtContext = createContext<ChainOfThoughtContextValue | null>(
   null
 );
+
+/** Minimal controlled/uncontrolled state hook (replaces the Radix hook). */
+function useControllableState<T>({
+  prop,
+  defaultProp,
+  onChange,
+}: {
+  prop?: T;
+  defaultProp?: T;
+  onChange?: (value: T) => void;
+}) {
+  const isControlled = prop !== undefined;
+  const [internal, setInternal] = useState<T>(defaultProp as T);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+  const value = isControlled ? prop : internal;
+  const setValue = useCallback(
+    (next: T) => {
+      if (!isControlled) {
+        setInternal(next);
+      }
+      onChangeRef.current?.(next);
+    },
+    [isControlled]
+  );
+  return [value, setValue] as const;
+}
 
 const useChainOfThought = () => {
   const context = useContext(ChainOfThoughtContext);
@@ -187,7 +216,7 @@ export const ChainOfThoughtContent = memo(
         <CollapsibleContent
           className={cn(
             "mt-2 space-y-3",
-            "data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in",
+            "data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-top-2 text-popover-foreground outline-none",
             className
           )}
           {...props}

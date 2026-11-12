@@ -163,7 +163,10 @@ function ScrubBarProgress({ className, ...props }: ScrubBarProgressProps) {
     <Progress
       data-slot="scrub-bar-progress"
       value={progress}
-      className={cn("absolute h-full [&>div]:transition-none", className)}
+      className={cn(
+        "absolute h-full [&_[data-slot=progress-indicator]]:transition-none",
+        className,
+      )}
       {...props}
     />
   );

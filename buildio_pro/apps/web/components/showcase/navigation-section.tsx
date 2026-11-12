@@ -83,11 +83,13 @@ export function NavigationSection() {
         <Collapsible className="w-full">
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm">Show advanced settings</span>
-            <CollapsibleTrigger asChild>
-              <Button variant="outline" size="icon-sm" aria-label="Toggle settings">
-                <ChevronRightIcon />
-              </Button>
-            </CollapsibleTrigger>
+            <CollapsibleTrigger
+              render={
+                <Button variant="outline" size="icon-sm" aria-label="Toggle settings">
+                  <ChevronRightIcon />
+                </Button>
+              }
+            />
           </div>
           <CollapsibleContent className="mt-2 rounded-md border p-3 text-sm text-muted-foreground">
             Hidden panel content — toggled without unmounting.
@@ -125,7 +127,7 @@ export function NavigationSection() {
         <Toggle aria-label="Toggle bold">
           <BoldIcon />
         </Toggle>
-        <ToggleGroup type="multiple" variant="outline">
+        <ToggleGroup multiple variant="outline">
           <ToggleGroupItem value="bold" aria-label="Bold">
             <BoldIcon />
           </ToggleGroupItem>
