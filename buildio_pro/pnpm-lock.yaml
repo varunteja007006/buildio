@@ -1436,6 +1436,9 @@ importers:
       remark-gfm:
         specifier: 'catalog:'
         version: 4.0.1
+      shadcn:
+        specifier: 4.23.0
+        version: 4.23.0
       shiki:
         specifier: 'catalog:'
         version: 4.6.0
