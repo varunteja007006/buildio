@@ -49,7 +49,7 @@ export function NavUser({ user }: { user: User }) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-muted">
+            <SidebarMenuButton size="lg" className="data-popup-open:bg-muted">
               <Avatar>
                 <AvatarImage src={user.image ?? undefined} alt={user.name} />
                 <AvatarFallback>{getUserInitials(user)}</AvatarFallback>

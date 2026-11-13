@@ -216,7 +216,7 @@ export function DataTableFilterMenu<TData>({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-full max-w-(--radix-popover-content-available-width) p-0"
+          className="w-full max-w-(--available-width) p-0"
           {...props}
         >
           <Command loop className="[&_[cmdk-input-wrapper]_svg]:hidden">

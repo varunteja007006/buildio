@@ -1,5 +1,5 @@
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
 import * as React from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
@@ -43,22 +43,33 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  children,
   ...props
-}: React.ComponentProps<"button"> &
+}: React.ComponentProps<typeof ButtonPrimitive> &
   VariantProps<typeof buttonVariants> & {
+    /** @deprecated Radix compat — Base UI uses `render`. */
     asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot.Root : "button";
+  const buttonProps = {
+    "data-slot": "button",
+    "data-variant": variant,
+    "data-size": size,
+    className: cn(buttonVariants({ variant, size, className })),
+    ...props,
+  } as React.ComponentProps<typeof ButtonPrimitive>;
 
-  return (
-    <Comp
-      data-slot="button"
-      data-variant={variant}
-      data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  );
+  if (asChild && React.isValidElement(children)) {
+    const childType = children.type;
+    const isNativeButtonChild = childType === "button";
+    return (
+      <ButtonPrimitive
+        {...buttonProps}
+        render={children}
+        nativeButton={isNativeButtonChild ? undefined : false}
+      />
+    );
+  }
+  return <ButtonPrimitive {...buttonProps}>{children}</ButtonPrimitive>;
 }
 
 export { Button, buttonVariants };

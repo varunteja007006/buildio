@@ -17,6 +17,10 @@ import { useComposedRefs } from "@workspace/ui/lib/compose-refs";
 import { cn } from "@workspace/ui/lib/utils";
 
 type ItemElement = React.ComponentRef<typeof ActionBarItem>;
+type ButtonProps = React.ComponentProps<typeof Button>;
+type ButtonEvent<K extends keyof ButtonProps> = Parameters<
+  Extract<NonNullable<ButtonProps[K]>, (event: never) => void>
+>[0];
 
 interface ActionBarItemProps extends Omit<
   React.ComponentProps<typeof Button>,
@@ -69,7 +73,7 @@ function ActionBarItem(props: ActionBarItemProps) {
   }, [focusContext, itemId, disabled]);
 
   const onClick = React.useCallback(
-    (event: React.MouseEvent<ItemElement>) => {
+    (event: ButtonEvent<"onClick">) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
 
@@ -95,7 +99,7 @@ function ActionBarItem(props: ActionBarItemProps) {
   );
 
   const onFocus = React.useCallback(
-    (event: React.FocusEvent<ItemElement>) => {
+    (event: ButtonEvent<"onFocus">) => {
       onFocusProp?.(event);
       if (event.defaultPrevented) return;
 
@@ -106,7 +110,7 @@ function ActionBarItem(props: ActionBarItemProps) {
   );
 
   const onKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<ItemElement>) => {
+    (event: ButtonEvent<"onKeyDown">) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
 
@@ -159,7 +163,7 @@ function ActionBarItem(props: ActionBarItemProps) {
   );
 
   const onMouseDown = React.useCallback(
-    (event: React.MouseEvent<ItemElement>) => {
+    (event: ButtonEvent<"onMouseDown">) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
 

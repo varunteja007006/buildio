@@ -13,9 +13,9 @@ import {
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { RadioGroup, RadioGroupItem } from "@workspace/ui/components/radio-group";
-import { Slider } from "@workspace/ui/components/slider";
 import { Switch } from "@workspace/ui/components/switch";
 import { Textarea } from "@workspace/ui/components/textarea";
+import { Slider } from "@workspace/ui/components/slider";
 import * as React from "react";
 
 import { Example, Section } from "@/components/showcase/section";

@@ -70,7 +70,7 @@ export function YearPicker({
       <PopoverContent
         className="w-full p-0"
         align="start"
-        style={{ width: "var(--radix-popover-trigger-width)" }}
+        style={{ width: "var(--anchor-width)" }}
       >
         <Command>
           <CommandInput placeholder={searchPlaceholder} />

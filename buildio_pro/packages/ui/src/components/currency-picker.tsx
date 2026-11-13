@@ -180,7 +180,7 @@ export function CurrencyPicker({
           collisionPadding={10}
           side="bottom"
           className="p-0"
-          style={{ width: "var(--radix-popover-trigger-width)" }}
+          style={{ width: "var(--anchor-width)" }}
         >
           <Command className="w-full max-h-[200px] sm:max-h-[270px]">
             <CommandList>

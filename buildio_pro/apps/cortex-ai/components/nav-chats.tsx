@@ -135,7 +135,7 @@ export function NavChats() {
                       <DropdownMenuTrigger asChild>
                         <SidebarMenuAction
                           showOnHover
-                          className="data-[state=open]:bg-muted"
+                          className="data-popup-open:bg-muted"
                         >
                           <MoreHorizontalIcon />
                           <span className="sr-only">More</span>

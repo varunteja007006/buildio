@@ -19,6 +19,8 @@
 
 - Radix `onCheckedChange` delivered `boolean | 'indeterminate'`; Base UI delivers plain `boolean` with a separate `indeterminate` prop. `Boolean('indeterminate')` used to be `true` in table select-all logic — with Base UI an indeterminate checkbox now reports `false`. No current call site relies on that truthiness (row-select headers use `!!value` on a boolean), but any future `Boolean(checked)`-as-indeterminate pattern would behave differently.
 - `data-[state=indeterminate]` styling is not used by this wrapper; Base UI exposes `data-indeterminate` if needed later.
+- 2026-11-14 visual fix (post-migration, after the row-select checkboxes rendered invisible in the web showcase data table): Base UI `Checkbox.Root` renders an inline `<span>` (`useRenderElement('span', …)`), not Radix's `<button>`, so `size-4` was ignored on an inline element and the box collapsed to zero size. Root now gets `relative inline-flex items-center justify-center` so it is a real box; the Indicator (`grid place-content-center`) centers inside it. This is the same inline-span root class of bug as radio-group's indicator fix.
+- 2026-11-14 follow-up (row height shifting ⅔px when checking): the span's baseline depends on its children (empty vs mounted Indicator), which moved the td's line box when toggling. Added `align-middle` (`vertical-align: middle`) so the box's vertical position depends only on its fixed 16px height, not its baseline.
 
 ## Verify by hand
 

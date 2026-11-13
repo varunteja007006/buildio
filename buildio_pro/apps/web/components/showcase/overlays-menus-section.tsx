@@ -90,7 +90,7 @@ export function OverlaysMenusSection() {
               Line numbers
             </DropdownMenuCheckboxItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => undefined}>
+            <DropdownMenuItem onClick={() => undefined}>
               <UserIcon />
               Profile
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
@@ -100,7 +100,7 @@ export function OverlaysMenusSection() {
               Billing
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onSelect={() => undefined}>
+            <DropdownMenuItem variant="destructive" onClick={() => undefined}>
               Delete account
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -113,7 +113,7 @@ export function OverlaysMenusSection() {
             Right click here
           </ContextMenuTrigger>
           <ContextMenuContent className="w-52">
-            <ContextMenuItem inset onSelect={() => undefined}>
+            <ContextMenuItem inset onClick={() => undefined}>
               <SettingsIcon />
               Preferences
             </ContextMenuItem>
@@ -121,7 +121,7 @@ export function OverlaysMenusSection() {
               Line numbers
             </ContextMenuCheckboxItem>
             <ContextMenuSeparator />
-            <ContextMenuItem inset onSelect={() => undefined}>
+            <ContextMenuItem inset onClick={() => undefined}>
               <PrinterIcon />
               Print
               <ContextMenuShortcut>⌘P</ContextMenuShortcut>

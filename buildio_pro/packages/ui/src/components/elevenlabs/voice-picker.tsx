@@ -113,7 +113,7 @@ export function VoicePicker({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[var(--radix-popover-trigger-width)] p-0"
+        className="w-[var(--anchor-width)] p-0"
       >
         <Command>
           <CommandInput placeholder="Search voices..." />

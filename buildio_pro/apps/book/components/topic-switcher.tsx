@@ -52,7 +52,7 @@ export function TopicSwitcher() {
     return window.localStorage.getItem(ACTIVE_TOPIC_STORAGE_KEY);
   });
 
-  // Set while a delete is opening so the row's onSelect does not also select.
+  // Set while a delete is opening so the row's click does not also select.
   const suppressSelectRef = useRef(false);
 
   const activeTopic = topics?.find((topic) => topic.id === activeTopicId);
@@ -110,17 +110,25 @@ export function TopicSwitcher() {
     <SidebarMenu>
       <SidebarMenuItem className="p-0!">
         <DropdownMenu
-          onOpenChange={(open) => {
+          onOpenChange={(open, eventDetails) => {
             if (open) {
               // A previous interaction may have left the suppress flag set.
               suppressSelectRef.current = false;
+            } else if (
+              suppressSelectRef.current &&
+              eventDetails.reason === "item-press"
+            ) {
+              // The row was activated by the delete button's synthetic click;
+              // keep the menu open instead of selecting the topic.
+              suppressSelectRef.current = false;
+              eventDetails.cancel();
             }
           }}
         >
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <BookHeartIcon className="size-4" />
@@ -135,7 +143,7 @@ export function TopicSwitcher() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--anchor-width) min-w-56 rounded-lg"
             align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
@@ -146,10 +154,9 @@ export function TopicSwitcher() {
             {topics?.map((topic, index) => (
               <DropdownMenuItem
                 key={topic.id}
-                onSelect={(event) => {
+                onClick={(event) => {
                   if (suppressSelectRef.current) {
                     suppressSelectRef.current = false;
-                    event.preventDefault();
                     return;
                   }
                   selectTopic(topic.id);

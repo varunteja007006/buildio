@@ -62,7 +62,7 @@ function FolderMenu({
           aria-label={`Folder options for ${node.name}`}
           // Reveal per row via the row-scoped group (see FolderRow); hover
           // anywhere on the row, including the action itself, reveals it.
-          className="opacity-100 transition-opacity md:opacity-0 md:group-hover/folder-row:opacity-100 md:group-focus-within/folder-row:opacity-100 md:focus-visible:opacity-100 md:data-[state=open]:opacity-100"
+          className="opacity-100 transition-opacity md:opacity-0 md:group-hover/folder-row:opacity-100 md:group-focus-within/folder-row:opacity-100 md:focus-visible:opacity-100 md:data-popup-open:opacity-100"
         >
           <MoreHorizontalIcon />
           <span className="sr-only">Folder options</span>

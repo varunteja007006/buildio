@@ -24,12 +24,18 @@ export function UserRegistrationDialog({
   const onSuccess = () => setOpen(false);
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent
-        onEscapeKeyDown={(e) => {
-          e.preventDefault();
-        }}
-      >
+    <AlertDialog
+      open={open}
+      onOpenChange={(nextOpen, details) => {
+        // Escape must not dismiss the registration dialog.
+        if (!nextOpen && details.reason === "escape-key") {
+          details.cancel();
+          return;
+        }
+        setOpen(nextOpen);
+      }}
+    >
+      <AlertDialogContent>
         <AlertDialogHeader className="sr-only">
           <AlertDialogTitle></AlertDialogTitle>
           <AlertDialogDescription></AlertDialogDescription>

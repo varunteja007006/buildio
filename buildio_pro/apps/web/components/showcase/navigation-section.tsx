@@ -61,7 +61,7 @@ export function NavigationSection() {
       description="Accordion, collapsible, tabs, breadcrumb, navigation menu, toggles, button group and action bar."
     >
       <Example title="Accordion" contentClassName="flex-col items-stretch">
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion className="w-full">
           <AccordionItem value="a">
             <AccordionTrigger>What is @workspace/ui?</AccordionTrigger>
             <AccordionContent>

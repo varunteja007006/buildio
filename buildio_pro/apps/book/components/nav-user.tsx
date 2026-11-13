@@ -39,7 +39,7 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-muted">
+            <SidebarMenuButton size="lg" className="data-popup-open:bg-muted">
               <Avatar className="size-8 rounded-lg">
                 <AvatarFallback className="rounded-lg">AR</AvatarFallback>
               </Avatar>

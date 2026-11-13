@@ -203,7 +203,7 @@ export default function CountryCombobox<
               className="p-0"
               align="start"
               sideOffset={4}
-              style={{ width: "var(--radix-popover-trigger-width)" }}
+              style={{ width: "var(--anchor-width)" }}
             >
               <Command>
                 <CommandInput placeholder={searchPlaceholder} />

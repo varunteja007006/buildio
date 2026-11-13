@@ -123,7 +123,7 @@ export function MicSelector({
             <DropdownMenuItem
               key={device.deviceId}
               onClick={(e) => handleDeviceSelect(device.deviceId, e)}
-              onSelect={(e) => e.preventDefault()}
+              closeOnClick={false}
               className="flex items-center justify-between"
             >
               <span className="truncate">{device.label}</span>

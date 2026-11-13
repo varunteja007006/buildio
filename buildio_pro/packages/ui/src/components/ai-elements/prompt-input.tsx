@@ -20,6 +20,7 @@ import type {
   HTMLAttributes,
   KeyboardEventHandler,
   PropsWithChildren,
+  ReactMouseEvent,
   ReactNode,
   RefObject,
 } from "react";
@@ -430,7 +431,7 @@ export const PromptInputActionAddAttachments = ({
   );
 
   return (
-    <DropdownMenuItem {...props} onSelect={handleSelect}>
+    <DropdownMenuItem {...props} onClick={handleSelect} closeOnClick={false}>
       <ImageIcon className="mr-2 size-4" /> {label}
     </DropdownMenuItem>
   );
@@ -450,7 +451,7 @@ export const PromptInputActionAddScreenshot = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    async (event: Event) => {
+    async (event: ReactMouseEvent<HTMLDivElement>) => {
       onSelect?.(event);
       if (event.defaultPrevented) {
         return;
@@ -475,7 +476,7 @@ export const PromptInputActionAddScreenshot = ({
   );
 
   return (
-    <DropdownMenuItem {...props} onSelect={handleSelect}>
+    <DropdownMenuItem {...props} onClick={handleSelect}>
       <Monitor className="mr-2 size-4" />
       {label}
     </DropdownMenuItem>
