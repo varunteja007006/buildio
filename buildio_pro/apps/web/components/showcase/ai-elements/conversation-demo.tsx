@@ -72,7 +72,10 @@ const messageText = (message: DemoMessage) =>
 export function ConversationDemo() {
   return (
     <div className="relative flex h-72 flex-col overflow-hidden rounded-md border bg-muted/20">
-      <Conversation className="h-full">
+      <div className="flex items-center justify-end border-b px-2 py-1.5">
+        <ConversationDownload messages={demoMessages} className="static" />
+      </div>
+      <Conversation className="min-h-0 flex-1">
         <ConversationContent>
           {demoMessages.map((message) => (
             <Message from={message.role} key={message.id}>
@@ -81,7 +84,6 @@ export function ConversationDemo() {
           ))}
         </ConversationContent>
         <ConversationScrollButton />
-        <ConversationDownload messages={demoMessages} />
       </Conversation>
     </div>
   );
