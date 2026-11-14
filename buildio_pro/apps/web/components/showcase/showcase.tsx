@@ -2,8 +2,10 @@
 
 import { Toaster } from "@workspace/ui/components/sonner";
 
+import { ContentSection } from "@/components/showcase/content-section";
 import { DataSection } from "@/components/showcase/data-section";
 import { DataTableSection } from "@/components/showcase/data-table-section";
+import { ExtrasSection } from "@/components/showcase/extras-section";
 import { FeedbackSection } from "@/components/showcase/feedback-section";
 import { FormsComboboxesSection } from "@/components/showcase/forms-comboboxes-section";
 import { FormsControlsSection } from "@/components/showcase/forms-controls-section";
@@ -29,6 +31,8 @@ export function Showcase() {
       <DataSection />
       <FeedbackSection />
       <NavigationSection />
+      <ExtrasSection />
+      <ContentSection />
     </>
   );
 }

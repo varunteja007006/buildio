@@ -50,6 +50,7 @@ import * as React from "react";
 
 import { NavigationMenuDemo } from "@/components/showcase/navigation-menu-demo";
 import { Example, Section } from "@/components/showcase/section";
+import { SidebarDemo } from "@/components/showcase/sidebar-demo";
 import { TabsDemo } from "@/components/showcase/tabs-demo";
 
 export function NavigationSection() {
@@ -121,6 +122,15 @@ export function NavigationSection() {
 
       <Example title="NavigationMenu" className="md:col-span-2" contentClassName="flex-col items-stretch">
         <NavigationMenuDemo />
+      </Example>
+
+      <Example
+        title="Sidebar"
+        description="Collapsible app sidebar with icon mode, tooltips, submenu, badge, and rail."
+        className="md:col-span-2"
+        contentClassName="flex-col items-stretch"
+      >
+        <SidebarDemo />
       </Example>
 
       <Example title="Toggle & ToggleGroup" description="Single toggles and exclusive group.">
