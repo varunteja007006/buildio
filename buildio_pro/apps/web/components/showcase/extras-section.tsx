@@ -3,10 +3,6 @@
 /**
  * Extras section — components that did not fit the other groups.
  *
- * Skipped demos:
- * - faceted.tsx: TODO — skipped; it has a pre-existing type error in the ui
- *   package (TS2554 in Faceted's Popover onOpenChange, faceted.tsx:76) which
- *   fails `pnpm --filter=web typecheck` via the tsconfig path mapping.
  * The form.tsx family and CountryCombobox are RHF-wired and demoed via
  * form-country-demo.tsx (apps/web depends on react-hook-form).
  */
@@ -48,6 +44,10 @@ import { toast } from "sonner";
 
 import { BubbleDemo, MessageDemo } from "@/components/showcase/chat-demo";
 import { ComboboxChipsDemo } from "@/components/showcase/combobox-chips-demo";
+import {
+  FacetedMultipleDemo,
+  FacetedSingleDemo,
+} from "@/components/showcase/faceted-demo";
 import {
   FormCountryComboboxDemo,
   FormFamilyDemo,
@@ -215,6 +215,22 @@ export function ExtrasSection() {
             </ComboboxContent>
           </Combobox>
         </div>
+      </Example>
+
+      <Example
+        title="Faceted"
+        description="Single-select popover over a Command list; picking an option closes it."
+        contentClassName="flex-col items-stretch"
+      >
+        <FacetedSingleDemo />
+      </Example>
+
+      <Example
+        title="Faceted · Multiple"
+        description="Multi-select with FacetedBadgeList rendering the chosen options as badges."
+        contentClassName="flex-col items-stretch"
+      >
+        <FacetedMultipleDemo />
       </Example>
 
       <Example
