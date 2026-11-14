@@ -193,6 +193,11 @@ export const highlightCode = (
   // Return cached result if available
   const cached = tokensCache.get(tokensCacheKey);
   if (cached) {
+    // Deliver synchronously so subscribers mounted after the cache warmed up
+    // still receive the result (mirrors the async path).
+    if (callback) {
+      callback(cached);
+    }
     return cached;
   }
 
@@ -384,13 +389,10 @@ export const CodeBlockContent = ({
   // Memoized raw tokens for immediate display
   const rawTokens = useMemo(() => createRawTokens(code), [code]);
 
-  // Synchronous cache lookup — avoids setState in effect for cached results
-  const syncTokens = useMemo(
-    () => highlightCode(code, language) ?? rawTokens,
-    [code, language, rawTokens]
-  );
-
-  // Async highlighting result (populated after shiki loads)
+  // Always start from raw tokens: module-level caches are warm on the server
+  // (static prerender runs multiple passes) but cold on the client's first
+  // render, which produced a hydration mismatch. The highlighter result is
+  // promoted to state after mount instead.
   const [asyncTokens, setAsyncTokens] = useState<TokenizedCode | null>(null);
   const asyncKeyRef = useRef({ code, language });
 
@@ -417,7 +419,7 @@ export const CodeBlockContent = ({
     };
   }, [code, language]);
 
-  const tokenized = asyncTokens ?? syncTokens;
+  const tokenized = asyncTokens ?? rawTokens;
 
   return (
     <div className="relative overflow-auto">
