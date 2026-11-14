@@ -4,14 +4,11 @@
  * Extras section — components that did not fit the other groups.
  *
  * Skipped demos:
- * - form.tsx: requires a react-hook-form instance (`control`); apps/web does
- *   not depend on react-hook-form and no dependencies may be added here.
- * - country-combobox.tsx: hard-wired to react-hook-form (`control`/`name`),
- *   same constraint. The standalone CountryDropdown is already demoed in
- *   forms-comboboxes-section.tsx.
  * - faceted.tsx: TODO — skipped; it has a pre-existing type error in the ui
  *   package (TS2554 in Faceted's Popover onOpenChange, faceted.tsx:76) which
  *   fails `pnpm --filter=web typecheck` via the tsconfig path mapping.
+ * The form.tsx family and CountryCombobox are RHF-wired and demoed via
+ * form-country-demo.tsx (apps/web depends on react-hook-form).
  */
 
 import {
@@ -51,6 +48,10 @@ import { toast } from "sonner";
 
 import { BubbleDemo, MessageDemo } from "@/components/showcase/chat-demo";
 import { ComboboxChipsDemo } from "@/components/showcase/combobox-chips-demo";
+import {
+  FormCountryComboboxDemo,
+  FormFamilyDemo,
+} from "@/components/showcase/form-country-demo";
 import { MessageScrollerDemo } from "@/components/showcase/message-scroller-demo";
 import { Example, Section } from "@/components/showcase/section";
 import { SortableDemo } from "@/components/showcase/sortable-demo";
@@ -70,7 +71,7 @@ export function ExtrasSection() {
   return (
     <Section
       title="Extras"
-      description="Attachment chips, chat bubbles, messages, sortable lists, chip comboboxes, progress and confetti."
+      description="Attachment chips, chat bubbles, messages, sortable lists, chip comboboxes, form fields, progress and confetti."
     >
       <Example
         title="Attachment"
@@ -214,6 +215,22 @@ export function ExtrasSection() {
             </ComboboxContent>
           </Combobox>
         </div>
+      </Example>
+
+      <Example
+        title="Form"
+        description="RHF primitives (FormProvider, FormField, FormItem, FormControl, FormDescription, FormMessage) around a small two-field form."
+        contentClassName="flex-col items-stretch"
+      >
+        <FormFamilyDemo />
+      </Example>
+
+      <Example
+        title="CountryCombobox"
+        description="Searchable country picker with flag emoji, wired to react-hook-form."
+        contentClassName="flex-col items-stretch"
+      >
+        <FormCountryComboboxDemo />
       </Example>
 
       <Example
