@@ -4,12 +4,6 @@
  * AI Elements section — agent chat UI building blocks from
  * packages/ui/src/components/ai-elements. All demos render statically:
  * no streaming, no network calls, no API keys.
- *
- * TODO(demo): PromptInput (ai-elements/prompt-input.tsx) is skipped — the ui
- * package file has pre-existing type errors (an invalid `ReactMouseEvent`
- * import and BaseUI handler mismatches at lines 434/1247) that break
- * `pnpm --filter=web typecheck` as soon as it is imported. Revisit once the
- * in-flight packages/ui migration fixes it.
  */
 
 import {
@@ -17,6 +11,7 @@ import {
   ConversationEmptyStateDemo,
 } from "@/components/showcase/ai-elements/conversation-demo";
 import { MessageDemo } from "@/components/showcase/ai-elements/message-demo";
+import { PromptInputDemo } from "@/components/showcase/ai-elements/prompt-input-demo";
 import {
   ChainOfThoughtDemo,
   ReasoningDemo,
@@ -63,6 +58,15 @@ export function AiElementsSection() {
         contentClassName="flex-col items-stretch"
       >
         <MessageDemo />
+      </Example>
+
+      <Example
+        title="Prompt Input"
+        description="Prompt composer with attachment menu, model select, tool toggles with tooltips and a status-aware submit button; submitting toasts the captured message."
+        className="md:col-span-2"
+        contentClassName="flex-col items-stretch"
+      >
+        <PromptInputDemo />
       </Example>
 
       <Example
