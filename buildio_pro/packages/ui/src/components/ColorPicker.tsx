@@ -24,6 +24,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback";
+import { useRafThrottledCallback } from "@workspace/ui/hooks/use-raf-throttled-callback";
 import { cn } from "@workspace/ui/lib/utils";
 
 // Define the color result interface for @uiw/react-color
@@ -113,6 +115,28 @@ const VEHICLE_COLORS = [
   "#4B0082", // Indigo
 ];
 
+const COLOR_NAMES: { [key: string]: string } = {
+  "#ffffff": "White",
+  "#000000": "Black",
+  "#c0c0c0": "Silver",
+  "#808080": "Gray",
+  "#ff0000": "Red",
+  "#0000ff": "Blue",
+  "#008000": "Green",
+  "#ffff00": "Yellow",
+  "#ffa500": "Orange",
+  "#a52a2a": "Brown",
+  "#800080": "Purple",
+  "#ffc0cb": "Pink",
+  "#ffd700": "Gold",
+  "#800000": "Maroon",
+  "#000080": "Navy",
+  "#f5f5dc": "Beige",
+};
+
+const getColorName = (value: string) =>
+  COLOR_NAMES[value?.toLowerCase()] || value;
+
 export default function ColorPicker<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -130,36 +154,32 @@ export default function ColorPicker<
 }: Readonly<ColorPickerProps<TFieldValues, TName>>) {
   const [open, setOpen] = useState(false);
 
-  const handleColorChange = (
-    color: ColorResult,
+  const applyColor = (
+    hexColor: string,
     field: ControllerRenderProps<TFieldValues, TName>,
   ) => {
-    const hexColor = color.hex;
+    field.onChange(hexColor);
+  };
+
+  const commitColor = (
+    hexColor: string,
+    field: ControllerRenderProps<TFieldValues, TName>,
+  ) => {
     field.onChange(hexColor);
     onSelectionChange?.(hexColor);
   };
 
-  const getColorName = (value: string) => {
-    const colorNames: { [key: string]: string } = {
-      "#ffffff": "White",
-      "#000000": "Black",
-      "#c0c0c0": "Silver",
-      "#808080": "Gray",
-      "#ff0000": "Red",
-      "#0000ff": "Blue",
-      "#008000": "Green",
-      "#ffff00": "Yellow",
-      "#ffa500": "Orange",
-      "#a52a2a": "Brown",
-      "#800080": "Purple",
-      "#ffc0cb": "Pink",
-      "#ffd700": "Gold",
-      "#800000": "Maroon",
-      "#000080": "Navy",
-      "#f5f5dc": "Beige",
-    };
+  // Drags fire an event per pointer move; update state at most once per frame
+  // and notify consumers (e.g. toasts) once the value settles.
+  const applyColorThrottled = useRafThrottledCallback(applyColor);
+  const commitColorDebounced = useDebouncedCallback(commitColor, 200);
 
-    return colorNames[value?.toLowerCase()] || value;
+  const handleColorChange = (
+    color: ColorResult,
+    field: ControllerRenderProps<TFieldValues, TName>,
+  ) => {
+    applyColorThrottled(color.hex, field);
+    commitColorDebounced(color.hex, field);
   };
 
   return (
@@ -179,8 +199,8 @@ export default function ColorPicker<
                   type="color"
                   value={field.value || "#ffffff"}
                   onChange={(e) => {
-                    field.onChange(e.target.value);
-                    onSelectionChange?.(e.target.value);
+                    applyColorThrottled(e.target.value, field);
+                    commitColorDebounced(e.target.value, field);
                   }}
                   disabled={disabled}
                   className={cn(
