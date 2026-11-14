@@ -20,7 +20,6 @@ import type {
   HTMLAttributes,
   KeyboardEventHandler,
   PropsWithChildren,
-  ReactMouseEvent,
   ReactNode,
   RefObject,
 } from "react";
@@ -79,6 +78,12 @@ import { cn } from "@workspace/ui/lib/utils";
 // ============================================================================
 // Helpers
 // ============================================================================
+
+// Menu items are Base UI `<div>`s, so their click events carry the
+// `preventBaseUIHandler` extras on top of the DOM `MouseEvent`.
+type DropdownMenuItemClickEvent = Parameters<
+  NonNullable<ComponentProps<typeof DropdownMenuItem>["onSelect"]>
+>[0];
 
 const convertBlobUrlToDataUrl = async (url: string): Promise<string | null> => {
   try {
@@ -423,7 +428,7 @@ export const PromptInputActionAddAttachments = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    (e: Event) => {
+    (e: DropdownMenuItemClickEvent) => {
       e.preventDefault();
       attachments.openFileDialog();
     },
@@ -451,7 +456,7 @@ export const PromptInputActionAddScreenshot = ({
   const attachments = usePromptInputAttachments();
 
   const handleSelect = useCallback(
-    async (event: ReactMouseEvent<HTMLDivElement>) => {
+    async (event: DropdownMenuItemClickEvent) => {
       onSelect?.(event);
       if (event.defaultPrevented) {
         return;
@@ -1215,6 +1220,10 @@ export type PromptInputSubmitProps = ComponentProps<typeof InputGroupButton> & {
   onStop?: () => void;
 };
 
+type PromptInputSubmitClickEvent = Parameters<
+  NonNullable<PromptInputSubmitProps["onClick"]>
+>[0];
+
 export const PromptInputSubmit = ({
   className,
   variant = "default",
@@ -1238,7 +1247,7 @@ export const PromptInputSubmit = ({
   }
 
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: PromptInputSubmitClickEvent) => {
       if (isGenerating && onStop) {
         e.preventDefault();
         onStop();
