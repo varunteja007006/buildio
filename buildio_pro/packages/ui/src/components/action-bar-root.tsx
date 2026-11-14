@@ -1,7 +1,7 @@
 "use client";
 
+import { useRender } from "@base-ui/react/use-render";
 import { useDirection } from "@radix-ui/react-direction";
-import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
@@ -49,6 +49,7 @@ function ActionBar(props: ActionBarProps) {
     style,
     ref,
     asChild,
+    children,
     ...rootProps
   } = props;
 
@@ -99,46 +100,52 @@ function ActionBar(props: ActionBarProps) {
   const portalContainer =
     portalContainerProp ?? (mounted ? globalThis.document?.body : null);
 
-  if (!portalContainer || !open) return null;
+  const render =
+    asChild && React.isValidElement(children) ? children : undefined;
 
-  const RootPrimitive = asChild ? Slot : "div";
+  const element = useRender({
+    defaultTagName: "div",
+    render,
+    enabled: mounted && open && portalContainer != null,
+    ref: composedRef,
+    props: {
+      role: "toolbar",
+      "aria-orientation": orientation,
+      "data-slot": "action-bar",
+      "data-side": side,
+      "data-align": align,
+      "data-orientation": orientation,
+      dir,
+      ...rootProps,
+      className: cn(
+        "fixed z-50 rounded-lg border bg-card shadow-lg outline-none",
+        "fade-in-0 zoom-in-95 animate-in duration-250 [animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
+        "data-[side=bottom]:slide-in-from-bottom-4 data-[side=top]:slide-in-from-top-4",
+        "motion-reduce:animate-none motion-reduce:transition-none",
+        orientation === "horizontal"
+          ? "flex flex-row items-center gap-2 px-2 py-1.5"
+          : "flex flex-col items-start gap-2 px-1.5 py-2",
+        className,
+      ),
+      style: {
+        [side]: `${sideOffset}px`,
+        ...(align === "center" && {
+          left: "50%",
+          translate: "-50% 0",
+        }),
+        ...(align === "start" && { left: `${alignOffset}px` }),
+        ...(align === "end" && { right: `${alignOffset}px` }),
+        ...style,
+      },
+      ...(render ? {} : { children }),
+    },
+  });
+
+  if (!portalContainer || !open) return null;
 
   return (
     <ActionBarContext.Provider value={contextValue}>
-      {ReactDOM.createPortal(
-        <RootPrimitive
-          role="toolbar"
-          aria-orientation={orientation}
-          data-slot="action-bar"
-          data-side={side}
-          data-align={align}
-          data-orientation={orientation}
-          dir={dir}
-          {...rootProps}
-          ref={composedRef}
-          className={cn(
-            "fixed z-50 rounded-lg border bg-card shadow-lg outline-none",
-            "fade-in-0 zoom-in-95 animate-in duration-250 [animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
-            "data-[side=bottom]:slide-in-from-bottom-4 data-[side=top]:slide-in-from-top-4",
-            "motion-reduce:animate-none motion-reduce:transition-none",
-            orientation === "horizontal"
-              ? "flex flex-row items-center gap-2 px-2 py-1.5"
-              : "flex flex-col items-start gap-2 px-1.5 py-2",
-            className,
-          )}
-          style={{
-            [side]: `${sideOffset}px`,
-            ...(align === "center" && {
-              left: "50%",
-              translate: "-50% 0",
-            }),
-            ...(align === "start" && { left: `${alignOffset}px` }),
-            ...(align === "end" && { right: `${alignOffset}px` }),
-            ...style,
-          }}
-        />,
-        portalContainer,
-      )}
+      {ReactDOM.createPortal(element, portalContainer)}
     </ActionBarContext.Provider>
   );
 }

@@ -1,5 +1,5 @@
+import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
 import * as React from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
@@ -22,21 +22,23 @@ function Marker({
   className,
   variant = "default",
   asChild = false,
+  children,
   ...props
 }: React.ComponentProps<"div"> &
   VariantProps<typeof markerVariants> & {
+    /** @deprecated Radix compat — Base UI uses `render`. */
     asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot.Root : "div";
+  const isChildRender = asChild && React.isValidElement(children);
 
-  return (
-    <Comp
-      data-slot="marker"
-      data-variant={variant}
-      className={cn(markerVariants({ variant, className }))}
-      {...props}
-    />
-  );
+  return useRender({
+    render: isChildRender ? children : <div data-slot="marker" />,
+    props: {
+      "data-variant": variant,
+      className: cn(markerVariants({ variant, className })),
+      ...(isChildRender ? props : { children, ...props }),
+    },
+  });
 }
 
 function MarkerIcon({ className, ...props }: React.ComponentProps<"span">) {

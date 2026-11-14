@@ -1,5 +1,5 @@
+import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
 import * as React from "react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -162,20 +162,22 @@ function AttachmentTrigger({
   className,
   asChild = false,
   type,
+  children,
   ...props
 }: React.ComponentProps<"button"> & {
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }) {
-  const Comp = asChild ? Slot.Root : "button";
+  const isChildRender = asChild && React.isValidElement(children);
 
-  return (
-    <Comp
-      data-slot="attachment-trigger"
-      type={asChild ? undefined : (type ?? "button")}
-      className={cn("absolute inset-0 z-10 outline-none", className)}
-      {...props}
-    />
-  );
+  return useRender({
+    render: isChildRender ? children : <button data-slot="attachment-trigger" />,
+    props: {
+      ...(isChildRender ? {} : { type: type ?? "button" }),
+      className: cn("absolute inset-0 z-10 outline-none", className),
+      ...(isChildRender ? props : { children, ...props }),
+    },
+  });
 }
 
 function AttachmentGroup({ className, ...props }: React.ComponentProps<"div">) {

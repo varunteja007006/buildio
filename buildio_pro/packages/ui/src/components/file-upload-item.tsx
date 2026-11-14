@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -13,11 +13,12 @@ import { cn } from "@workspace/ui/lib/utils";
 
 interface FileUploadItemProps extends React.ComponentProps<"div"> {
   value: File;
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }
 
 function FileUploadItem(props: FileUploadItemProps) {
-  const { value, asChild, className, ...itemProps } = props;
+  const { value, asChild, children, className, ...itemProps } = props;
 
   const id = React.useId();
   const statusId = `${id}-status`;
@@ -45,42 +46,56 @@ function FileUploadItem(props: FileUploadItemProps) {
     [id, fileState, statusId, nameId, sizeId, messageId],
   );
 
-  if (!fileState) return null;
+  const statusText = fileState
+    ? fileState.error
+      ? `Error: ${fileState.error}`
+      : fileState.status === "uploading"
+        ? `Uploading: ${fileState.progress}% complete`
+        : fileState.status === "success"
+          ? "Upload complete"
+          : "Ready to upload"
+    : null;
 
-  const statusText = fileState.error
-    ? `Error: ${fileState.error}`
-    : fileState.status === "uploading"
-      ? `Uploading: ${fileState.progress}% complete`
-      : fileState.status === "success"
-        ? "Upload complete"
-        : "Ready to upload";
+  const isChildRender = asChild && React.isValidElement(children);
 
-  const ItemPrimitive = asChild ? SlotPrimitive.Slot : "div";
+  const element = useRender({
+    enabled: Boolean(fileState),
+    render: isChildRender ? children : <div data-slot="file-upload-item" />,
+    props: {
+      role: "listitem",
+      id,
+      "aria-setsize": fileCount,
+      "aria-posinset": fileIndex,
+      "aria-describedby": `${nameId} ${sizeId} ${statusId} ${
+        fileState?.error ? messageId : ""
+      }`,
+      "aria-labelledby": nameId,
+      dir: context.dir,
+      ...(isChildRender
+        ? {}
+        : {
+            children: (
+              <>
+                {children}
+                {fileState && (
+                  <span id={statusId} className="sr-only">
+                    {statusText}
+                  </span>
+                )}
+              </>
+            ),
+          }),
+      ...itemProps,
+      className: cn(
+        "relative flex items-center gap-2.5 rounded-md border p-3",
+        className,
+      ),
+    },
+  });
 
   return (
     <FileUploadItemContext.Provider value={itemContext}>
-      <ItemPrimitive
-        role="listitem"
-        id={id}
-        aria-setsize={fileCount}
-        aria-posinset={fileIndex}
-        aria-describedby={`${nameId} ${sizeId} ${statusId} ${
-          fileState.error ? messageId : ""
-        }`}
-        aria-labelledby={nameId}
-        data-slot="file-upload-item"
-        dir={context.dir}
-        {...itemProps}
-        className={cn(
-          "relative flex items-center gap-2.5 rounded-md border p-3",
-          className,
-        )}
-      >
-        {props.children}
-        <span id={statusId} className="sr-only">
-          {statusText}
-        </span>
-      </ItemPrimitive>
+      {element}
     </FileUploadItemContext.Provider>
   );
 }

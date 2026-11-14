@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -10,11 +10,12 @@ import {
 import { useAsRef } from "@workspace/ui/hooks/use-as-ref";
 
 interface FileUploadTriggerProps extends React.ComponentProps<"button"> {
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }
 
 function FileUploadTrigger(props: FileUploadTriggerProps) {
-  const { asChild, onClick: onClickProp, ...triggerProps } = props;
+  const { asChild, children, onClick: onClickProp, ...triggerProps } = props;
 
   const context = useFileUploadContext(TRIGGER_NAME);
 
@@ -33,19 +34,22 @@ function FileUploadTrigger(props: FileUploadTriggerProps) {
     [context.inputRef, propsRef],
   );
 
-  const TriggerPrimitive = asChild ? SlotPrimitive.Slot : "button";
+  const isChildRender = asChild && React.isValidElement(children);
 
-  return (
-    <TriggerPrimitive
-      type="button"
-      aria-controls={context.inputId}
-      data-disabled={context.disabled ? "" : undefined}
-      data-slot="file-upload-trigger"
-      {...triggerProps}
-      disabled={context.disabled}
-      onClick={onClick}
-    />
-  );
+  return useRender({
+    render: isChildRender
+      ? children
+      : <button data-slot="file-upload-trigger" />,
+    props: {
+      type: "button",
+      "aria-controls": context.inputId,
+      "data-disabled": context.disabled ? "" : undefined,
+      ...(isChildRender ? {} : { children }),
+      ...triggerProps,
+      disabled: context.disabled,
+      onClick,
+    },
+  });
 }
 
 export { FileUploadTrigger };

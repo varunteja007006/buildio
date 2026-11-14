@@ -1,10 +1,10 @@
 "use client";
 
+import { useRender } from "@base-ui/react/use-render";
 import {
   SortableContext,
   type SortableContextProps,
 } from "@dnd-kit/sortable";
-import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 
 import {
@@ -16,6 +16,7 @@ import {
 interface SortableContentProps extends React.ComponentProps<"div"> {
   strategy?: SortableContextProps["strategy"];
   children: React.ReactNode;
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
   withoutSlot?: boolean;
 }
@@ -32,7 +33,17 @@ function SortableContent(props: SortableContentProps) {
 
   const context = useSortableContext(CONTENT_NAME);
 
-  const ContentPrimitive = asChild ? Slot : "div";
+  const isSlot = asChild && React.isValidElement(children);
+
+  const element = useRender({
+    render: isSlot ? children : <div data-slot="sortable-content" />,
+    ref,
+    props: {
+      "data-slot": "sortable-content",
+      ...contentProps,
+      ...(isSlot ? {} : { children }),
+    },
+  });
 
   return (
     <SortableContentContext.Provider value={true}>
@@ -40,17 +51,7 @@ function SortableContent(props: SortableContentProps) {
         items={context.items}
         strategy={strategyProp ?? context.strategy}
       >
-        {withoutSlot ? (
-          children
-        ) : (
-          <ContentPrimitive
-            data-slot="sortable-content"
-            {...contentProps}
-            ref={ref}
-          >
-            {children}
-          </ContentPrimitive>
-        )}
+        {withoutSlot ? children : element}
       </SortableContext>
     </SortableContentContext.Provider>
   );

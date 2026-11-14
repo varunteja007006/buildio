@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -13,6 +13,7 @@ import { cn } from "@workspace/ui/lib/utils";
 
 interface FileUploadItemPreviewProps extends React.ComponentProps<"div"> {
   render?: (file: File, fallback: () => React.ReactNode) => React.ReactNode;
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }
 
@@ -52,24 +53,33 @@ function FileUploadItemPreview(props: FileUploadItemPreviewProps) {
     [render, getDefaultRender],
   );
 
-  if (!itemContext.fileState) return null;
+  const isChildRender = asChild && React.isValidElement(children);
 
-  const ItemPreviewPrimitive = asChild ? SlotPrimitive.Slot : "div";
-
-  return (
-    <ItemPreviewPrimitive
-      aria-labelledby={itemContext.nameId}
-      data-slot="file-upload-preview"
-      {...previewProps}
-      className={cn(
+  return useRender({
+    enabled: Boolean(itemContext.fileState),
+    render: isChildRender
+      ? children
+      : <div data-slot="file-upload-preview" />,
+    props: {
+      "aria-labelledby": itemContext.nameId,
+      ...previewProps,
+      className: cn(
         "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded border bg-accent/50 [&>svg]:size-10",
         className,
-      )}
-    >
-      {onPreviewRender(itemContext.fileState.file)}
-      {children}
-    </ItemPreviewPrimitive>
-  );
+      ),
+      ...(isChildRender
+        ? {}
+        : {
+            children: (
+              <>
+                {itemContext.fileState &&
+                  onPreviewRender(itemContext.fileState.file)}
+                {children}
+              </>
+            ),
+          }),
+    },
+  });
 }
 
 export { FileUploadItemPreview };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -13,12 +13,14 @@ import { useAsRef } from "@workspace/ui/hooks/use-as-ref";
 import { cn } from "@workspace/ui/lib/utils";
 
 interface FileUploadDropzoneProps extends React.ComponentProps<"div"> {
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }
 
 function FileUploadDropzone(props: FileUploadDropzoneProps) {
   const {
     asChild,
+    children,
     className,
     onClick: onClickProp,
     onDragOver: onDragOverProp,
@@ -187,35 +189,38 @@ function FileUploadDropzone(props: FileUploadDropzoneProps) {
     [context.inputRef, propsRef],
   );
 
-  const DropzonePrimitive = asChild ? SlotPrimitive.Slot : "div";
+  const isChildRender = asChild && React.isValidElement(children);
 
-  return (
-    <DropzonePrimitive
-      role="region"
-      id={context.dropzoneId}
-      aria-controls={`${context.inputId} ${context.listId}`}
-      aria-disabled={context.disabled}
-      aria-invalid={invalid}
-      data-disabled={context.disabled ? "" : undefined}
-      data-dragging={dragOver ? "" : undefined}
-      data-invalid={invalid ? "" : undefined}
-      data-slot="file-upload-dropzone"
-      dir={context.dir}
-      tabIndex={context.disabled ? undefined : 0}
-      {...dropzoneProps}
-      className={cn(
+  return useRender({
+    render: isChildRender
+      ? children
+      : <div data-slot="file-upload-dropzone" />,
+    props: {
+      role: "region",
+      id: context.dropzoneId,
+      "aria-controls": `${context.inputId} ${context.listId}`,
+      "aria-disabled": context.disabled,
+      "aria-invalid": invalid,
+      "data-disabled": context.disabled ? "" : undefined,
+      "data-dragging": dragOver ? "" : undefined,
+      "data-invalid": invalid ? "" : undefined,
+      dir: context.dir,
+      tabIndex: context.disabled ? undefined : 0,
+      ...(isChildRender ? {} : { children }),
+      ...dropzoneProps,
+      className: cn(
         "relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 transition-colors outline-none select-none hover:bg-accent/30 focus-visible:border-ring/50 data-disabled:pointer-events-none data-dragging:border-primary/30 data-dragging:bg-accent/30 data-invalid:border-destructive data-invalid:ring-destructive/20",
         className,
-      )}
-      onClick={onClick}
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      onKeyDown={onKeyDown}
-      onPaste={onPaste}
-    />
-  );
+      ),
+      onClick,
+      onDragEnter,
+      onDragLeave,
+      onDragOver,
+      onDrop,
+      onKeyDown,
+      onPaste,
+    },
+  });
 }
 
 export { FileUploadDropzone };

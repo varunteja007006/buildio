@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -12,6 +12,7 @@ import {
 
 interface FileUploadClearProps extends React.ComponentProps<"button"> {
   forceMount?: boolean;
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }
 
@@ -20,6 +21,7 @@ function FileUploadClear(props: FileUploadClearProps) {
     asChild,
     forceMount,
     disabled,
+    children,
     onClick: onClickProp,
     ...clearProps
   } = props;
@@ -42,22 +44,21 @@ function FileUploadClear(props: FileUploadClearProps) {
   );
 
   const shouldRender = forceMount || fileCount > 0;
+  const isChildRender = asChild && React.isValidElement(children);
 
-  if (!shouldRender) return null;
-
-  const ClearPrimitive = asChild ? SlotPrimitive.Slot : "button";
-
-  return (
-    <ClearPrimitive
-      type="button"
-      aria-controls={context.listId}
-      data-slot="file-upload-clear"
-      data-disabled={isDisabled ? "" : undefined}
-      {...clearProps}
-      disabled={isDisabled}
-      onClick={onClick}
-    />
-  );
+  return useRender({
+    enabled: shouldRender,
+    render: isChildRender ? children : <button data-slot="file-upload-clear" />,
+    props: {
+      type: "button",
+      "aria-controls": context.listId,
+      "data-disabled": isDisabled ? "" : undefined,
+      ...(isChildRender ? {} : { children }),
+      ...clearProps,
+      disabled: isDisabled,
+      onClick,
+    },
+  });
 }
 
 export { FileUploadClear };

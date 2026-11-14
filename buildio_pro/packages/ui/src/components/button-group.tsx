@@ -1,5 +1,6 @@
+import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
+import * as React from "react";
 
 import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
@@ -40,21 +41,24 @@ function ButtonGroup({
 function ButtonGroupText({
   className,
   asChild = false,
+  children,
   ...props
 }: React.ComponentProps<"div"> & {
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }) {
-  const Comp = asChild ? Slot.Root : "div";
+  const isSlot = asChild && React.isValidElement(children);
 
-  return (
-    <Comp
-      className={cn(
+  return useRender({
+    render: isSlot ? children : <div />,
+    props: {
+      className: cn(
         "flex items-center gap-2 rounded-md border bg-muted px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
         className,
-      )}
-      {...props}
-    />
-  );
+      ),
+      ...(isSlot ? props : { ...props, children }),
+    },
+  });
 }
 
 function ButtonGroupSeparator({

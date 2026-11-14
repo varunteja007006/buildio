@@ -1,9 +1,9 @@
 "use client";
 
+import { useRender } from "@base-ui/react/use-render";
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 
 import {
@@ -22,6 +22,7 @@ import { cn } from "@workspace/ui/lib/utils";
 interface SortableItemProps extends React.ComponentProps<"div"> {
   value: UniqueIdentifier;
   asHandle?: boolean;
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
   disabled?: boolean;
 }
@@ -34,6 +35,7 @@ function SortableItem(props: SortableItemProps) {
     asChild,
     disabled,
     className,
+    children,
     ref,
     ...itemProps
   } = props;
@@ -89,33 +91,39 @@ function SortableItem(props: SortableItemProps) {
     [id, attributes, listeners, setActivatorNodeRef, isDragging, disabled],
   );
 
-  const ItemPrimitive = asChild ? Slot : "div";
+  const isSlot = asChild && React.isValidElement(children);
+
+  const element = useRender({
+    render: isSlot ? children : <div data-slot="sortable-item" />,
+    ref: composedRef,
+    props: {
+      id,
+      "data-disabled": disabled,
+      "data-dragging": isDragging ? "" : undefined,
+      "data-slot": "sortable-item",
+      ...itemProps,
+      ...(asHandle && !disabled ? attributes : {}),
+      ...(asHandle && !disabled ? listeners : {}),
+      style: composedStyle,
+      className: cn(
+        "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+        {
+          "touch-none select-none": asHandle,
+          "cursor-default": context.flatCursor,
+          "data-dragging:cursor-grabbing": !context.flatCursor,
+          "cursor-grab": !isDragging && asHandle && !context.flatCursor,
+          "opacity-50": isDragging,
+          "pointer-events-none opacity-50": disabled,
+        },
+        className,
+      ),
+      ...(isSlot ? {} : { children }),
+    },
+  });
 
   return (
     <SortableItemContext.Provider value={itemContext}>
-      <ItemPrimitive
-        id={id}
-        data-disabled={disabled}
-        data-dragging={isDragging ? "" : undefined}
-        data-slot="sortable-item"
-        {...itemProps}
-        {...(asHandle && !disabled ? attributes : {})}
-        {...(asHandle && !disabled ? listeners : {})}
-        ref={composedRef}
-        style={composedStyle}
-        className={cn(
-          "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
-          {
-            "touch-none select-none": asHandle,
-            "cursor-default": context.flatCursor,
-            "data-dragging:cursor-grabbing": !context.flatCursor,
-            "cursor-grab": !isDragging && asHandle && !context.flatCursor,
-            "opacity-50": isDragging,
-            "pointer-events-none opacity-50": disabled,
-          },
-          className,
-        )}
-      />
+      {element}
     </SortableItemContext.Provider>
   );
 }

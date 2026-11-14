@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot as SlotPrimitive } from "radix-ui";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -10,11 +10,12 @@ import {
 } from "@workspace/ui/components/file-upload-context";
 
 interface FileUploadItemDeleteProps extends React.ComponentProps<"button"> {
+  /** @deprecated Radix compat — Base UI uses `render`. */
   asChild?: boolean;
 }
 
 function FileUploadItemDelete(props: FileUploadItemDeleteProps) {
-  const { asChild, onClick: onClickProp, ...deleteProps } = props;
+  const { asChild, children, onClick: onClickProp, ...deleteProps } = props;
 
   const store = useStoreContext(ITEM_DELETE_NAME);
   const itemContext = useFileUploadItemContext(ITEM_DELETE_NAME);
@@ -33,20 +34,22 @@ function FileUploadItemDelete(props: FileUploadItemDeleteProps) {
     [store, itemContext.fileState, onClickProp],
   );
 
-  if (!itemContext.fileState) return null;
+  const isChildRender = asChild && React.isValidElement(children);
 
-  const ItemDeletePrimitive = asChild ? SlotPrimitive.Slot : "button";
-
-  return (
-    <ItemDeletePrimitive
-      type="button"
-      aria-controls={itemContext.id}
-      aria-describedby={itemContext.nameId}
-      data-slot="file-upload-item-delete"
-      {...deleteProps}
-      onClick={onClick}
-    />
-  );
+  return useRender({
+    enabled: Boolean(itemContext.fileState),
+    render: isChildRender
+      ? children
+      : <button data-slot="file-upload-item-delete" />,
+    props: {
+      type: "button",
+      "aria-controls": itemContext.id,
+      "aria-describedby": itemContext.nameId,
+      ...(isChildRender ? {} : { children }),
+      ...deleteProps,
+      onClick,
+    },
+  });
 }
 
 export { FileUploadItemDelete };

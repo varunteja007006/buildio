@@ -1,6 +1,6 @@
 "use client";
 
-import { Slot } from "@radix-ui/react-slot";
+import { useRender } from "@base-ui/react/use-render";
 import * as React from "react";
 
 import {
@@ -24,6 +24,7 @@ function ActionBarGroup(props: DivProps) {
     onMouseDown: onMouseDownProp,
     className,
     asChild,
+    children,
     ref,
     ...groupProps
   } = props;
@@ -156,29 +157,35 @@ function ActionBarGroup(props: DivProps) {
     ],
   );
 
-  const GroupPrimitive = asChild ? Slot : "div";
+  const render =
+    asChild && React.isValidElement(children) ? children : undefined;
 
   return (
     <FocusContext.Provider value={focusContextValue}>
-      <GroupPrimitive
-        role="group"
-        data-slot="action-bar-group"
-        data-orientation={orientation}
-        dir={dir}
-        tabIndex={isTabbingBackOut || focusableItemCount === 0 ? -1 : 0}
-        {...groupProps}
-        ref={composedRef}
-        className={cn(
-          "flex gap-2 outline-none",
-          orientation === "horizontal"
-            ? "items-center"
-            : "w-full flex-col items-start",
-          className,
-        )}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        onMouseDown={onMouseDown}
-      />
+      {useRender({
+        defaultTagName: "div",
+        render,
+        ref: composedRef,
+        props: {
+          role: "group",
+          "data-slot": "action-bar-group",
+          "data-orientation": orientation,
+          dir,
+          tabIndex: isTabbingBackOut || focusableItemCount === 0 ? -1 : 0,
+          ...groupProps,
+          className: cn(
+            "flex gap-2 outline-none",
+            orientation === "horizontal"
+              ? "items-center"
+              : "w-full flex-col items-start",
+            className,
+          ),
+          onBlur,
+          onFocus,
+          onMouseDown,
+          ...(render ? {} : { children }),
+        },
+      })}
     </FocusContext.Provider>
   );
 }
