@@ -31,6 +31,7 @@
     "@types/react-dom": "catalog:react19",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
+    "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   }
