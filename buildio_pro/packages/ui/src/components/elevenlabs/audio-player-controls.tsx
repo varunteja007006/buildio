@@ -4,12 +4,12 @@ import { PauseIcon, PlayIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 
 import { Button } from "@workspace/ui/components/button";
-import { cn } from "@workspace/ui/lib/utils";
-
 import {
   useAudioPlayer,
   type AudioPlayerItem,
-} from "./audio-player-context.js";
+} from "@workspace/ui/components/elevenlabs/audio-player-context";
+import { cn } from "@workspace/ui/lib/utils";
+
 
 interface SpinnerProps {
   className?: string;

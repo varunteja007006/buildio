@@ -1,12 +1,13 @@
 "use client";
 
+
+
+import { useBarAnimator } from "@workspace/ui/components/elevenlabs/bar-visualizer-animation";
+import { useMultibandVolume } from "@workspace/ui/components/elevenlabs/bar-visualizer-audio";
+import type { AgentState, BarVisualizerProps } from "@workspace/ui/components/elevenlabs/bar-visualizer-types";
 import { forwardRef, memo, useEffect, useMemo, useRef, useState } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
-
-import { useBarAnimator } from "./bar-visualizer-animation.js";
-import { useMultibandVolume } from "./bar-visualizer-audio.js";
-import type { AgentState, BarVisualizerProps } from "./bar-visualizer-types.js";
 
 function Bar({
   heightPct,
@@ -155,11 +156,11 @@ BarVisualizerComponent.displayName = "BarVisualizerComponent";
 export const BarVisualizer = memo(BarVisualizerComponent);
 BarVisualizer.displayName = "BarVisualizer";
 
-export { useBarAnimator } from "./bar-visualizer-animation.js";
+export { useBarAnimator } from "@workspace/ui/components/elevenlabs/bar-visualizer-animation";
 export {
   useAudioVolume,
   useMultibandVolume,
   type AudioAnalyserOptions,
   type MultiBandVolumeOptions,
-} from "./bar-visualizer-audio.js";
-export type { AgentState, BarVisualizerProps } from "./bar-visualizer-types.js";
+} from "@workspace/ui/components/elevenlabs/bar-visualizer-audio";
+export type { AgentState, BarVisualizerProps } from "@workspace/ui/components/elevenlabs/bar-visualizer-types";

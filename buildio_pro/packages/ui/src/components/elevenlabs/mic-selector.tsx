@@ -1,5 +1,6 @@
 "use client";
 
+import { useAudioDevices } from "@workspace/ui/components/elevenlabs/use-audio-devices";
 import { Check, ChevronsUpDown, Mic, MicOff } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -11,12 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { LiveWaveform } from "@workspace/ui/components/elevenlabs/live-waveform";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { LiveWaveform } from "./live-waveform.js";
-import { useAudioDevices } from "./use-audio-devices.js";
 
-export { useAudioDevices, type AudioDevice } from "./use-audio-devices.js";
+export { useAudioDevices, type AudioDevice } from "@workspace/ui/components/elevenlabs/use-audio-devices";
 
 export interface MicSelectorProps {
   value?: string;

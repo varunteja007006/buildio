@@ -9,14 +9,14 @@ import {
   type RefObject,
 } from "react";
 
-import { useAudioPlaybackSync } from "./use-audio-playback-sync.js";
+import { useAudioPlaybackSync } from "@workspace/ui/hooks/use-audio-playback-sync";
 import {
   composeSegments,
   findWordIndexAtTime,
   type SegmentComposer,
   type TranscriptSegment,
   type TranscriptWord,
-} from "./use-transcript-viewer-compose.js";
+} from "@workspace/ui/hooks/use-transcript-viewer-compose";
 
 /**
  * Compatibility adjustment: the upstream sources import this type from
@@ -281,4 +281,4 @@ export type {
   SegmentComposer,
   TranscriptSegment,
   TranscriptWord,
-} from "./use-transcript-viewer-compose.js";
+} from "@workspace/ui/hooks/use-transcript-viewer-compose";

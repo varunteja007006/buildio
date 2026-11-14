@@ -9,13 +9,13 @@ export {
   TranscriptViewerContainer,
   TranscriptViewerProvider,
   useTranscriptViewerContext,
-} from "./transcript-viewer-context.js";
+} from "@workspace/ui/components/elevenlabs/transcript-viewer-context";
 export {
   TranscriptViewerWord,
   TranscriptViewerWords,
-} from "./transcript-viewer-words.js";
+} from "@workspace/ui/components/elevenlabs/transcript-viewer-words";
 export {
   TranscriptViewerAudio,
   TranscriptViewerPlayPauseButton,
   TranscriptViewerScrubBar,
-} from "./transcript-viewer-controls.js";
+} from "@workspace/ui/components/elevenlabs/transcript-viewer-controls";

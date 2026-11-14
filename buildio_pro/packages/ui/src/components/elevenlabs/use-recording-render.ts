@@ -1,8 +1,8 @@
 "use client";
 
+import { drawBar, getComputedBarColor } from "@workspace/ui/components/elevenlabs/waveform-canvas";
 import { useEffect, useRef, type RefObject } from "react";
 
-import { drawBar, getComputedBarColor } from "./waveform-canvas.js";
 
 export type RecordingRenderOptions = {
   recording: boolean;

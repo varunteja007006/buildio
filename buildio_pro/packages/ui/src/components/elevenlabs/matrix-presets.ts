@@ -1,4 +1,4 @@
-import { emptyFrame, setPixel, type Frame } from "./matrix-types.js";
+import { emptyFrame, setPixel, type Frame } from "@workspace/ui/components/elevenlabs/matrix-types";
 
 export const digits: Frame[] = [
   [

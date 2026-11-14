@@ -1,6 +1,6 @@
+import type { AgentState } from "@workspace/ui/components/elevenlabs/bar-visualizer-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { AgentState } from "./bar-visualizer-types.js";
 
 export function useBarAnimator(
   state: AgentState | undefined,

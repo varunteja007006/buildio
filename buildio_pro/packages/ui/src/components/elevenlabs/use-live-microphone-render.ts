@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
-
 import {
   drawBar,
   drawFadeEdges,
   getComputedBarColor,
-} from "./waveform-canvas.js";
+} from "@workspace/ui/components/elevenlabs/waveform-canvas";
+import { useEffect, useRef, type RefObject } from "react";
+
 
 export type LiveMicrophoneRenderOptions = {
   active: boolean;

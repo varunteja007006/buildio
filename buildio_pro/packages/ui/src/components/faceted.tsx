@@ -14,33 +14,19 @@ import {
   CommandSeparator,
 } from "@workspace/ui/components/command";
 import {
+  type FacetedContextValue,
+  type FacetedValue,
+  type PopoverChangeEventDetails,
+  FacetedContext,
+  programmaticCloseDetails,
+  useFacetedContext,
+} from "@workspace/ui/components/faceted-context";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { cn } from "@workspace/ui/lib/utils";
-
-type FacetedValue<Multiple extends boolean> = Multiple extends true
-  ? string[]
-  : string;
-
-interface FacetedContextValue<Multiple extends boolean = boolean> {
-  value?: FacetedValue<Multiple>;
-  onItemSelect?: (value: string) => void;
-  multiple?: Multiple;
-}
-
-const FacetedContext = React.createContext<FacetedContextValue<boolean> | null>(
-  null,
-);
-
-function useFacetedContext(name: string) {
-  const context = React.useContext(FacetedContext);
-  if (!context) {
-    throw new Error(`\`${name}\` must be within Faceted`);
-  }
-  return context;
-}
 
 interface FacetedProps<
   Multiple extends boolean = false,
@@ -69,11 +55,11 @@ function Faceted<Multiple extends boolean = false>(
   const open = isControlled ? openProp : uncontrolledOpen;
 
   const onOpenChange = React.useCallback(
-    (newOpen: boolean) => {
+    (newOpen: boolean, eventDetails: PopoverChangeEventDetails) => {
       if (!isControlled) {
         setUncontrolledOpen(newOpen);
       }
-      onOpenChangeProp?.(newOpen);
+      onOpenChangeProp?.(newOpen, eventDetails);
     },
     [isControlled, onOpenChangeProp],
   );
@@ -95,7 +81,9 @@ function Faceted<Multiple extends boolean = false>(
           onValueChange(selectedValue as FacetedValue<Multiple>);
         }
 
-        requestAnimationFrame(() => onOpenChange(false));
+        requestAnimationFrame(() =>
+          onOpenChange(false, programmaticCloseDetails),
+        );
       }
     },
     [multiple, value, onValueChange, onOpenChange],

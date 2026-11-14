@@ -1,6 +1,6 @@
+import type { Frame } from "@workspace/ui/components/elevenlabs/matrix-types";
 import { useEffect, useRef, useState } from "react";
 
-import type { Frame } from "./matrix-types.js";
 
 export function useAnimation(
   frames: Frame[] | undefined,

@@ -16,7 +16,7 @@ import {
   AudioPlayerTimeContextProvider,
   type AudioPlayerApi,
   type AudioPlayerItem,
-} from "./audio-player-context.js";
+} from "@workspace/ui/components/elevenlabs/audio-player-context";
 
 type Callback = (delta: number) => void;
 

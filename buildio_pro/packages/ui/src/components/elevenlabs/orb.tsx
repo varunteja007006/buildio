@@ -1,11 +1,11 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
+import type { OrbProps } from "@workspace/ui/components/elevenlabs/orb-types";
 
-import { Scene } from "./orb-scene.js";
-import type { OrbProps } from "./orb-types.js";
+import { Scene } from "@workspace/ui/components/elevenlabs/orb-scene";
 
-export type { AgentState, OrbProps } from "./orb-types.js";
+export type { AgentState, OrbProps } from "@workspace/ui/components/elevenlabs/orb-types";
 
 export function Orb({
   colors = ["#CADCFC", "#A0B9D1"],

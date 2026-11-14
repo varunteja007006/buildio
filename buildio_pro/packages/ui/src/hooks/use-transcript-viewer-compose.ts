@@ -1,6 +1,6 @@
 "use client";
 
-import type { CharacterAlignmentResponseModel } from "./use-transcript-viewer.js";
+import type { CharacterAlignmentResponseModel } from "@workspace/ui/hooks/use-transcript-viewer";
 
 type ComposeSegmentsOptions = {
   hideAudioTags?: boolean;

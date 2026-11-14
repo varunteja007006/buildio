@@ -118,7 +118,10 @@
       "./src/lib/*.ts",
       "./src/lib/*.tsx"
     ],
-    "./components/*": "./src/components/*.tsx",
+    "./components/*": [
+      "./src/components/*.tsx",
+      "./src/components/*.ts"
+    ],
     "./types/*": "./src/types/*.ts",
     "./config/*": "./src/config/*.ts",
     "./hooks/*": [

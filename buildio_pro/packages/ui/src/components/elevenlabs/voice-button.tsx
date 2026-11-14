@@ -4,9 +4,9 @@ import { CheckIcon, XIcon } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@workspace/ui/components/button";
+import { LiveWaveform } from "@workspace/ui/components/elevenlabs/live-waveform";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { LiveWaveform } from "./live-waveform.js";
 
 export type VoiceButtonState =
   "idle" | "recording" | "processing" | "success" | "error";

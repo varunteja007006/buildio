@@ -2,13 +2,13 @@
 
 import { useMemo, type HTMLAttributes, type ReactNode } from "react";
 
+import { useTranscriptViewerContext } from "@workspace/ui/components/elevenlabs/transcript-viewer-context";
 import {
   type TranscriptSegment,
   type TranscriptWord as TranscriptWordType,
 } from "@workspace/ui/hooks/use-transcript-viewer";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { useTranscriptViewerContext } from "./transcript-viewer-context.js";
 
 type TranscriptGap = Extract<TranscriptSegment, { kind: "gap" }>;
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useConversationBarState } from "@workspace/ui/components/elevenlabs/use-conversation-bar-state";
 import {
   ArrowUpIcon,
   ChevronDown,
@@ -13,12 +14,11 @@ import * as React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card } from "@workspace/ui/components/card";
+import { LiveWaveform } from "@workspace/ui/components/elevenlabs/live-waveform";
 import { Separator } from "@workspace/ui/components/separator";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { LiveWaveform } from "./live-waveform.js";
-import { useConversationBarState } from "./use-conversation-bar-state.js";
 
 export interface ConversationBarProps {
   /**

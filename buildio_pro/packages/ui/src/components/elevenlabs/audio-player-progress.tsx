@@ -3,13 +3,13 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { useRef, type ComponentProps, type HTMLProps } from "react";
 
-import { cn } from "@workspace/ui/lib/utils";
-
 import {
   formatTime,
   useAudioPlayer,
   useAudioPlayerTime,
-} from "./audio-player-context.js";
+} from "@workspace/ui/components/elevenlabs/audio-player-context";
+import { cn } from "@workspace/ui/lib/utils";
+
 
 export const AudioPlayerProgress = ({
   ...otherProps

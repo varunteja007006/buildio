@@ -1,11 +1,11 @@
 "use client";
 
+import { heightToStyle } from "@workspace/ui/components/elevenlabs/waveform-canvas";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Waveform, type WaveformProps } from "@workspace/ui/components/elevenlabs/waveform";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { heightToStyle } from "./waveform-canvas.js";
-import { Waveform, type WaveformProps } from "./waveform.js";
 
 export type AudioScrubberProps = WaveformProps & {
   currentTime?: number;

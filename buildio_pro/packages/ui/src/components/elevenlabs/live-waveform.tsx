@@ -1,15 +1,16 @@
 "use client";
 
+
+
+import { useMicrophoneStream } from "@workspace/ui/components/elevenlabs/live-waveform-audio";
+import { useProcessingTransition } from "@workspace/ui/components/elevenlabs/live-waveform-processing";
+import { useWaveformRenderer } from "@workspace/ui/components/elevenlabs/live-waveform-render";
+import type { LiveWaveformProps } from "@workspace/ui/components/elevenlabs/live-waveform-types";
 import { useEffect, useRef } from "react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
-import { useMicrophoneStream } from "./live-waveform-audio.js";
-import { useProcessingTransition } from "./live-waveform-processing.js";
-import { useWaveformRenderer } from "./live-waveform-render.js";
-import type { LiveWaveformProps } from "./live-waveform-types.js";
-
-export type { LiveWaveformProps } from "./live-waveform-types.js";
+export type { LiveWaveformProps } from "@workspace/ui/components/elevenlabs/live-waveform-types";
 
 export const LiveWaveform = ({
   active = false,

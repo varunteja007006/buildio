@@ -10,9 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { useAudioPlayer } from "@workspace/ui/components/elevenlabs/audio-player-context";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { useAudioPlayer } from "./audio-player-context.js";
 
 const PLAYBACK_SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
 

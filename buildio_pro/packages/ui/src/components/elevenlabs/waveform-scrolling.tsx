@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
-import { cn } from "@workspace/ui/lib/utils";
-
 import {
   drawBar,
   drawFadeEdges,
   getComputedBarColor,
   heightToStyle,
   observeCanvasResize,
-} from "./waveform-canvas.js";
-import type { WaveformProps } from "./waveform.js";
+} from "@workspace/ui/components/elevenlabs/waveform-canvas";
+import { useEffect, useRef } from "react";
+
+import type { WaveformProps } from "@workspace/ui/components/elevenlabs/waveform";
+import { cn } from "@workspace/ui/lib/utils";
+
 
 export type ScrollingWaveformProps = Omit<
   WaveformProps,

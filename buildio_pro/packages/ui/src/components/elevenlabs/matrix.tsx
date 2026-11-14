@@ -1,28 +1,28 @@
 "use client";
 
-import * as React from "react";
-import { useMemo } from "react";
-
-import { cn } from "@workspace/ui/lib/utils";
-
-import { useAnimation } from "./matrix-animation.js";
-import { vu } from "./matrix-frames.js";
+import { useAnimation } from "@workspace/ui/components/elevenlabs/matrix-animation";
+import { vu } from "@workspace/ui/components/elevenlabs/matrix-frames";
 import {
   clamp,
   ensureFrameSize,
   type CellPosition,
   type MatrixProps,
-} from "./matrix-types.js";
+} from "@workspace/ui/components/elevenlabs/matrix-types";
+import * as React from "react";
+import { useMemo } from "react";
 
-export type { Frame, MatrixMode, MatrixProps } from "./matrix-types.js";
+import { cn } from "@workspace/ui/lib/utils";
+
+
+export type { Frame, MatrixMode, MatrixProps } from "@workspace/ui/components/elevenlabs/matrix-types";
 export {
   chevronLeft,
   chevronRight,
   digits,
   loader,
   pulse,
-} from "./matrix-presets.js";
-export { snake, vu, wave } from "./matrix-frames.js";
+} from "@workspace/ui/components/elevenlabs/matrix-presets";
+export { snake, vu, wave } from "@workspace/ui/components/elevenlabs/matrix-frames";
 
 export const Matrix = React.forwardRef<HTMLDivElement, MatrixProps>(
   (

@@ -4,12 +4,12 @@
 
 import { useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
+import { fragmentShader, vertexShader } from "@workspace/ui/components/elevenlabs/orb-shaders";
+import type { AgentState, OrbUniforms } from "@workspace/ui/components/elevenlabs/orb-types";
 import { useEffect, useMemo, useRef } from "react";
 import type { RefObject } from "react";
 import * as THREE from "three";
 
-import { fragmentShader, vertexShader } from "./orb-shaders.js";
-import type { AgentState, OrbUniforms } from "./orb-types.js";
 
 function splitmix32(a: number) {
   return function () {

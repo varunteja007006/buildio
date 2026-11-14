@@ -1,12 +1,13 @@
 "use client";
 
+
+
+import { useRecordingRender } from "@workspace/ui/components/elevenlabs/use-recording-render";
+import { heightToStyle, observeCanvasResize } from "@workspace/ui/components/elevenlabs/waveform-canvas";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { WaveformProps } from "@workspace/ui/components/elevenlabs/waveform";
 import { cn } from "@workspace/ui/lib/utils";
-
-import { useRecordingRender } from "./use-recording-render.js";
-import { heightToStyle, observeCanvasResize } from "./waveform-canvas.js";
-import type { WaveformProps } from "./waveform.js";
 
 export type RecordingWaveformProps = Omit<
   WaveformProps,

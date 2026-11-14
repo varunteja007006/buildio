@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useRef, type HTMLAttributes } from "react";
-
-import { cn } from "@workspace/ui/lib/utils";
-
 import {
   drawBar,
   drawFadeEdges,
   getComputedBarColor,
   heightToStyle,
   observeCanvasResize,
-} from "./waveform-canvas.js";
+} from "@workspace/ui/components/elevenlabs/waveform-canvas";
+import { useEffect, useRef, type HTMLAttributes } from "react";
+
+import { cn } from "@workspace/ui/lib/utils";
+
 
 export type WaveformProps = HTMLAttributes<HTMLDivElement> & {
   data?: number[];

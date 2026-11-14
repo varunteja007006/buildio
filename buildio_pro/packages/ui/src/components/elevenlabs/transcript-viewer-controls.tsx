@@ -8,16 +8,15 @@ import {
 } from "react";
 
 import { Button } from "@workspace/ui/components/button";
-import { cn } from "@workspace/ui/lib/utils";
-
 import {
   ScrubBarContainer,
   ScrubBarProgress,
   ScrubBarThumb,
   ScrubBarTimeLabel,
   ScrubBarTrack,
-} from "./scrub-bar.js";
-import { useTranscriptViewerContext } from "./transcript-viewer-context.js";
+} from "@workspace/ui/components/elevenlabs/scrub-bar";
+import { useTranscriptViewerContext } from "@workspace/ui/components/elevenlabs/transcript-viewer-context";
+import { cn } from "@workspace/ui/lib/utils";
 
 function TranscriptViewerAudio({
   ...props

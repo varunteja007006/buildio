@@ -1,15 +1,16 @@
 "use client";
 
+
+
+import { useLiveMicrophoneDrag } from "@workspace/ui/components/elevenlabs/use-live-microphone-drag";
+import { useLiveMicrophonePlayback } from "@workspace/ui/components/elevenlabs/use-live-microphone-playback";
+import { useLiveMicrophoneRecorder } from "@workspace/ui/components/elevenlabs/use-live-microphone-recorder";
+import { useLiveMicrophoneRender } from "@workspace/ui/components/elevenlabs/use-live-microphone-render";
+import { heightToStyle, observeCanvasResize } from "@workspace/ui/components/elevenlabs/waveform-canvas";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { ScrollingWaveformProps } from "@workspace/ui/components/elevenlabs/waveform-scrolling";
 import { cn } from "@workspace/ui/lib/utils";
-
-import { useLiveMicrophoneDrag } from "./use-live-microphone-drag.js";
-import { useLiveMicrophonePlayback } from "./use-live-microphone-playback.js";
-import { useLiveMicrophoneRecorder } from "./use-live-microphone-recorder.js";
-import { useLiveMicrophoneRender } from "./use-live-microphone-render.js";
-import { heightToStyle, observeCanvasResize } from "./waveform-canvas.js";
-import type { ScrollingWaveformProps } from "./waveform-scrolling.js";
 
 export type LiveMicrophoneWaveformProps = Omit<
   ScrollingWaveformProps,

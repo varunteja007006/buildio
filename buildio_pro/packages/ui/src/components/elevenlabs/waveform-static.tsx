@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import { Waveform, type WaveformProps } from "./waveform.js";
+import { Waveform, type WaveformProps } from "@workspace/ui/components/elevenlabs/waveform";
 
 export type StaticWaveformProps = WaveformProps & {
   bars?: number;
