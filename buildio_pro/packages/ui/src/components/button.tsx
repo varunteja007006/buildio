@@ -61,11 +61,19 @@ function Button({
   if (asChild && React.isValidElement(children)) {
     const childType = children.type;
     const isNativeButtonChild = childType === "button";
+    const isNativeElementChild = typeof childType === "string";
+    // Only force `nativeButton={false}` for native non-button elements (a,
+    // span, div...). Function components may render either — Base UI defaults
+    // to true and validates against the runtime DOM element. An explicitly
+    // passed nativeButton always wins.
+    const nativeButton =
+      buttonProps.nativeButton ??
+      (isNativeElementChild && !isNativeButtonChild ? false : undefined);
     return (
       <ButtonPrimitive
         {...buttonProps}
         render={children}
-        nativeButton={isNativeButtonChild ? undefined : false}
+        nativeButton={nativeButton}
       />
     );
   }

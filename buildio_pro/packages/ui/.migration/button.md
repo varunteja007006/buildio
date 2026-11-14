@@ -31,3 +31,7 @@
 - `apps/billezy/app/layout.tsx` — the `ghost` + `sm` `<Link>` header button and the `outline` + `sm` external `<a>` still open/hover correctly; the `<a target="_blank">` child still opens a new tab.
 - `apps/cortex-ai/components/agents/agent-playground.tsx` — `<Button asChild variant="ghost" size="sm">` keeps the ghost/small classes on the link.
 - Any action bar (e.g. expense-tracker tables) — clicks on a disabled action-bar item no longer trigger the handler, and keyboard focus/Enter still works.
+
+## Follow-up (2026-11-14)
+
+- `nativeButton` heuristic fixed: previously forced `false` for ANY non-`"button"` child, including function components that render a native `<button>` (e.g. `ComboboxTrigger` via `InputGroupButton`) — Base UI then logged the "expected a non-<button>" console warning. Now `false` is only forced for native non-button *string* elements; function components get Base UI's default (`true`, runtime-validated against the rendered DOM), and an explicitly passed `nativeButton` prop always wins.
