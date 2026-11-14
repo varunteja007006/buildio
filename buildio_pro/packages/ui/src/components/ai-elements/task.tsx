@@ -64,10 +64,16 @@ export const TaskTrigger = ({
       <ChevronDownIcon className="size-4 transition-transform group-data-panel-open:rotate-180" />
     </div>
   );
+  // The default trigger is a <div>; mirror button.tsx's heuristic and tell
+  // Base UI not to expect a native <button> for non-button native elements.
+  const childIsNonButtonElement =
+    !isValidElement(children) ||
+    (typeof children.type === "string" && children.type !== "button");
   return (
     <CollapsibleTrigger
       render={isValidElement(children) ? children : defaultTrigger}
       className={cn("group", className)}
+      nativeButton={childIsNonButtonElement ? false : undefined}
       {...props}
     />
   );
