@@ -136,9 +136,13 @@ function TranscriptAudio() {
 function TranscriptControls() {
   const transcript = useTranscriptViewerContext();
   const Icon = transcript.isPlaying ? PauseIcon : PlayIcon;
+  const name = exampleTracks[0]?.name ?? "Track 00";
 
+  // Styled to mirror the AudioPlayer demo: bordered card, outline play
+  // button, thin muted track with a hover-reveal thumb, and `text-sm` time
+  // labels on one row.
   return (
-    <div className="flex items-center gap-3">
+    <div className="bg-background flex w-full max-w-md items-center gap-3 rounded-md border p-3">
       <Button
         type="button"
         variant="outline"
@@ -152,27 +156,37 @@ function TranscriptControls() {
       >
         <Icon className="size-4" />
       </Button>
-      <ScrubBarContainer
-        duration={transcript.duration}
-        value={transcript.currentTime}
-        onScrub={transcript.seekToTime}
-        onScrubStart={transcript.startScrubbing}
-        onScrubEnd={transcript.endScrubbing}
-        className="flex-1"
-      >
-        <div className="flex flex-1 flex-col gap-1">
-          <ScrubBarTrack>
-            <ScrubBarProgress />
-            <ScrubBarThumb />
-          </ScrubBarTrack>
-          <div className="text-muted-foreground flex items-center justify-between text-xs tabular-nums">
-            <ScrubBarTimeLabel time={transcript.currentTime} />
+      <div className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-medium">{name}</span>
+        <ScrubBarContainer
+          duration={transcript.duration}
+          value={transcript.currentTime}
+          onScrub={transcript.seekToTime}
+          onScrubStart={transcript.startScrubbing}
+          onScrubEnd={transcript.endScrubbing}
+          className="mt-1"
+        >
+          <div className="flex w-full items-center gap-2">
             <ScrubBarTimeLabel
-              time={Math.max(0, transcript.duration - transcript.currentTime)}
+              time={transcript.currentTime}
+              className="text-muted-foreground text-sm"
+            />
+            <ScrubBarTrack className="group/scrub h-1 bg-muted">
+              <ScrubBarProgress className="bg-transparent" />
+              <ScrubBarThumb className="relative flex h-0 w-0 items-center justify-center opacity-0 group-hover/scrub:opacity-100 focus-visible:opacity-100 focus-visible:outline-none">
+                <span className="bg-foreground absolute size-3 rounded-full" />
+              </ScrubBarThumb>
+            </ScrubBarTrack>
+            <ScrubBarTimeLabel
+              time={transcript.duration}
+              format={
+                transcript.duration > 0 ? undefined : () => "--:--"
+              }
+              className="text-muted-foreground text-sm"
             />
           </div>
-        </div>
-      </ScrubBarContainer>
+        </ScrubBarContainer>
+      </div>
     </div>
   );
 }
