@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "oklch(0.2683 0.0279 150.7681)",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
