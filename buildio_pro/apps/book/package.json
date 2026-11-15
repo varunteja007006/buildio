@@ -22,7 +22,7 @@
     "@workspace/book-convex-backend": "workspace:*",
     "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",
-    "better-auth": "1.7.18",
+    "better-auth": "1.7.22",
     "convex": "catalog:",
     "lucide-react": "catalog:",
     "next": "catalog:",

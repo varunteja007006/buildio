@@ -40,7 +40,7 @@
     "embla-carousel": "catalog:",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.5.0",
-    "libphonenumber-js": "^1.13.12",
+    "libphonenumber-js": "^1.13.16",
     "lucide-react": "catalog:",
     "motion": "catalog:",
     "nanoid": "^6.0.1",
@@ -72,7 +72,7 @@
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
     "@tailwindcss/postcss": "catalog:",
-    "@turbo/gen": "^2.11.10",
+    "@turbo/gen": "^2.11.11",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",

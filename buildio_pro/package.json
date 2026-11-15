@@ -39,14 +39,19 @@
     "start:portfolio": "pnpm --filter=portfolio start",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
-    "clean:all": "turbo run clean && git clean -xdf node_modules"
+    "clean:all": "bash scripts/clean.sh all",
+    "clean:deps": "bash scripts/clean.sh deps",
+    "clean:cache": "bash scripts/clean.sh cache",
+    "clean:dry:all": "bash scripts/clean.sh --dry all",
+    "clean:dry:deps": "bash scripts/clean.sh --dry deps",
+    "clean:dry:cache": "bash scripts/clean.sh --dry cache"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "prettier": "3.9.10",
+    "prettier": "3.10.1",
     "shadcn": "4.23.0",
-    "turbo": "2.11.10",
+    "turbo": "2.11.11",
     "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@11.4.0",
