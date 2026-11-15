@@ -60,15 +60,19 @@ function Button({
 
   if (asChild && React.isValidElement(children)) {
     const childType = children.type;
+    const childProps = children.props as { href?: unknown };
     const isNativeButtonChild = childType === "button";
-    const isNativeElementChild = typeof childType === "string";
-    // Only force `nativeButton={false}` for native non-button elements (a,
-    // span, div...). Function components may render either — Base UI defaults
-    // to true and validates against the runtime DOM element. An explicitly
-    // passed nativeButton always wins.
+    const isNonButtonElementChild =
+      typeof childType === "string" && !isNativeButtonChild;
+    // Function components may render either — Base UI defaults to true and
+    // validates against the runtime DOM element. A child that receives an
+    // `href` prop (next/link, custom link wrappers) renders an anchor, not a
+    // native button. An explicitly passed nativeButton always wins.
+    const isLinkLikeChild =
+      typeof childType === "function" && childProps.href !== undefined;
     const nativeButton =
       buttonProps.nativeButton ??
-      (isNativeElementChild && !isNativeButtonChild ? false : undefined);
+      (isNonButtonElementChild || isLinkLikeChild ? false : undefined);
     return (
       <ButtonPrimitive
         {...buttonProps}

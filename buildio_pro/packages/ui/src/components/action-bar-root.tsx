@@ -1,7 +1,6 @@
 "use client";
 
 import { useRender } from "@base-ui/react/use-render";
-import { useDirection } from "@radix-ui/react-direction";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
@@ -12,6 +11,7 @@ import {
   type DivProps,
   type Orientation,
 } from "@workspace/ui/components/action-bar-context";
+import { useDirection } from "@workspace/ui/components/direction";
 import { useAsRef } from "@workspace/ui/hooks/use-as-ref";
 import { useComposedRefs } from "@workspace/ui/lib/compose-refs";
 import { cn } from "@workspace/ui/lib/utils";
