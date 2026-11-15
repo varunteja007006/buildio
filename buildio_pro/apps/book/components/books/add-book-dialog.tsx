@@ -16,6 +16,7 @@ import { useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useActiveTopic } from "@/components/topic-provider";
 import { getConvexErrorMessage } from "@/lib/convex-error";
 
 export function AddBookDialog({
@@ -26,6 +27,7 @@ export function AddBookDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const createBook = useMutation(api.books.create);
+  const { topicId } = useActiveTopic();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -42,12 +44,12 @@ export function AddBookDialog({
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = title.trim();
-    if (trimmed.length === 0 || isSubmitting) {
+    if (trimmed.length === 0 || isSubmitting || topicId === null) {
       return;
     }
     setIsSubmitting(true);
     try {
-      const bookId = await createBook({ title: trimmed });
+      const bookId = await createBook({ title: trimmed, topicId });
       handleOpenChange(false);
       router.push(`/home/notes/${bookId}`);
     } catch (cause) {
@@ -89,7 +91,9 @@ export function AddBookDialog({
             </Button>
             <Button
               type="submit"
-              disabled={title.trim().length === 0 || isSubmitting}
+              disabled={
+                title.trim().length === 0 || isSubmitting || topicId === null
+              }
             >
               Save
             </Button>

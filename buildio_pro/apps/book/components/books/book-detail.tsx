@@ -10,13 +10,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb";
+import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { HeartIcon } from "lucide-react";
 import Link from "next/link";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -29,6 +31,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
  */
 export function BookDetail({ bookId }: { bookId: Id<"books"> }) {
   const book = useQuery(api.books.get, { id: bookId });
+  const setFavorite = useMutation(api.books.setFavorite);
+  const isFavorite = book?.isFavorite ?? false;
+  const toggleFavorite = () => {
+    void setFavorite({ id: bookId, favorite: !isFavorite }).catch((error) => {
+      console.error("Failed to update book favorite", error);
+    });
+  };
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -58,7 +67,23 @@ export function BookDetail({ bookId }: { bookId: Id<"books"> }) {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={`${isFavorite ? "Unfavorite" : "Favorite"} book`}
+              title={`${isFavorite ? "Unfavorite" : "Favorite"} book`}
+              disabled={book === undefined}
+              onClick={toggleFavorite}
+            >
+              <HeartIcon
+                className={`size-4 ${
+                  isFavorite ? "fill-current text-amber-500" : ""
+                }`}
+                aria-hidden="true"
+              />
+            </Button>
             <ThemeToggle />
           </div>
         </header>

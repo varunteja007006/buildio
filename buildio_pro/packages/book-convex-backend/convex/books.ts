@@ -5,7 +5,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 
-// Books are global for now; per-user scoping returns once the app
+// Books are scoped to a topic; per-user scoping returns once the app
 // has sign-in set up.
 
 /** Longest allowed book title (after trimming). */
@@ -54,15 +54,19 @@ async function requireBook(
   return book;
 }
 
-/** Lists all books, newest first, paginated. */
+/** Lists a topic's books, newest first, paginated. */
 export const list = query({
-  args: { paginationOpts: paginationOptsValidator },
+  args: {
+    topicId: v.id("book_topics"),
+    paginationOpts: paginationOptsValidator,
+  },
   returns: v.object({
     page: v.array(
       v.object({
         id: v.id("books"),
         title: v.string(),
         createdAt: v.number(),
+        isFavorite: v.boolean(),
       }),
     ),
     isDone: v.boolean(),
@@ -71,7 +75,7 @@ export const list = query({
   handler: async (ctx, args) => {
     const result = await ctx.db
       .query("books")
-      .withIndex("by_created")
+      .withIndex("by_topic_created", (q) => q.eq("topic_id", args.topicId))
       .order("desc")
       .paginate(args.paginationOpts);
     return {
@@ -79,6 +83,7 @@ export const list = query({
         id: book._id,
         title: book.title,
         createdAt: book.createdAt,
+        isFavorite: book.is_favorite === true,
       })),
       isDone: result.isDone,
       continueCursor: result.continueCursor,
@@ -94,6 +99,7 @@ export const get = query({
     title: v.string(),
     doc: v.union(v.string(), v.null()),
     createdAt: v.number(),
+    isFavorite: v.boolean(),
   }),
   handler: async (ctx, args) => {
     const book = await requireBook(ctx, args.id);
@@ -102,19 +108,21 @@ export const get = query({
       title: book.title,
       doc: book.doc ?? null,
       createdAt: book.createdAt,
+      isFavorite: book.is_favorite === true,
     };
   },
 });
 
-/** Creates a book with a unique title, returning the new id. */
+/** Creates a book in a topic with a unique title, returning the new id. */
 export const create = mutation({
-  args: { title: v.string() },
+  args: { title: v.string(), topicId: v.id("book_topics") },
   returns: v.id("books"),
   handler: async (ctx, args) => {
     const title = validatedTitle(args.title.trim());
 
-    // Uniqueness is enforced in the handler (not the schema) across all
-    // books, matching the topic module; order is irrelevant for the check.
+    // Uniqueness is enforced in the handler (not the schema) and stays
+    // global across all topics, matching the current UX; order is
+    // irrelevant for the check.
     const books = await ctx.db
       .query("books")
       .withIndex("by_created")
@@ -129,6 +137,7 @@ export const create = mutation({
 
     return await ctx.db.insert("books", {
       title,
+      topic_id: args.topicId,
       createdAt: Date.now(),
     });
   },
@@ -170,5 +179,46 @@ export const remove = mutation({
     }
     await ctx.db.delete(args.id);
     return null;
+  },
+});
+
+/** Marks or unmarks a book as a favorite. */
+export const setFavorite = mutation({
+  args: { id: v.id("books"), favorite: v.boolean() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const book = await requireBook(ctx, args.id);
+    if (book.is_favorite !== args.favorite) {
+      await ctx.db.patch(book._id, { is_favorite: args.favorite });
+    }
+    return null;
+  },
+});
+
+/** Lists favorite books, newest first, bounded like the shelf scan. */
+export const listFavorites = query({
+  args: {},
+  returns: v.array(
+    v.object({
+      id: v.id("books"),
+      title: v.string(),
+      createdAt: v.number(),
+      isFavorite: v.boolean(),
+    }),
+  ),
+  handler: async (ctx) => {
+    const books = await ctx.db
+      .query("books")
+      .withIndex("by_created")
+      .order("desc")
+      .take(MAX_BOOKS);
+    return books
+      .filter((book) => book.is_favorite === true)
+      .map((book) => ({
+        id: book._id,
+        title: book.title,
+        createdAt: book.createdAt,
+        isFavorite: book.is_favorite === true,
+      }));
   },
 });

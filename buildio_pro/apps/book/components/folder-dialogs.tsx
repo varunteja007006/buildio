@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@workspace/book-convex-backend/convex/_generated/api";
+import type { Id } from "@workspace/book-convex-backend/convex/_generated/dataModel";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -121,11 +122,13 @@ function FolderNameDialog({
 }
 
 export function FolderCreateDialog({
+  topicId,
   parentId,
   parentDepth,
   open,
   onOpenChange,
 }: {
+  topicId: Id<"book_topics"> | null;
   parentId: FolderId | null;
   parentDepth: number;
   open: boolean;
@@ -148,7 +151,13 @@ export function FolderCreateDialog({
           : null
       }
       onSubmit={async (name) => {
-        await createFolder({ name, parentId: parentId ?? undefined });
+        if (topicId === null) {
+          // Unreachable while the "Add folder" buttons are disabled without
+          // an active topic; guarded so the mutation is never called without
+          // a topic.
+          throw new Error("No active topic — select a topic first.");
+        }
+        await createFolder({ name, topicId, parentId: parentId ?? undefined });
       }}
     />
   );

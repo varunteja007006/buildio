@@ -18,19 +18,24 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar";
 import { useMutation, useQuery } from "convex/react";
-import { BookHeartIcon, ChevronsUpDown, Plus, Star, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  BookHeartIcon,
+  ChevronsUpDown,
+  Plus,
+  Star,
+  Trash2,
+} from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 
 import { AddTopicDialog } from "@/components/add-topic-dialog";
 import { DeleteTopicDialog } from "@/components/delete-topic-dialog";
-
-const ACTIVE_TOPIC_STORAGE_KEY = "book:active-topic";
+import { useActiveTopic } from "@/components/topic-provider";
 
 export function TopicSwitcher() {
   const { isMobile } = useSidebar();
   const topics = useQuery(api.bookTopics.list);
-  const ensureDefault = useMutation(api.bookTopics.ensureDefault);
   const setFavorite = useMutation(api.bookTopics.setFavorite);
+  const { setActiveTopicId, topic: activeTopic } = useActiveTopic();
   const [addTopicOpen, setAddTopicOpen] = useState(false);
   const [topicToDelete, setTopicToDelete] = useState<{
     id: Id<"book_topics">;
@@ -46,48 +51,8 @@ export function TopicSwitcher() {
     [setFavorite],
   );
 
-  // Selected topic persists in localStorage; missing/stale ids fall back to null.
-  const [activeTopicId, setActiveTopicId] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return window.localStorage.getItem(ACTIVE_TOPIC_STORAGE_KEY);
-  });
-
   // Set while a delete is opening so the row's click does not also select.
   const suppressSelectRef = useRef(false);
-
-  const activeTopic = topics?.find((topic) => topic.id === activeTopicId);
-
-  const selectTopic = useCallback((topicId: string) => {
-    setActiveTopicId(topicId);
-    window.localStorage.setItem(ACTIVE_TOPIC_STORAGE_KEY, topicId);
-  }, []);
-
-  const topicsLoaded = topics !== undefined;
-  const hasDefault = topics?.some((topic) => topic.isDefault) ?? false;
-
-  // Auto-create the default topic when it is missing — covers the empty case
-  // and legacy topics predating the is_default flag.
-  useEffect(() => {
-    if (topicsLoaded && !hasDefault) {
-      void ensureDefault();
-    }
-  }, [topicsLoaded, hasDefault, ensureDefault]);
-
-  // Restore a resolvable selection; otherwise auto-select the default topic
-  // (or the first topic) after the list loads. Never overrides a user
-  // selection that still resolves.
-  useEffect(() => {
-    if (!topicsLoaded) {
-      return;
-    }
-    if (activeTopicId && topics?.some((topic) => topic.id === activeTopicId)) {
-      return;
-    }
-    const fallback = topics?.find((topic) => topic.isDefault) ?? topics?.[0];
-    if (fallback) {
-      selectTopic(fallback.id);
-    }
-  }, [topicsLoaded, topics, activeTopicId, selectTopic]);
 
   const requestDeleteTopic = (topic: {
     id: Id<"book_topics">;
@@ -95,15 +60,6 @@ export function TopicSwitcher() {
   }) => {
     suppressSelectRef.current = true;
     setTopicToDelete(topic);
-  };
-
-  const handleDeleted = (deletedTopicId: string) => {
-    if (activeTopicId === deletedTopicId) {
-      // Clear the selection; the fallback effect re-selects (and persists)
-      // the default topic or the first remaining one.
-      setActiveTopicId(null);
-      window.localStorage.removeItem(ACTIVE_TOPIC_STORAGE_KEY);
-    }
   };
 
   return (
@@ -154,12 +110,12 @@ export function TopicSwitcher() {
             {topics?.map((topic, index) => (
               <DropdownMenuItem
                 key={topic.id}
-                onClick={(event) => {
+                onClick={() => {
                   if (suppressSelectRef.current) {
                     suppressSelectRef.current = false;
                     return;
                   }
-                  selectTopic(topic.id);
+                  setActiveTopicId(topic.id);
                 }}
                 className="gap-2 p-2"
               >
@@ -226,7 +182,7 @@ export function TopicSwitcher() {
       <AddTopicDialog
         open={addTopicOpen}
         onOpenChange={setAddTopicOpen}
-        onCreated={selectTopic}
+        onCreated={(topicId) => setActiveTopicId(topicId as Id<"book_topics">)}
       />
       <DeleteTopicDialog
         topic={topicToDelete}
@@ -235,7 +191,6 @@ export function TopicSwitcher() {
             setTopicToDelete(null);
           }
         }}
-        onDeleted={handleDeleted}
       />
     </SidebarMenu>
   );

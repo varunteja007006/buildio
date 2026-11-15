@@ -19,16 +19,23 @@ import {
   FolderRenameDialog,
 } from "@/components/folder-dialogs";
 import { FolderRow, type DialogState } from "@/components/folder-tree";
+import { useActiveTopic } from "@/components/topic-provider";
 import { buildFolderTree, MAX_MAIN_FOLDERS } from "@/lib/folders";
 
 export function NavMain() {
-  const folders = useQuery(api.bookFolders.list);
+  // Folders are topic-scoped; skip the query until a topic resolves.
+  const { topicId } = useActiveTopic();
+  const folders = useQuery(
+    api.bookFolders.list,
+    topicId !== null ? { topicId } : "skip",
+  );
   const [dialog, setDialog] = useState<DialogState | null>(null);
 
   const tree = folders ? buildFolderTree(folders) : [];
   const mainCount =
     folders?.filter((folder) => folder.parentId === null).length ?? 0;
   const atMainLimit = mainCount >= MAX_MAIN_FOLDERS;
+  const noActiveTopic = topicId === null;
   const openCreate = () =>
     setDialog({ kind: "create", parentId: null, parentDepth: 0 });
 
@@ -46,7 +53,7 @@ export function NavMain() {
           // Empty state: folders are the only way to organize here, so offer
           // a prominent add affordance.
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={openCreate}>
+            <SidebarMenuButton onClick={openCreate} disabled={noActiveTopic}>
               <FolderPlusIcon />
               <span>Add folder</span>
             </SidebarMenuButton>
@@ -63,7 +70,7 @@ export function NavMain() {
             ))}
             <SidebarMenuItem>
               <SidebarMenuButton
-                disabled={atMainLimit}
+                disabled={atMainLimit || noActiveTopic}
                 title={
                   atMainLimit
                     ? `Maximum of ${MAX_MAIN_FOLDERS} main folders reached`
@@ -79,6 +86,7 @@ export function NavMain() {
         )}
       </SidebarMenu>
       <FolderCreateDialog
+        topicId={topicId}
         parentId={dialog?.kind === "create" ? dialog.parentId : null}
         parentDepth={dialog?.kind === "create" ? dialog.parentDepth : 0}
         open={dialog?.kind === "create"}

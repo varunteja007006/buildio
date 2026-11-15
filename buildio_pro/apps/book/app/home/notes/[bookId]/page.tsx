@@ -2,6 +2,7 @@ import type { Id } from "@workspace/book-convex-backend/convex/_generated/dataMo
 import { use } from "react";
 
 import { BookDetail } from "@/components/books/book-detail";
+import { TopicProvider } from "@/components/topic-provider";
 
 export default function BookPage({
   params,
@@ -9,5 +10,9 @@ export default function BookPage({
   params: Promise<{ bookId: string }>;
 }) {
   const { bookId } = use(params);
-  return <BookDetail bookId={bookId as Id<"books">} />;
+  return (
+    <TopicProvider>
+      <BookDetail bookId={bookId as Id<"books">} />
+    </TopicProvider>
+  );
 }

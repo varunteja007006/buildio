@@ -22,7 +22,7 @@ export function DeleteTopicDialog({
 }: {
   topic: { id: Id<"book_topics">; name: string } | null;
   onOpenChange: (open: boolean) => void;
-  onDeleted: (topicId: Id<"book_topics">) => void;
+  onDeleted?: (topicId: Id<"book_topics">) => void;
 }) {
   const removeTopic = useMutation(api.bookTopics.remove);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -43,7 +43,7 @@ export function DeleteTopicDialog({
     setError(null);
     try {
       await removeTopic({ id: topic.id });
-      onDeleted(topic.id);
+      onDeleted?.(topic.id);
       handleOpenChange(false);
     } catch (cause) {
       setError(

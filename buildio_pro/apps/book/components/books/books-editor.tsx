@@ -11,12 +11,12 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { DeleteBookDialog } from "@/components/books/delete-book-dialog";
-import { BookEditor } from "@/components/notes/book-editor";
 import {
   blocksToMarkdown,
   downloadBookNotes,
   type BookNotes,
-} from "@/components/notes/notes-model";
+} from "@/components/books/export";
+import { BookEditor } from "@/components/notes/book-editor";
 import { getConvexErrorMessage } from "@/lib/convex-error";
 
 const AUTOSAVE_DELAY_MS = 800;

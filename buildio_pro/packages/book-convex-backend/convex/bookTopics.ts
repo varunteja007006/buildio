@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 
@@ -118,6 +118,22 @@ export const remove = mutation({
     }
     if (topic.is_default === true) {
       throw new Error("The default topic cannot be deleted");
+    }
+
+    // A topic with content cannot be deleted; there is no cascade because
+    // reading notes must not be silently destroyed.
+    const folders = await ctx.db
+      .query("book_folders")
+      .withIndex("by_topic_created", (q) => q.eq("topic_id", args.id))
+      .take(1);
+    const books = await ctx.db
+      .query("books")
+      .withIndex("by_topic_created", (q) => q.eq("topic_id", args.id))
+      .take(1);
+    if (folders.length > 0 || books.length > 0) {
+      throw new ConvexError(
+        "Topic is not empty — delete or move its books and folders first",
+      );
     }
 
     await ctx.db.delete(args.id);

@@ -51,6 +51,7 @@ async function folderDepth(
 /** Checks whether a sibling of `excludeId` (or any folder) already uses `name`. */
 async function hasSiblingNamed(
   ctx: MutationCtx,
+  topicId: Id<"book_topics">,
   parentId: Id<"book_folders"> | undefined,
   name: string,
   excludeId?: Id<"book_folders">,
@@ -65,12 +66,12 @@ async function hasSiblingNamed(
     );
   }
   // The by_parent index only covers documents where parent_id is defined, so
-  // top-level folders are found via the created-at scan. The full bounded scan
-  // is needed because nested folders interleave with top-level ones in
-  // creation order.
+  // top-level folders are found via the per-topic created-at scan. The full
+  // bounded scan is needed because nested folders interleave with top-level
+  // ones in creation order.
   const folders = await ctx.db
     .query("book_folders")
-    .withIndex("by_created_at")
+    .withIndex("by_topic_created", (q) => q.eq("topic_id", topicId))
     .order("asc")
     .take(MAX_FOLDERS);
   return folders.some(
@@ -81,9 +82,9 @@ async function hasSiblingNamed(
   );
 }
 
-/** Lists every folder in creation order. */
+/** Lists every folder of a topic, in creation order. */
 export const list = query({
-  args: {},
+  args: { topicId: v.id("book_topics") },
   returns: v.array(
     v.object({
       id: v.id("book_folders"),
@@ -93,10 +94,10 @@ export const list = query({
       isFavorite: v.boolean(),
     }),
   ),
-  handler: async (ctx) => {
+  handler: async (ctx, args) => {
     const folders = await ctx.db
       .query("book_folders")
-      .withIndex("by_created_at")
+      .withIndex("by_topic_created", (q) => q.eq("topic_id", args.topicId))
       .order("asc")
       .take(MAX_FOLDERS);
     return folders.map((folder) => ({
@@ -109,9 +110,13 @@ export const list = query({
   },
 });
 
-/** Creates a folder, enforcing depth, main-folder count, and sibling names. */
+/** Creates a folder in a topic, enforcing depth, main-folder count, and names. */
 export const create = mutation({
-  args: { name: v.string(), parentId: v.optional(v.id("book_folders")) },
+  args: {
+    topicId: v.id("book_topics"),
+    name: v.string(),
+    parentId: v.optional(v.id("book_folders")),
+  },
   returns: v.id("book_folders"),
   handler: async (ctx, args) => {
     const name = args.name.trim();
@@ -136,9 +141,12 @@ export const create = mutation({
         );
       }
     } else {
+      // Main-folder count is per topic; the per-topic created-at scan stays
+      // bounded and the top-level filter stays in the handler because the
+      // by_parent index cannot match undefined parent_id values.
       const recent = await ctx.db
         .query("book_folders")
-        .withIndex("by_created_at")
+        .withIndex("by_topic_created", (q) => q.eq("topic_id", args.topicId))
         .order("asc")
         .take(MAX_MAIN_FOLDERS + 1);
       const topLevelCount = recent.filter(
@@ -149,13 +157,14 @@ export const create = mutation({
       }
     }
 
-    if (await hasSiblingNamed(ctx, args.parentId, name)) {
+    if (await hasSiblingNamed(ctx, args.topicId, args.parentId, name)) {
       throw new ConvexError("A folder with this name already exists here");
     }
 
     return await ctx.db.insert("book_folders", {
       name,
       parent_id: args.parentId,
+      topic_id: args.topicId,
       created_at: Date.now(),
     });
   },
@@ -180,7 +189,13 @@ export const rename = mutation({
       );
     }
     if (
-      await hasSiblingNamed(ctx, folder.parent_id, name, args.id)
+      await hasSiblingNamed(
+        ctx,
+        folder.topic_id,
+        folder.parent_id,
+        name,
+        args.id,
+      )
     ) {
       throw new ConvexError("A folder with this name already exists here");
     }

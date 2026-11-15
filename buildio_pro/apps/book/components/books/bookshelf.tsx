@@ -8,13 +8,17 @@ import * as React from "react";
 
 import { AddBookDialog } from "@/components/books/add-book-dialog";
 import { BookCard } from "@/components/books/book-card";
+import { useActiveTopic } from "@/components/topic-provider";
 
 const PAGE_SIZE = 12;
 
 export function Bookshelf() {
+  // Books are topic-scoped; skip the query until a topic resolves (the
+  // !loaded branch below shows the loading state meanwhile).
+  const { topicId } = useActiveTopic();
   const { results, status, loadMore } = usePaginatedQuery(
     api.books.list,
-    {},
+    topicId !== null ? { topicId } : "skip",
     { initialNumItems: PAGE_SIZE },
   );
   const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -58,6 +62,7 @@ export function Bookshelf() {
                 id={book.id}
                 title={book.title}
                 createdAt={book.createdAt}
+                isFavorite={book.isFavorite}
               />
             ))}
           </div>
