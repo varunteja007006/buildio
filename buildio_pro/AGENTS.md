@@ -17,7 +17,7 @@ This is a pnpm 11.4 + Turborepo monorepo of Next.js 16 apps (plus one Expo app).
 
 - There are many apps sharing catalogs; a version bump in the shared `catalog:` or `react19` catalog (and in `packages/ui`) affects every app that uses it. Do not assume one app compiles means all do: after changing any dependency version, verify with `pnpm build` (all apps), plus `pnpm --filter=web typecheck` if shared packages changed.
 - New dependencies: pin the exact version (no `^`/`~`). If the package is used by more than one app (or plausibly soon will be), add it to the `catalog` in `pnpm-workspace.yaml` and consume it via `"catalog:"`, not a hardcoded version. React types also live in the `react19` catalog.
-- Renovate enforces this policy (`renovate.json`): `:pinDependencies`, `rangeStrategy: pin`, weekly schedule, `minimumReleaseAge: 10 days` (security fixes bypass it). `pnpm-workspace.yaml` additionally sets `minimumReleaseAge: 10080` (7 days) with an allowlist of newer packages, and keeps security `overrides` pinning minimum versions — leave those entries intact unless intentionally changing policy.
+- Renovate enforces this policy (`renovate.json`): `:pinDependencies`, `rangeStrategy: pin`, weekly schedule, `minimumReleaseAge: 60 hours` (security fixes bypass it). `pnpm-workspace.yaml` additionally sets `minimumReleaseAge: 3600` (60 hours, in minutes) with an allowlist of newer packages, and keeps security `overrides` pinning minimum versions — leave those entries intact unless intentionally changing policy.
 - `pnpm-workspace.yaml` `allowBuilds` lists the packages allowed to run postinstall build scripts; add entries there when a new package's scripts need to run.
 
 ## Workspace Boundaries

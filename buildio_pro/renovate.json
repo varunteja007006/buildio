@@ -5,13 +5,13 @@
     ":pinDependencies",
     "schedule:weekly"
   ],
-  "minimumReleaseAge": "10 days",
+  "minimumReleaseAge": "60 hours",
   "rangeStrategy": "pin",
   "separateMajorMinor": true,
   "osvVulnerabilityAlerts": true,
   "packageRules": [
     {
-      "description": "Security fixes land immediately, bypassing the 10-day stability window",
+      "description": "Security fixes land immediately, bypassing the 60-hour stability window",
       "matchUpdateTypes": ["security"],
       "minimumReleaseAge": null
     }
