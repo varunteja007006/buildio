@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@workspace/book-convex-backend/convex/_generated/api";
+import type { Id } from "@workspace/book-convex-backend/convex/_generated/dataModel";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -22,9 +23,12 @@ import { getConvexErrorMessage } from "@/lib/convex-error";
 export function AddBookDialog({
   open,
   onOpenChange,
+  folderId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** When set, the created book is filed inside this folder. */
+  folderId?: Id<"book_folders">;
 }) {
   const createBook = useMutation(api.books.create);
   const { topicId } = useActiveTopic();
@@ -49,7 +53,7 @@ export function AddBookDialog({
     }
     setIsSubmitting(true);
     try {
-      const bookId = await createBook({ title: trimmed, topicId });
+      const bookId = await createBook({ title: trimmed, topicId, folderId });
       handleOpenChange(false);
       router.push(`/home/notes/${bookId}`);
     } catch (cause) {

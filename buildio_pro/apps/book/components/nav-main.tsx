@@ -13,12 +13,14 @@ import { useQuery } from "convex/react";
 import { FolderPlusIcon } from "lucide-react";
 import { useState } from "react";
 
+import { AddBookDialog } from "@/components/books/add-book-dialog";
 import { FolderDeleteDialog } from "@/components/folder-delete-dialog";
 import {
   FolderCreateDialog,
   FolderRenameDialog,
 } from "@/components/folder-dialogs";
-import { FolderRow, type DialogState } from "@/components/folder-tree";
+import { type DialogState } from "@/components/folder-menu";
+import { FolderRow } from "@/components/folder-tree";
 import { useActiveTopic } from "@/components/topic-provider";
 import { buildFolderTree, MAX_MAIN_FOLDERS } from "@/lib/folders";
 
@@ -90,6 +92,19 @@ export function NavMain() {
         parentId={dialog?.kind === "create" ? dialog.parentId : null}
         parentDepth={dialog?.kind === "create" ? dialog.parentDepth : 0}
         open={dialog?.kind === "create"}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDialog(null);
+          }
+        }}
+      />
+      <AddBookDialog
+        // Always mounted: it calls `router.push` right after closing, so
+        // unmounting on close would interrupt the navigation.
+        open={dialog?.kind === "create-note"}
+        folderId={
+          dialog?.kind === "create-note" ? dialog.folderId : undefined
+        }
         onOpenChange={(open) => {
           if (!open) {
             setDialog(null);

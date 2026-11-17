@@ -5,6 +5,7 @@ import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
+import { useTheme } from "next-themes";
 import * as React from "react";
 
 type BookEditorProps = {
@@ -16,6 +17,7 @@ type BookEditorProps = {
 const SAVE_DELAY_MS = 500;
 
 export function BookEditor({ doc, onChange }: BookEditorProps) {
+  const { resolvedTheme } = useTheme();
   const editor = useCreateBlockNote({ initialContent: doc });
 
   const onChangeRef = React.useRef(onChange);
@@ -50,6 +52,11 @@ export function BookEditor({ doc, onChange }: BookEditorProps) {
   }
 
   return (
-    <BlockNoteView editor={editor} onChange={handleChange} theme="light" />
+    <BlockNoteView
+      editor={editor}
+      onChange={handleChange}
+      theme={resolvedTheme === "dark" ? "dark" : "light"}
+      className="h-full [&_.bn-editor]:min-h-full"
+    />
   );
 }

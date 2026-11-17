@@ -21,7 +21,9 @@ tables are global and the topic switcher only persists a localStorage id.
 4. **Favourites stays global.** `/home/favourites` remains a cross-topic view.
 5. **Folder membership of books is deferred.** The diagram implies books live in
    folders; this plan ships topic scoping first (books = topic root). Adding an
-   optional `folder_id` on books is a follow-up plan.
+   optional `folder_id` on books is a follow-up plan. → Implemented in
+   `notes-in-folders.md` (✅): optional `books.folder_id`, `books.listByFolder`,
+   `/home/notes/f/[folderId]`, and folder delete now unfiles contained notes.
 
 ## Phase 1 — Backend (`packages/book-convex-backend`)
 

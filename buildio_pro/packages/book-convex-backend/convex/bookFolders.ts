@@ -22,6 +22,9 @@ const MAX_ANCESTOR_STEPS = 20;
 /** Bounded sibling scan for duplicate-name checks under a parent. */
 const MAX_SIBLING_SCAN = 200;
 
+/** Upper bound of the per-folder book scan when unfiled on folder delete. */
+const MAX_BOOKS = 500;
+
 /** Computes the depth of a folder (main folder = 1), guarding against cycles. */
 async function folderDepth(
   ctx: MutationCtx,
@@ -149,9 +152,8 @@ export const create = mutation({
         .withIndex("by_topic_created", (q) => q.eq("topic_id", args.topicId))
         .order("asc")
         .take(MAX_MAIN_FOLDERS + 1);
-      const topLevelCount = recent.filter(
-        (folder) => folder.parent_id === undefined,
-      ).length;
+      const topLevelCount = recent.filter((folder) => folder.parent_id === undefined)
+        .length;
       if (topLevelCount >= MAX_MAIN_FOLDERS) {
         throw new ConvexError("Maximum of 10 main folders reached");
       }
@@ -204,7 +206,7 @@ export const rename = mutation({
   },
 });
 
-/** Deletes a folder together with every nested descendant. Idempotent. */
+/** Deletes a folder plus its nested descendants; contained books are unfiled. Idempotent. */
 export const remove = mutation({
   args: { id: v.id("book_folders") },
   returns: v.null(),
@@ -222,9 +224,7 @@ export const remove = mutation({
       .take(MAX_FOLDERS);
     const childrenOf = new Map<Id<"book_folders">, Id<"book_folders">[]>();
     for (const folder of all) {
-      if (folder.parent_id === undefined) {
-        continue;
-      }
+      if (folder.parent_id === undefined) continue;
       const siblings = childrenOf.get(folder.parent_id);
       if (siblings) {
         siblings.push(folder._id);
@@ -247,6 +247,15 @@ export const remove = mutation({
       frontier = next;
     }
     for (const id of toDelete) {
+      // Unfile the books inside deleted folders instead of destroying
+      // them; the per-folder index scan keeps the extra work bounded.
+      const books = await ctx.db
+        .query("books")
+        .withIndex("by_folder_created", (q) => q.eq("folder_id", id))
+        .take(MAX_BOOKS);
+      for (const book of books) {
+        await ctx.db.patch(book._id, { folder_id: undefined });
+      }
       await ctx.db.delete(id);
     }
     return null;

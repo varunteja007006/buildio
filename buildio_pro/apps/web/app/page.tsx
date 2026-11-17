@@ -1,5 +1,4 @@
 import { AppGrid } from "@/components/app-grid";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const GITHUB_URL = "https://github.com/varunteja007006/buildio";
 
@@ -28,7 +27,6 @@ export default function Page() {
           >
             GitHub
           </a>
-          <ThemeToggle />
         </nav>
       </header>
 

@@ -33,13 +33,15 @@ export default defineSchema({
     // count. Does not match rows where topic_id is still undefined; the
     // backfill assigns those to the default topic.
     .index("by_topic_created", ["topic_id", "created_at"]),
-  // Books are scoped to a topic; per-user scoping returns once auth is
-  // set up in the app. `doc` is the JSON-encoded BlockNote document and
-  // is absent until the first save.
+  // Books are scoped to a topic, with optional folder membership; books
+  // without a folder sit at the topic root. `doc` is the JSON-encoded
+  // BlockNote document and is absent until the first save.
   books: defineTable({
     title: v.string(),
     doc: v.optional(v.string()),
     topic_id: v.id("book_topics"),
+    // Optional folder membership; pre-folder documents read as unfiled.
+    folder_id: v.optional(v.id("book_folders")),
     createdAt: v.number(),
     // Optional favorite flag; pre-favorite documents read as unfavored.
     is_favorite: v.optional(v.boolean()),
@@ -47,5 +49,8 @@ export default defineSchema({
     .index("by_created", ["createdAt"])
     // Per-topic bookshelf pages, newest first. Does not match rows where
     // topic_id is still undefined; the backfill assigns those.
-    .index("by_topic_created", ["topic_id", "createdAt"]),
+    .index("by_topic_created", ["topic_id", "createdAt"])
+    // Per-folder bookshelf pages, newest first. Does not match unfiled
+    // books (folder_id undefined), which always read as topic-root books.
+    .index("by_folder_created", ["folder_id", "createdAt"]),
 });

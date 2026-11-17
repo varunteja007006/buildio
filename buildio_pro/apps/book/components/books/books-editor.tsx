@@ -157,7 +157,7 @@ export function BooksEditor({ bookId }: { bookId: Id<"books"> }) {
     saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved" : "";
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
         <Input
           value={titleDraft ?? book.title}
@@ -198,8 +198,8 @@ export function BooksEditor({ bookId }: { bookId: Id<"books"> }) {
       {saveError !== null ? (
         <p className="text-sm text-destructive">{saveError}</p>
       ) : null}
-      <div className="rounded-xl border bg-card p-4">
-        <div className="mx-auto max-w-3xl">
+      <div className="flex flex-1 flex-col rounded-xl border bg-card p-4">
+        <div className="flex-1">
           <BookEditor
             key={book.id}
             doc={initialDoc}
