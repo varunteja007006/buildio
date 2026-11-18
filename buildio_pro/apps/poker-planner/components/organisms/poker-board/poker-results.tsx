@@ -7,6 +7,7 @@ import { useUserStore } from "@/lib/store/user.store";
 
 import { PokerResultChart } from "./poker-chart-result";
 import { PokerResultTable } from "./poker-table-result";
+import { Activity, useState } from "react";
 
 export function PokerResults({
   storyId,
@@ -16,6 +17,12 @@ export function PokerResults({
   const { userToken } = useUserStore();
   const params = useParams();
   const roomCode = params?.roomCode as string;
+
+  const [showMore, setShowMore] = useState(false);
+
+  const onClickShowMore = () => {
+    setShowMore((prev) => !prev);
+  };
 
   const result = useQuery(
     api.storyPoints.getStoryPointsStats,
@@ -39,14 +46,24 @@ export function PokerResults({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="p-2 border flex-1 bg-card rounded-lg">
+    <div className="flex flex-col md:flex-row gap-4">
+      <div
+        onClick={onClickShowMore}
+        className="p-2 border flex-1 bg-card rounded-lg flex flex-col md:flex-row"
+      >
         <PokerResultChart chartData={stats.chartData} />
-        <Stats avgValue={stats.avgPoints} totalVotes={stats.totalVoters ?? 0} />
       </div>
-      <div className="p-1 border flex-1 bg-card rounded-lg">
-        <PokerResultTable chartData={stats.chartData} />
-      </div>
+      <Activity mode={showMore ? "visible" : "hidden"}>
+        <div className="p-1 border flex-1 bg-card rounded-lg w-full md:max-w-md">
+          <PokerResultTable chartData={stats.chartData} />
+          <div className="my-2">
+            <Stats
+              avgValue={stats.avgPoints}
+              totalVotes={stats.totalVoters ?? 0}
+            />
+          </div>
+        </div>
+      </Activity>
     </div>
   );
 }

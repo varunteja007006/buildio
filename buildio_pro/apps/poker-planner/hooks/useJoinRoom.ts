@@ -19,12 +19,12 @@ export function useJoinRoom() {
     async (roomCode: string) => {
       if (!roomCode) {
         toast.error("Room code is required");
-        return false;
+        return "failed" as const;
       }
 
       if (!userToken) {
         toast.error("User not authenticated");
-        return false;
+        return "failed" as const;
       }
 
       setIsJoining(true);
@@ -35,8 +35,8 @@ export function useJoinRoom() {
         });
 
         if (!checkResult.success) {
-          toast.error(checkResult.message);
-          return false;
+          toast.error("No room found");
+          return "not-found" as const;
         }
 
         const joinResult = await convex.mutation(api.rooms.joinRoom, {
@@ -47,15 +47,15 @@ export function useJoinRoom() {
         if (joinResult.success) {
           // toast.success(joinResult.message);
           router.push(`/room/${roomCode}`);
-          return true;
+          return "joined" as const;
         } else {
           toast.error(joinResult.message);
-          return false;
+          return "failed" as const;
         }
       } catch (error) {
         toast.error("Failed to join room");
         console.error(error);
-        return false;
+        return "failed" as const;
       } finally {
         setIsJoining(false);
       }

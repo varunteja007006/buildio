@@ -26,7 +26,8 @@ export function RoomHeader() {
     roomCode: roomCode as string,
   });
 
-  const isOwner = roomDetails?.room?.ownerId === user?.id;
+  const isOwner =
+    user?.success === true && roomDetails?.room?.ownerId === user.id;
 
   return (
     <div className="w-full flex justify-end md:justify-between gap-1 items-center">

@@ -24,9 +24,19 @@ export default function RootLayout({
       </head>
       <body className={`font-sans antialiased`}>
         <Providers>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
+          <main className="min-h-screen bg-primary/20">
+            <div className="p-2 md:p-4">
+              <section className="sm:min-h-[calc(100svh-5rem)] min-h-[calc(100svh-3rem)] rounded-lg border border-border bg-background p-2 md:py-6 md:px-4">
+                <Navbar />
+                {children}
+              </section>
+            </div>
+          </main>
+          <div className="pt-0 pb-4 px-2 md:pb-8 md:pt-0 md:px-4 bg-primary/20">
+            <div className="bg-background py-5 rounded-lg border border-border">
+              <Footer />
+            </div>
+          </div>
           <Toaster />
         </Providers>
       </body>

@@ -77,7 +77,7 @@ export function CreateRoomForm({
           name="roomName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-primary">{`Room Name`}</FormLabel>
+              <FormLabel className="text-primary font-bold">{`Room Name`}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter room name"

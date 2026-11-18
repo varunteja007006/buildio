@@ -7,7 +7,7 @@ import { UserCard } from "@/components/user-card";
 
 export function Navbar() {
   return (
-    <nav className="flex w-full items-center justify-between p-4">
+    <nav className="flex w-full items-center justify-between md:mb-5 mb-2">
       <Link href={"/"}>
         <div className="flex items-center gap-2">
           <Kanban className="text-primary size-8" />

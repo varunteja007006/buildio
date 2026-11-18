@@ -7,16 +7,17 @@ export const getUserFromToken = async (ctx: QueryCtx, token: string) => {
     .unique();
   if (!user) {
     return {
-      success: false,
+      success: false as const,
       message: "User not found.",
-      isFound: false,
+      isFound: false as const,
     };
   }
   return {
-    success: true,
+    success: true as const,
     id: user._id,
     username: user.username,
+    ...(user.emoji ? { emoji: user.emoji } : {}),
     message: "User found.",
-    isFound: true,
+    isFound: true as const,
   };
 };

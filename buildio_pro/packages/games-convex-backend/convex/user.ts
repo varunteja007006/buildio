@@ -4,6 +4,39 @@ import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { getUserFromToken } from "./utils";
 
+const profileEmojiValidator = v.union(
+  v.literal("😊"),
+  v.literal("😃"),
+  v.literal("😎"),
+  v.literal("🤓"),
+  v.literal("😇"),
+  v.literal("🤖"),
+  v.literal("👻"),
+  v.literal("🐶"),
+  v.literal("🐱"),
+  v.literal("🐰"),
+  v.literal("🥳"),
+  v.literal("🤩"),
+  v.literal("🥰"),
+  v.literal("😈"),
+  v.literal("🥸"),
+  v.literal("🤠"),
+  v.literal("👽"),
+  v.literal("💩"),
+  v.literal("🐸"),
+  v.literal("🦊"),
+  v.literal("🐼"),
+  v.literal("🐵"),
+  v.literal("🦄"),
+  v.literal("🐻"),
+  v.literal("🐯"),
+  v.literal("🦁"),
+  v.literal("🐨"),
+  v.literal("🐷"),
+  v.literal("🐙"),
+  v.literal("🦋"),
+);
+
 export const createUser = mutation({
   args: {
     name: v.string(),
@@ -68,19 +101,37 @@ export const getUserByToken = query({
     v.object({
       id: v.id("users"),
       username: v.string(),
-      success: v.boolean(),
+      emoji: v.optional(profileEmojiValidator),
+      success: v.literal(true),
       message: v.string(),
-      isFound: v.boolean(),
+      isFound: v.literal(true),
     }),
     v.object({
-      success: v.boolean(),
+      success: v.literal(false),
       message: v.string(),
-      isFound: v.boolean(),
+      isFound: v.literal(false),
     }),
   ),
 
   handler: async (ctx, args) => {
     const user = await getUserFromToken(ctx, args.token);
     return user;
+  },
+});
+
+export const setProfileEmoji = mutation({
+  args: {
+    token: v.string(),
+    emoji: profileEmojiValidator,
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.token);
+    if (!user.success || !user.id) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user.id, { emoji: args.emoji });
+    return null;
   },
 });

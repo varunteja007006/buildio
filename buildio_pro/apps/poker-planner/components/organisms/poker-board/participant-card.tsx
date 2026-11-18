@@ -14,6 +14,7 @@ import { ConfettiSideCannons } from "./reaction-collection";
 
 export function ParticipantCard({
   name,
+  emoji,
   online,
   hasVoted,
   lastDisconnected,
@@ -21,6 +22,7 @@ export function ParticipantCard({
   isUser,
 }: Readonly<{
   name: string;
+  emoji?: string;
   online: boolean;
   hasVoted: boolean;
   lastDisconnected?: number;
@@ -30,7 +32,7 @@ export function ParticipantCard({
   return (
     <div className="border-primary/25 flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md border bg-white p-2 pr-4 pl-2 shadow dark:bg-secondary">
       <div className="flex flex-row items-center gap-2">
-        <div className="text-2xl">{getEmojiForUserId(emojiId)}</div>
+        <div className="text-2xl">{emoji ?? getEmojiForUserId(emojiId)}</div>
         <div className="flex flex-col items-start">
           <p className="truncate overflow-hidden text-sm text-ellipsis capitalize text-primary font-semibold">
             {name}

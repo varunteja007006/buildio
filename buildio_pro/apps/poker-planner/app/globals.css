@@ -5,3 +5,4 @@
 
 /* Import the theme styles */
 @import "../node_modules/@workspace/theme/caffeine.css";
+@import "./palette-themes.css";

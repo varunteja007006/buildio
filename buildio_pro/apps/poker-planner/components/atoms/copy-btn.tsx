@@ -13,11 +13,13 @@ type CopyBtnProps = {
   text: string;
   children?: React.ReactNode;
   tooltipText?: string;
+  disableTooltip?: boolean;
 } & React.ComponentProps<"button">;
 
 export function CopyBtn({
   text,
   tooltipText,
+  disableTooltip,
   children,
   ...props
 }: Readonly<CopyBtnProps>) {
@@ -31,17 +33,19 @@ export function CopyBtn({
     }
   };
 
+  const button = (
+    <Button onClick={handleCopyRoomCode} className="cursor-pointer" {...props}>
+      {children ?? <Copy />}
+    </Button>
+  );
+
+  if (disableTooltip) {
+    return button;
+  }
+
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          onClick={handleCopyRoomCode}
-          className="cursor-pointer"
-          {...props}
-        >
-          {children ?? <Copy />}
-        </Button>
-      </TooltipTrigger>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
       <TooltipContent>
         <p>{tooltipText ?? "Click to copy"}</p>
       </TooltipContent>

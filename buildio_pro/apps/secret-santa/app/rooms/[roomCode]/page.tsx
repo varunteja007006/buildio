@@ -24,7 +24,8 @@ export default function RoomPage() {
   });
   const initializeGame = useMutation(api.secretSanta.initializeGame);
   const joinRoom = useMutation(api.rooms.joinRoom);
-  const isOwner = gameState?.room?.ownerId === user?.id;
+  const isOwner =
+    user?.success === true && gameState?.room?.ownerId === user.id;
 
   // Initialize the game doc when the owner joins, and (re)join the room
   // so membership is always up to date.
@@ -37,7 +38,7 @@ export default function RoomPage() {
     }
   }, [isOwner, userToken, roomCode, initializeGame, joinRoom]);
 
-  if (!user?.id) {
+  if (user?.success !== true) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
         <p>Loading… 🎄</p>

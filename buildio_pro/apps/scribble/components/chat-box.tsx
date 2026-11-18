@@ -53,7 +53,7 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
           <ScrollArea className="h-full p-2">
             <div className="flex flex-col gap-2">
               {messages?.map((msg) => {
-                const isMe = msg.userId === user?.id;
+                const isMe = user?.success === true && msg.userId === user.id;
                 const isGuess = msg.isGuess;
 
                 return (

@@ -1,3 +1,36 @@
+export const PROFILE_EMOJIS = [
+  "😊",
+  "😃",
+  "😎",
+  "🤓",
+  "😇",
+  "🤖",
+  "👻",
+  "🐶",
+  "🐱",
+  "🐰",
+  "🥳",
+  "🤩",
+  "🥰",
+  "😈",
+  "🥸",
+  "🤠",
+  "👽",
+  "💩",
+  "🐸",
+  "🦊",
+  "🐼",
+  "🐵",
+  "🦄",
+  "🐻",
+  "🐯",
+  "🦁",
+  "🐨",
+  "🐷",
+  "🐙",
+  "🦋",
+] as const;
+
 export function getEmojiForUserId(userId: string): string {
   // Simple hash function to generate a consistent emoji for a user ID.
   // see https://stackoverflow.com/a/7616484
@@ -6,6 +39,5 @@ export function getEmojiForUserId(userId: string): string {
     hash = (hash << 5) - hash + userId.charCodeAt(i);
     hash |= 0; // Constrain to 32bit integer
   }
-  const emojis = ["😊", "😃", "😎", "🤓", "😇", "🤖", "👻", "🐶", "🐱", "🐰"];
-  return emojis[Math.abs(hash) % emojis.length] ?? "";
+  return PROFILE_EMOJIS[Math.abs(hash) % PROFILE_EMOJIS.length] ?? "";
 }

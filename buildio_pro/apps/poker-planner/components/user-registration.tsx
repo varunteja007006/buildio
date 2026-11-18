@@ -28,8 +28,10 @@ type CreateUserSchema = z.infer<typeof createUserSchema>;
 
 export function UserRegistration({
   onSuccess,
+  className,
 }: Readonly<{
   onSuccess?: () => void;
+  className?: string;
 }>) {
   const { handleSetUserToken, userToken } = useUserStore();
   const router = useRouter();
@@ -80,7 +82,10 @@ export function UserRegistration({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-sm lg:w-md">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={className ?? "w-sm lg:w-md"}
+      >
         <FormField
           control={form.control}
           name="name"

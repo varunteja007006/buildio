@@ -28,7 +28,8 @@ export function Participants() {
   );
 
   const participants = gameState?.participants ?? [];
-  const isViewerOwner = gameState?.room?.ownerId === user?.id;
+  const isViewerOwner =
+    user?.success === true && gameState?.room?.ownerId === user.id;
 
   const kickParticipant = useMutation(api.secretSanta.kickParticipant);
 

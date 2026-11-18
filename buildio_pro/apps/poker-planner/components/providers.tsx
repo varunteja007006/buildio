@@ -14,8 +14,8 @@ export function Providers({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      forcedTheme="light"
+      storageKey="poker-planner-appearance"
       disableTransitionOnChange
       enableColorScheme
     >

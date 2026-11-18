@@ -34,7 +34,8 @@ export default function RoomPage() {
   });
   const initializeSettings = useMutation(api.scribble.initializeGameSettings);
   const joinRoom = useMutation(api.rooms.joinRoom);
-  const isOwner = roomDetails?.room?.ownerId === user?.id;
+  const isOwner =
+    user?.success === true && roomDetails?.room?.ownerId === user.id;
 
   // Initialize default game settings when owner joins
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function RoomPage() {
     }
   }, [isOwner, userToken, roomCode, initializeSettings, joinRoom]);
 
-  if (!user?.id) {
+  if (user?.success !== true) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
         <p>Loading user...</p>

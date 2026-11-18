@@ -23,7 +23,7 @@ export function Participants() {
   const presenceState = usePresence(
     api.presence,
     roomCode as string,
-    user?.id ?? "",
+    user?.success === true ? user.id : "",
   );
 
   if (!presenceState) {

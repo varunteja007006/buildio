@@ -30,11 +30,12 @@ export function Participants({
   const roomCode = params?.roomCode ?? "unknown-room";
 
   const { user, userToken } = useUserStore();
+  const userId = user?.success === true ? user.id : undefined;
 
   const presenceState = usePresence(
     api.presence,
     roomCode as string,
-    user?.id ?? "",
+    userId ?? "",
   );
 
   const roomStoryPoints = useQuery(
@@ -54,7 +55,13 @@ export function Participants({
     [roomStoryPoints],
   );
 
-  const participantList = React.useMemo(
+  type Participant = NonNullable<typeof presenceState>[number] & {
+    emoji?: string;
+    isCurrentUser?: boolean;
+    hasVoted: boolean;
+  };
+
+  const participantList = React.useMemo<Participant[]>(
     () =>
       presenceState?.map((p) => {
         const foundUser = findUserStoryPoint(p.userId, updatedRoomStoryPoints);
@@ -82,7 +89,8 @@ export function Participants({
             hasVoted={innerUser?.hasVoted}
             lastDisconnected={innerUser.lastDisconnected}
             emojiId={innerUser.userId}
-            isUser={innerUser.userId === user?.id}
+            emoji={innerUser.emoji}
+            isUser={innerUser.userId === userId}
           />
         );
       })}

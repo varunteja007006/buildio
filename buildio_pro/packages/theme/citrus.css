@@ -79,10 +79,6 @@
   --card-foreground: var(--base-200);
   --popover: var(--base-900);
   --popover-foreground: var(--base-200);
-  --primary: var(--primary-300);
-  --primary-foreground: var(--color-black);
-  --secondary: var(--secondary-600);
-  --secondary-foreground: var(--color-white);
   --muted: var(--base-800);
   --muted-foreground: var(--base-300);
   --accent: var(--base-800);
@@ -90,20 +86,11 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: var(--base-800);
   --input: var(--base-700);
-  --ring: var(--primary-300);
-  --chart-1: var(--primary-300);
-  --chart-2: var(--secondary-600);
-  --chart-3: var(--primary-300);
-  --chart-4: var(--secondary-300);
-  --chart-5: var(--primary-100);
   --sidebar: var(--base-900);
   --sidebar-foreground: var(--base-200);
-  --sidebar-primary: var(--primary-300);
-  --sidebar-primary-foreground: var(--color-black);
   --sidebar-accent: var(--base-800);
   --sidebar-accent-foreground: var(--base-200);
   --sidebar-border: var(--base-800);
-  --sidebar-ring: var(--primary-300);
 }
 
 @theme inline {

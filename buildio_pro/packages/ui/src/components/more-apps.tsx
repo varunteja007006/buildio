@@ -14,7 +14,7 @@ export function MoreAppsFooter({ current }: MoreAppsProps) {
   if (!hub) return null;
 
   return (
-    <footer className="border-t border-neutral-500/20 px-4 py-4">
+    <footer className="px-4 py-4">
       <div className="flex flex-col items-center gap-2">
         <a
           href={hub.url}
