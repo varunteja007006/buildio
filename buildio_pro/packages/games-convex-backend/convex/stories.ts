@@ -3,6 +3,10 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getUserFromToken } from "./utils";
 
+// Pause after a game ends before the room can start the next one. Protects
+// against accidental double-clicks on "Stop".
+const START_COOLDOWN_MS = 10_000;
+
 export const createStory = mutation({
   args: {
     roomCode: v.string(),
@@ -35,6 +39,16 @@ export const createStory = mutation({
       return {
         success: false,
         message: "Room not found.",
+      };
+    }
+
+    const cooldownRemainingMs = (room.startCooldownUntil ?? 0) - Date.now();
+    if (cooldownRemainingMs > 0) {
+      return {
+        success: false,
+        message: `Please wait ${Math.ceil(
+          cooldownRemainingMs / 1000,
+        )}s before starting a new game.`,
       };
     }
 
@@ -93,8 +107,19 @@ export const completeStory = mutation({
 
     // Optional: Check if user is the creator or in the room, but task doesn't specify
 
-    // Update status to completed
+    // Don't let a repeated stop (e.g. a stale double-click) restart the pause.
+    if (story.status === "completed") {
+      return {
+        success: false,
+        message: "Story is already completed.",
+      };
+    }
+
+    const completedAt = Date.now();
     await ctx.db.patch(args.storyId, { status: "completed" });
+    await ctx.db.patch(story.roomId, {
+      startCooldownUntil: completedAt + START_COOLDOWN_MS,
+    });
 
     return {
       success: true,
@@ -123,6 +148,10 @@ export const getStartedStory = query({
         created_by: v.id("users"),
       }),
     ),
+    // When the room can start another game, and the server clock the client
+    // should measure it against.
+    cooldownEndsAt: v.optional(v.number()),
+    serverNow: v.number(),
   }),
   handler: async (ctx, args) => {
     // Validate user token
@@ -131,6 +160,7 @@ export const getStartedStory = query({
       return {
         success: false,
         message: userResult.message,
+        serverNow: Date.now(),
       };
     }
 
@@ -143,8 +173,11 @@ export const getStartedStory = query({
       return {
         success: false,
         message: "Room not found.",
+        serverNow: Date.now(),
       };
     }
+
+    const cooldownEndsAt = room.startCooldownUntil;
 
     // Find started story in room
     const story = await ctx.db
@@ -157,6 +190,8 @@ export const getStartedStory = query({
       return {
         success: false,
         message: "No started story found.",
+        cooldownEndsAt,
+        serverNow: Date.now(),
       };
     }
 
@@ -166,6 +201,8 @@ export const getStartedStory = query({
       success: true,
       message: "Started story found.",
       story: storyWithoutCreationTime,
+      cooldownEndsAt,
+      serverNow: Date.now(),
     };
   },
 });

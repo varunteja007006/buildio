@@ -21,6 +21,7 @@ export function PokerBoard() {
   const { userToken, user } = useUserStore();
   const { joinRoom } = useJoinRoom();
   const [storyId, setStoryId] = React.useState<Id<"stories"> | null>(null);
+  const [cooldownRemainingMs, setCooldownRemainingMs] = React.useState(0);
 
   const startedStory = useQuery(api.stories.getStartedStory, {
     userToken,
@@ -58,6 +59,27 @@ export function PokerBoard() {
   }, [startedStory]);
 
   React.useEffect(() => {
+    const endsAt = startedStory?.cooldownEndsAt ?? 0;
+    if (!endsAt) {
+      setCooldownRemainingMs(0);
+      return;
+    }
+    // Measure the room's cooldown against the server clock, so a skewed local
+    // clock cannot re-enable "Start" early or leave it disabled too long.
+    const clockOffset = (startedStory?.serverNow ?? Date.now()) - Date.now();
+    const tick = () => {
+      const remaining = Math.max(0, endsAt - (Date.now() + clockOffset));
+      setCooldownRemainingMs(remaining);
+      return remaining;
+    };
+    if (tick() <= 0) return;
+    const id = window.setInterval(() => {
+      if (tick() <= 0) window.clearInterval(id);
+    }, 250);
+    return () => window.clearInterval(id);
+  }, [startedStory]);
+
+  React.useEffect(() => {
     if (roomCode) {
       joinRoom(roomCode);
     }
@@ -67,8 +89,13 @@ export function PokerBoard() {
     if (!userToken || !roomCode || startedStory === undefined) return;
 
     if (startedStory?.success && startedStory.story) {
-      // Stop the story
-      await completeMutation({ storyId: startedStory.story._id, userToken });
+      // Stop the story, then start the room's cooldown right away so the
+      // button can't be clicked again before the server round-trip lands.
+      const result = await completeMutation({
+        storyId: startedStory.story._id,
+        userToken,
+      });
+      if (result.success) setCooldownRemainingMs(10_000);
       setStoryId(null);
     } else {
       // Start a new story
@@ -78,17 +105,29 @@ export function PokerBoard() {
       });
       if (result.success && result.storyId) {
         setStoryId(result.storyId);
+      } else if (!result.success) {
+        toast.error(result.message);
       }
     }
   };
+
+  const cooldownSeconds = Math.ceil(cooldownRemainingMs / 1000);
 
   let hasActiveStory = null;
   let buttonText = "Loading...";
   if (startedStory !== undefined) {
     hasActiveStory = startedStory.success && startedStory.story;
-    buttonText = hasActiveStory ? "Stop" : "Start";
+    buttonText = hasActiveStory
+      ? "Stop"
+      : cooldownSeconds > 0
+        ? `Start (${cooldownSeconds}s)`
+        : "Start";
   }
-  const isDisabled = !userToken || !roomCode || startedStory === undefined;
+  const isDisabled =
+    !userToken ||
+    !roomCode ||
+    startedStory === undefined ||
+    (!hasActiveStory && cooldownSeconds > 0);
 
   if (!user?.id) {
     return null;

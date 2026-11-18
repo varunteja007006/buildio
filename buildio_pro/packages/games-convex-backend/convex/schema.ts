@@ -14,6 +14,9 @@ export default defineSchema({
     room_code: v.string(),
     created_at: v.number(),
     ownerId: v.id("users"), // replaces inference from teams
+    // Room-wide pause after a game ends, so an accidental double-click on
+    // "Stop" cannot immediately start the next game.
+    startCooldownUntil: v.optional(v.number()),
   })
     .index("by_room_code", ["room_code"])
     .index("by_owner", ["ownerId"]),
