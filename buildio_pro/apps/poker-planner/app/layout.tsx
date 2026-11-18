@@ -1,3 +1,4 @@
+import { PageTransition } from "@workspace/ui/components/animate-ui/components/page-transition";
 import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 
@@ -28,7 +29,7 @@ export default function RootLayout({
             <div className="p-2 md:p-4">
               <section className="sm:min-h-[calc(100svh-5rem)] min-h-[calc(100svh-3rem)] rounded-lg border border-border bg-background p-2 md:py-6 md:px-4">
                 <Navbar />
-                {children}
+                <PageTransition effect="stack">{children}</PageTransition>
               </section>
             </div>
           </main>

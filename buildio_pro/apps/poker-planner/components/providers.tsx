@@ -4,6 +4,7 @@ import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
 
+import { ClickEffectProvider } from "@/components/click-effect-provider";
 import { UserStoreProvider } from "@/lib/store/user.store";
 
 import { ConvexClientProvider } from "./convex-provider";
@@ -21,7 +22,9 @@ export function Providers({
     >
       <ConvexClientProvider>
         <UserStoreProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <ClickEffectProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+          </ClickEffectProvider>
         </UserStoreProvider>
       </ConvexClientProvider>
     </NextThemesProvider>

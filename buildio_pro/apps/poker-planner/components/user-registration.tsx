@@ -37,6 +37,7 @@ export function UserRegistration({
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const registrationRedirect = React.useRef(false);
 
   const roomCode = params?.roomCode;
 
@@ -62,6 +63,7 @@ export function UserRegistration({
         roomCode: roomCode as string,
       });
       if (res.token) {
+        registrationRedirect.current = true;
         handleSetUserToken?.(res.token);
       }
       toast.success("User registered successfully!");
@@ -75,9 +77,10 @@ export function UserRegistration({
   };
 
   React.useEffect(() => {
-    if (userToken && pathname === "/") {
-      router.push("/room");
-    }
+    if (!userToken || pathname !== "/" || registrationRedirect.current) return;
+
+    const timeout = window.setTimeout(() => router.push("/room"), 800);
+    return () => window.clearTimeout(timeout);
   }, [userToken, pathname, router]);
 
   return (

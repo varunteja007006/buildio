@@ -11,17 +11,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 import { useMutation } from "convex/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useClickEffect } from "@/components/click-effect-provider";
 import { useUserStore } from "@/lib/store/user.store";
 import { PROFILE_EMOJIS } from "@/lib/utils";
 
 type ProfileEmoji = (typeof PROFILE_EMOJIS)[number];
+const CLICK_EFFECTS = [
+  "ripple",
+  "ring",
+  "crosshair",
+  "burst",
+  "particles",
+] as const;
 
 export function UserCard() {
   const { userToken, user } = useUserStore();
+  const { effect, setEffect } = useClickEffect();
   const setProfileEmoji = useMutation(api.user.setProfileEmoji);
   const [open, setOpen] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState<ProfileEmoji>(
@@ -48,23 +67,44 @@ export function UserCard() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <button
-        type="button"
-        aria-label="Choose profile emoji"
-        onClick={() => {
-          setSelectedEmoji(user.emoji ?? PROFILE_EMOJIS[0]);
-          setOpen(true);
-        }}
-        className="mr-5 flex flex-row items-center gap-2"
-      >
-        <Avatar className="text-primary">
-          <AvatarFallback className={user.emoji ? "text-xl" : undefined}>
-            {user.emoji ??
-              user.username.split("").slice(0, 2).join("").toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <p className="text-primary font-bold capitalize">{user.username}</p>
-      </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className="mr-5 flex flex-row items-center gap-2"
+          aria-label="User menu"
+        >
+          <Avatar className="text-primary">
+            <AvatarFallback className={user.emoji ? "text-xl" : undefined}>
+              {user.emoji ??
+                user.username.split("").slice(0, 2).join("").toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <p className="text-primary font-bold capitalize">{user.username}</p>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Click effect</DropdownMenuLabel>
+          <DropdownMenuRadioGroup
+            value={effect}
+            onValueChange={(value) =>
+              setEffect(value as (typeof CLICK_EFFECTS)[number])
+            }
+          >
+            {CLICK_EFFECTS.map((name) => (
+              <DropdownMenuRadioItem key={name} value={name}>
+                {name.charAt(0).toUpperCase() + name.slice(1)}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              setSelectedEmoji(user.emoji ?? PROFILE_EMOJIS[0]);
+              setOpen(true);
+            }}
+          >
+            Choose profile emoji
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Choose your profile emoji</DialogTitle>
