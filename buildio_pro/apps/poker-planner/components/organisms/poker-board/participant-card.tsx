@@ -45,7 +45,9 @@ export function ParticipantCard({
           )}
         </div>
       </div>
-      <div>{hasVoted && <div className="animate-bounce">👍</div>}</div>
+      <div className="ml-auto">
+        {hasVoted && <div className="animate-bounce">👍</div>}
+      </div>
       {isUser && (
         <div>
           <ReactionsMenu />
