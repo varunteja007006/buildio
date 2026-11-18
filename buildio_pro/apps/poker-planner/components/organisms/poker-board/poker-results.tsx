@@ -47,14 +47,11 @@ export function PokerResults({
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <div
-        onClick={onClickShowMore}
-        className="p-2 border flex-1 bg-card rounded-lg flex flex-col md:flex-row"
-      >
+      <div onClick={onClickShowMore}>
         <PokerResultChart chartData={stats.chartData} />
       </div>
       <Activity mode={showMore ? "visible" : "hidden"}>
-        <div className="p-1 border flex-1 bg-card rounded-lg w-full md:max-w-md">
+        <div className="p-2 border flex-1 bg-card rounded-lg w-full md:max-w-md">
           <PokerResultTable chartData={stats.chartData} />
           <div className="my-2">
             <Stats

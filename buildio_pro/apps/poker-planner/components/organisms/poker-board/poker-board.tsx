@@ -138,7 +138,7 @@ export function PokerBoard() {
       <div className="flex flex-col w-full gap-4">
         <PokerBoardHeader />
 
-        <div className="flex-1 flex flex-col items-center py-4 justify-center min-h-[280px] gap-10 bg-card rounded-md border">
+        <div className="flex-1 flex flex-col items-center py-4 justify-center min-h-[40rem] gap-10 bg-card rounded-md border">
           <button
             onClick={handleClick}
             disabled={isDisabled}
@@ -148,9 +148,9 @@ export function PokerBoard() {
           </button>
 
           <PokerCards storyId={storyId} />
-        </div>
 
-        <PokerResults storyId={storyId} />
+          <PokerResults storyId={storyId} />
+        </div>
       </div>
 
       <div className="sm:w-xs">
