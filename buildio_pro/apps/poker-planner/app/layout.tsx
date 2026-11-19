@@ -25,7 +25,7 @@ export default function RootLayout({
       </head>
       <body className={`font-sans antialiased`}>
         <Providers>
-          <main className="min-h-screen bg-primary/20">
+          <main className="min-h-screen bg-secondary">
             <div className="p-2 md:p-4">
               <section className="sm:min-h-[calc(100svh-5rem)] min-h-[calc(100svh-3rem)] rounded-lg border border-border bg-background p-2 md:py-6 md:px-4">
                 <Navbar />
@@ -33,12 +33,12 @@ export default function RootLayout({
               </section>
             </div>
           </main>
-          <div className="pt-0 pb-4 px-2 md:pb-8 md:pt-0 md:px-4 bg-primary/20">
+          <div className="pt-0 pb-4 px-2 md:pb-8 md:pt-0 md:px-4 bg-secondary">
             <div className="bg-background py-5 rounded-lg border border-border">
               <Footer />
             </div>
           </div>
-          <Toaster />
+          <Toaster position="top-center" />
         </Providers>
       </body>
     </html>

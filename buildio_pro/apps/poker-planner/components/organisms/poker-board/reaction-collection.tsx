@@ -39,10 +39,12 @@ export const ConfettiSideCanonsNotifier = () => {
       return;
     }
 
-    // If a brand new reaction ID arrives, shoot confetti!
+    // If a brand new reaction ID arrives, shoot confetti! (🎉 only — 🎆 fireworks are handled separately)
     if (id !== lastTriggeredId) {
       setLastTriggeredId(id);
-      setTriggerConfetti(true);
+      if (latestReaction?.reaction === "🎉") {
+        setTriggerConfetti(true);
+      }
     }
   }, [memoizedTeamReactions, lastTriggeredId]);
 
@@ -105,10 +107,12 @@ export const ConfettiSideCannons = () => {
       return;
     }
 
-    // If a brand new reaction ID arrives, shoot confetti!
+    // If a brand new reaction ID arrives, shoot confetti! (🎉 only — 🎆 fireworks are handled separately)
     if (id !== lastTriggeredId) {
       setLastTriggeredId(id);
-      setTriggerConfetti(true);
+      if (latestReaction?.reaction === "🎉") {
+        setTriggerConfetti(true);
+      }
     }
   }, [memoizedTeamReactions, lastTriggeredId]);
 

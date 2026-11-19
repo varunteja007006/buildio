@@ -67,7 +67,8 @@ export function JoinRoomForm() {
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-2">
       <Label
-        className="font-semibold text-primary"
+        style={{ animationDelay: "0ms" }}
+        className="font-semibold text-primary animate-in slide-in-from-left-8 duration-500 ease-out fill-mode-backwards"
         htmlFor="roomCode"
       >{`Room Code`}</Label>
       <Input
@@ -77,11 +78,14 @@ export function JoinRoomForm() {
         value={roomCode}
         onChange={handleRoomCodeChange}
         disabled={isJoining || creating}
+        style={{ animationDelay: "100ms" }}
+        className="animate-in slide-in-from-left-8 duration-500 ease-out fill-mode-backwards"
       />
       <Button
         type="submit"
         disabled={!userToken || isJoining}
-        className="w-full cursor-pointer"
+        className="w-full cursor-pointer animate-in slide-in-from-left-8 duration-500 ease-out fill-mode-backwards"
+        style={{ animationDelay: "200ms" }}
       >
         {isJoining ? "Joining..." : "Join"}
       </Button>
@@ -90,7 +94,7 @@ export function JoinRoomForm() {
           type="button"
           onClick={handleCreateRoom}
           disabled={!userToken || isJoining || creating}
-          className="w-full cursor-pointer"
+          className="w-full cursor-pointer animate-in slide-in-from-left-8 duration-500 ease-out"
         >
           {creating ? "Creating..." : "Create"}
         </Button>

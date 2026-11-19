@@ -44,7 +44,12 @@ export function ModeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button
+          variant="outline"
+          size="icon"
+          className="animate-in fade-in slide-in-from-top-32 duration-700 ease-spring"
+          style={{ animationDelay: "150ms", animationFillMode: "backwards" }}
+        >
           <Palette className="h-[1.2rem] w-[1.2rem]" />
           <span className="sr-only">Select color palette</span>
         </Button>

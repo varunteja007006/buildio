@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
 import { Power } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const clearLocalStorage = (): void => {
@@ -30,17 +31,34 @@ const performReset = (): void => {
 };
 
 export function LogoutBtn() {
+  const [exiting, setExiting] = useState(false);
+
   const resetBtn = () => {
+    setExiting(true);
     toast.success("Account reset successful");
-    performReset();
+    window.setTimeout(() => {
+      performReset();
+    }, 550);
   };
+
+  const buttonClassName = exiting
+    ? "cursor-pointer animate-out fade-out slide-out-to-top-32 duration-500 ease-spring"
+    : "cursor-pointer animate-in fade-in slide-in-from-top-32 duration-700 ease-spring";
+  const buttonStyle = exiting
+    ? undefined
+    : { animationDelay: "400ms", animationFillMode: "backwards" };
 
   return (
     <Tooltip>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" className="cursor-pointer">
+            <Button
+              variant="outline"
+              size="icon"
+              className={buttonClassName}
+              style={buttonStyle}
+            >
               <Power />
             </Button>
           </TooltipTrigger>

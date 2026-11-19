@@ -7,6 +7,7 @@ import React from "react";
 
 import { useUserStore } from "@/lib/store/user.store";
 
+import { FireworksNotifier } from "./fireworks";
 import { ParticipantCard } from "./participant-card";
 import { ConfettiSideCanonsNotifier } from "./reaction-collection";
 
@@ -80,7 +81,7 @@ export function Participants({
 
   return (
     <div className="space-y-2">
-      {participantList.map((innerUser) => {
+      {participantList.map((innerUser, index) => {
         return (
           <ParticipantCard
             key={innerUser.userId}
@@ -91,10 +92,12 @@ export function Participants({
             emojiId={innerUser.userId}
             emoji={innerUser.emoji}
             isUser={innerUser.userId === userId}
+            index={index}
           />
         );
       })}
       <ConfettiSideCanonsNotifier />
+      <FireworksNotifier />
     </div>
   );
 }

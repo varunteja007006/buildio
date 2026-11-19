@@ -1,6 +1,7 @@
 "use client";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
+import { StartStopButton } from "@workspace/ui/components/start-stop-button";
 import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -113,21 +114,9 @@ export function PokerBoard() {
 
   const cooldownSeconds = Math.ceil(cooldownRemainingMs / 1000);
 
-  let hasActiveStory = null;
-  let buttonText = "Loading...";
-  if (startedStory !== undefined) {
-    hasActiveStory = startedStory.success && startedStory.story;
-    buttonText = hasActiveStory
-      ? "Stop"
-      : cooldownSeconds > 0
-        ? `Start (${cooldownSeconds}s)`
-        : "Start";
-  }
-  const isDisabled =
-    !userToken ||
-    !roomCode ||
-    startedStory === undefined ||
-    (!hasActiveStory && cooldownSeconds > 0);
+  const hasActiveStory =
+    startedStory !== undefined && startedStory.success && !!startedStory.story;
+  const isDisabled = !userToken || !roomCode || startedStory === undefined;
 
   if (user?.success !== true) {
     return null;
@@ -138,18 +127,38 @@ export function PokerBoard() {
       <div className="flex flex-col w-full gap-4">
         <PokerBoardHeader />
 
-        <div className="flex-1 flex flex-col items-center py-4 justify-center min-h-[40rem] gap-10 bg-card rounded-md border">
-          <button
-            onClick={handleClick}
-            disabled={isDisabled}
-            className="bg-white dark:bg-secondary dark:border-primary/50 shadow font-bold border hover:shadow-lg text-primary hover:dark:border-primary hover:bg-primary-foreground/80 h-[50px] w-[140px] cursor-pointer rounded-lg p-2 transition-all disabled:cursor-not-allowed disabled:opacity-50"
+        <div
+          className="flex-1 flex flex-col items-center py-4 justify-center min-h-[40rem] gap-10 bg-card rounded-md shadow-lg border-gray-300 border animate-in fade-in slide-in-from-bottom duration-700 ease-out"
+          style={{ animationDelay: "250ms", animationFillMode: "backwards" }}
+        >
+          <div
+            className="animate-in fade-in slide-in-from-bottom-16 duration-500 ease-out"
+            style={{ animationDelay: "950ms", animationFillMode: "backwards" }}
           >
-            {buttonText}
-          </button>
+            <StartStopButton
+              active={hasActiveStory}
+              disabled={isDisabled || (!hasActiveStory && cooldownSeconds > 0)}
+              className="h-[50px] w-[140px] cursor-pointer"
+              startLabel={
+                cooldownSeconds > 0 ? `Start (${cooldownSeconds}s)` : "Start"
+              }
+              onClick={handleClick}
+            />
+          </div>
 
-          <PokerCards storyId={storyId} />
+          <div
+            className="animate-in fade-in slide-in-from-bottom-16 duration-500 ease-out"
+            style={{ animationDelay: "1070ms", animationFillMode: "backwards" }}
+          >
+            <PokerCards storyId={storyId} />
+          </div>
 
-          <PokerResults storyId={storyId} />
+          <div
+            className="animate-in fade-in slide-in-from-bottom-16 duration-500 ease-out"
+            style={{ animationDelay: "1190ms", animationFillMode: "backwards" }}
+          >
+            <PokerResults storyId={storyId} />
+          </div>
         </div>
       </div>
 

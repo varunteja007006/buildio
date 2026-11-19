@@ -10,6 +10,7 @@ import * as React from "react";
 
 import { getEmojiForUserId } from "@/lib/utils";
 
+import { Fireworks } from "./fireworks";
 import { ConfettiSideCannons } from "./reaction-collection";
 
 export function ParticipantCard({
@@ -20,6 +21,7 @@ export function ParticipantCard({
   lastDisconnected,
   emojiId,
   isUser,
+  index,
 }: Readonly<{
   name: string;
   emoji?: string;
@@ -28,9 +30,16 @@ export function ParticipantCard({
   lastDisconnected?: number;
   emojiId: string;
   isUser: boolean;
+  index: number;
 }>) {
   return (
-    <div className="border-primary/25 flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md border bg-white p-2 pr-4 pl-2 shadow dark:bg-secondary">
+    <div
+      className="border-gray-300 flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md bg-white p-2 pr-4 pl-2 shadow-lg animate-in fade-in slide-in-from-right-8 duration-500 ease-out dark:bg-secondary"
+      style={{
+        animationDelay: `${Math.min(index, 10) * 70}ms`,
+        animationFillMode: "backwards",
+      }}
+    >
       <div className="flex flex-row items-center gap-2">
         <div className="text-2xl">{emoji ?? getEmojiForUserId(emojiId)}</div>
         <div className="flex flex-col items-start">
@@ -81,9 +90,12 @@ export function ReactionsMenu() {
           <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="flex flex-col gap-1">
         <DropdownMenuItem asChild>
           <ConfettiSideCannons />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Fireworks />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

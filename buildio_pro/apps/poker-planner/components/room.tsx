@@ -41,20 +41,17 @@ function RoomList() {
     return null;
   }
 
+  const joinedRoomsList = joinedRooms?.rooms ?? [];
+  const createdRoomsList = createdRooms?.rooms ?? [];
+
   return (
     <div className="flex flex-row flex-wrap gap-4">
-      {joinedRooms?.rooms.map((room) => (
+      {[...joinedRoomsList, ...createdRoomsList].map((room, index) => (
         <RoomLineItem
           key={room._id}
           label={room.room_name}
           roomCode={room.room_code}
-        />
-      ))}
-      {createdRooms?.rooms.map((room) => (
-        <RoomLineItem
-          key={room._id}
-          label={room.room_name}
-          roomCode={room.room_code}
+          style={{ animationDelay: `${index * 75}ms` }}
         />
       ))}
     </div>

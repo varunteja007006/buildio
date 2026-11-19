@@ -78,7 +78,7 @@ export function UserCard() {
                 user.username.split("").slice(0, 2).join("").toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <p className="text-primary font-bold capitalize">{user.username}</p>
+          <p className="text-primary font-bold capitalize animate-in fade-in duration-1000 ease-out">{user.username}</p>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Click effect</DropdownMenuLabel>

@@ -28,12 +28,18 @@ export function PokerBoardHeader() {
 
   return (
     <div className="w-full flex justify-between gap-2 items-center">
-      <div className="flex flex-row items-center gap-4">
-        <p className="font-bold text-lg text-primary">
+      <div
+        className="flex flex-row items-center gap-4 animate-in fade-in slide-in-from-right-8 duration-500 ease-out"
+        style={{ animationDelay: "0ms", animationFillMode: "backwards" }}
+      >
+        <p className="font-bold text-lg text-primary underline underline-offset-8">
           {roomDetails?.room?.room_name}
         </p>
       </div>
-      <div className="hidden flex-row items-center justify-end gap-2 sm:flex">
+      <div
+        className="hidden flex-row items-center justify-end gap-2 sm:flex animate-in fade-in slide-in-from-right-8 duration-500 ease-out"
+        style={{ animationDelay: "70ms", animationFillMode: "backwards" }}
+      >
         <Link href={"/room"}>
           <Button variant={"destructive"} className="cursor-pointer">
             Leave Room
@@ -45,7 +51,10 @@ export function PokerBoardHeader() {
         </CopyBtn>
         <ShareBtn size="icon-sm" variant="outline" />
       </div>
-      <div className="sm:hidden">
+      <div
+        className="sm:hidden animate-in fade-in slide-in-from-right-8 duration-500 ease-out"
+        style={{ animationDelay: "70ms", animationFillMode: "backwards" }}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon-sm" aria-label="Room actions">

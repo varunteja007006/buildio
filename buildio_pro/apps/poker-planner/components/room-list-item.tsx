@@ -1,5 +1,6 @@
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import type { CSSProperties } from "react";
 import { Users } from "lucide-react";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
@@ -50,10 +51,12 @@ export function RoomLineItem({
   label,
   roomCode,
   isNew,
+  style,
 }: Readonly<{
   label: string;
   roomCode: string;
   isNew?: boolean;
+  style?: CSSProperties;
 }>) {
   const { joinRoom, isJoining } = useJoinRoom();
 
@@ -62,7 +65,10 @@ export function RoomLineItem({
   };
 
   return (
-    <div className="flex border border-primary pl-4 p-2 rounded flex-row items-center justify-between gap-2 w-full max-w-sm">
+    <div
+      style={style}
+      className="flex border border-primary pl-4 p-2 rounded flex-row items-center justify-between gap-2 w-full max-w-sm animate-in fade-in duration-500 ease-out fill-mode-backwards"
+    >
       <p className="font-semibold w-full">{label}</p>
 
       {isNew && (
