@@ -76,6 +76,7 @@ function DropdownMenuContent({
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Positioner
+        className="z-50"
         align={align}
         side={side}
         sideOffset={sideOffset}
