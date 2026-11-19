@@ -112,7 +112,7 @@ export default function Home() {
             className="animate-rise text-4xl font-bold tracking-tight text-primary sm:text-5xl lg:text-6xl"
           >
             Plan together.{" "}
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
               Estimate smarter.
             </span>
           </h1>
