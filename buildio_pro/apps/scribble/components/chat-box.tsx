@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -9,7 +10,6 @@ import { useMutation, useQuery } from "convex/react";
 import { MessageCircleMore, Send } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
-import { useUserStore } from "@/lib/store/user.store";
 
 interface ChatBoxProps {
   roomCode: string;

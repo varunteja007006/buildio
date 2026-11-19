@@ -1,5 +1,7 @@
 "use client";
 
+import { getErrorMessage } from "@workspace/game-ui/lib/convex-errors";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import {
@@ -14,8 +16,6 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { ParticipantCard } from "@/components/participant-card";
-import { getErrorMessage } from "@/lib/convex-errors";
-import { useUserStore } from "@/lib/store/user.store";
 
 export function Participants() {
   const params = useParams();

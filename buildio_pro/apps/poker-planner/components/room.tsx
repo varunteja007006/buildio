@@ -1,12 +1,11 @@
 "use client";
 
+
+import { JoinRoomForm } from "@workspace/game-ui/components/join-room-form";
+import { RoomLineItem } from "@workspace/game-ui/components/room-list-item";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useQuery } from "convex/react";
-
-import { useUserStore } from "@/lib/store/user.store";
-
-import { RoomLineItem } from "./room-list-item";
-import { JoinRoomForm } from "./join-room-form";
 
 export function Room() {
   return (

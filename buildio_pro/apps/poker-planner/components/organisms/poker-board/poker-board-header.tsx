@@ -1,3 +1,6 @@
+import { CopyBtn } from "@workspace/game-ui/components/atoms/copy-btn";
+import { ShareBtn } from "@workspace/game-ui/components/atoms/share-btn";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -11,10 +14,6 @@ import { Copy, Menu } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-
-import { CopyBtn } from "@/components/atoms/copy-btn";
-import { ShareBtn } from "@/components/atoms/share-btn";
-import { useUserStore } from "@/lib/store/user.store";
 
 export function PokerBoardHeader() {
   const params = useParams();

@@ -1,20 +1,11 @@
-"use client";
+import { RoomGate } from "@workspace/game-ui/components/room-gate";
+import type { ReactNode } from "react";
 
-import React from "react";
-
-import { UserRegistrationDialog } from "@/components/user-registration-dialog";
-import { useUserStore } from "@/lib/store/user.store";
 
 export default function RoomLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
-  const { userToken } = useUserStore();
-
-  if (!userToken) {
-    return <UserRegistrationDialog defaultOpen={true} />;
-  }
-
-  return <>{children}</>;
+  return <RoomGate>{children}</RoomGate>;
 }

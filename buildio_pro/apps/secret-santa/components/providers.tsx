@@ -1,12 +1,10 @@
 "use client";
 
-import { TooltipProvider } from "@workspace/ui/components/tooltip";
+import { ClickEffectProvider } from "@workspace/game-ui/components/click-effect-provider";
+import { Providers as SharedProviders } from "@workspace/game-ui/components/providers";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
 
-import { UserStoreProvider } from "@/lib/store/user.store";
-
-import { ConvexClientProvider } from "./convex-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -17,11 +15,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       enableColorScheme
     >
-      <ConvexClientProvider>
-        <UserStoreProvider>
-          <TooltipProvider>{children}</TooltipProvider>
-        </UserStoreProvider>
-      </ConvexClientProvider>
+      <SharedProviders>
+        <ClickEffectProvider>{children}</ClickEffectProvider>
+      </SharedProviders>
     </NextThemesProvider>
   );
 }

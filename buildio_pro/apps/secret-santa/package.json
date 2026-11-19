@@ -13,6 +13,7 @@
     "clean": "git clean -xdf .cache .next .turbo node_modules"
   },
   "dependencies": {
+    "@workspace/game-ui": "workspace:*",
     "@workspace/games-convex-backend": "workspace:*",
     "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -17,7 +18,6 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { useUserStore } from "@/lib/store/user.store";
 
 interface GameSettingsDialogProps {
   roomCode: string;

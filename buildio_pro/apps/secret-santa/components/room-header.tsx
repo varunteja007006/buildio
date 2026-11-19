@@ -1,5 +1,8 @@
 "use client";
 
+import { CopyBtn } from "@workspace/game-ui/components/atoms/copy-btn";
+import { ShareBtn } from "@workspace/game-ui/components/atoms/share-btn";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Badge } from "@workspace/ui/components/badge";
 import { useQuery } from "convex/react";
@@ -7,13 +10,10 @@ import { Copy } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRef } from "react";
 
-import { CopyBtn } from "@/components/atoms/copy-btn";
-import { ShareBtn } from "@/components/atoms/share-btn";
 import {
   SnowflakeIcon,
   type SnowflakeIconHandle,
 } from "@/components/snowflake-icon";
-import { useUserStore } from "@/lib/store/user.store";
 
 export function RoomHeader() {
   const params = useParams();

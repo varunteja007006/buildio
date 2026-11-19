@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import dynamic from "next/dynamic";
@@ -9,7 +10,6 @@ import { useEffect } from "react";
 import { ChatBox } from "@/components/chat-box";
 import { Participants } from "@/components/participants";
 import { RoomHeader } from "@/components/room-header";
-import { useUserStore } from "@/lib/store/user.store";
 
 const Canvas = dynamic(
   () => import("@/components/canvas").then((mod) => mod.Canvas),

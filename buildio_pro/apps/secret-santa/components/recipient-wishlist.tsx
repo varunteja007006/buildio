@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import {
   Card,
@@ -14,7 +15,6 @@ import { useParams } from "next/navigation";
 
 import { WishItemRow } from "@/components/wish-item-row";
 import { useLinkPreviews } from "@/hooks/use-link-previews";
-import { useUserStore } from "@/lib/store/user.store";
 
 export function RecipientWishlist({
   myRecipientUsername,

@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
@@ -11,7 +12,6 @@ import { Participants } from "@/components/participants";
 import { RecipientWishlist } from "@/components/recipient-wishlist";
 import { RoomHeader } from "@/components/room-header";
 import { WishlistEditor } from "@/components/wishlist-editor";
-import { useUserStore } from "@/lib/store/user.store";
 
 export default function RoomPage() {
   const { user, userToken } = useUserStore();

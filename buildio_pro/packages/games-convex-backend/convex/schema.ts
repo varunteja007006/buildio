@@ -41,6 +41,15 @@ export default defineSchema({
         v.literal("🦋"),
       ),
     ),
+    role: v.optional(
+      v.union(
+        v.literal("frontend"),
+        v.literal("backend"),
+        v.literal("mobile"),
+        v.literal("qa"),
+        v.literal("ba"),
+      ),
+    ),
   }).index("by_user_token", ["user_token"]),
 
   rooms: defineTable({

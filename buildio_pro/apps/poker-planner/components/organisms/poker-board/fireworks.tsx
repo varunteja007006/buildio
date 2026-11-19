@@ -1,3 +1,4 @@
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { FireworksBackground } from "@workspace/ui/components/animate-ui/components/backgrounds/fireworks";
 import { Button } from "@workspace/ui/components/button";
@@ -5,8 +6,6 @@ import { useMutation, useQuery } from "convex/react";
 import { Sparkles } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
-import { useUserStore } from "@/lib/store/user.store";
 
 const FIREWORK_COLORS = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
 const SHOW_DURATION_MS = 8000;

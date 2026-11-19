@@ -1,8 +1,6 @@
+import { UserRegistration } from "@workspace/game-ui/components/user-registration";
 import { cn } from "@workspace/ui/lib/utils";
-import { Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
-
-import { UserRegistration } from "./user-registration";
 
 const FLOATING_CARDS = [
   {
@@ -109,12 +107,9 @@ export default function Home() {
         <div className="flex flex-col items-center gap-5">
           <h1
             style={{ animationDelay: "100ms" }}
-            className="animate-rise text-4xl font-bold tracking-tight text-primary sm:text-5xl lg:text-6xl"
+            className="animate-rise bg-linear-to-r from-primary from-35% via-primary/80 via-70% to-primary/50 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl lg:text-6xl"
           >
-            Plan together.{" "}
-            <span className="bg-linear-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent">
-              Estimate smarter.
-            </span>
+            Plan together. Estimate smarter.
           </h1>
           <p
             style={{ animationDelay: "200ms" }}
@@ -139,8 +134,9 @@ export default function Home() {
 
         <UserRegistration
           animated
+          askRole
           delayMs={400}
-          className="mx-auto w-full max-w-sm rounded-2xl border border-border/70 bg-card/80 p-6 text-left shadow-lg shadow-primary/5 backdrop-blur-md"
+          className="mx-auto w-full max-w-[calc(var(--container-sm)+2rem)] rounded-2xl border border-border/70 bg-card/80 p-6 text-left shadow-lg shadow-primary/5 backdrop-blur-md"
         />
       </div>
     </div>

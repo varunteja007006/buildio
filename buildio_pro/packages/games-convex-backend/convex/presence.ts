@@ -36,6 +36,7 @@ export const list = query({
       lastDisconnected: v.number(),
       name: v.string(),
       emoji: v.optional(v.string()),
+      role: v.optional(v.string()),
     }),
   ),
   handler: async (ctx, { roomToken }) => {
@@ -61,6 +62,7 @@ export const list = query({
           lastDisconnected: p.lastDisconnected,
           name: user.username ?? "Unknown",
           ...(user.emoji ? { emoji: user.emoji } : {}),
+          ...(user.role ? { role: user.role } : {}),
         };
       }),
     );

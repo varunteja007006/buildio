@@ -1,5 +1,7 @@
 "use client";
 
+import { getErrorMessage } from "@workspace/game-ui/lib/convex-errors";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -16,8 +18,6 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { getErrorMessage } from "@/lib/convex-errors";
-import { useUserStore } from "@/lib/store/user.store";
 import { MAX_BUDGET_VALUE } from "@/lib/utils";
 
 export function DrawControl({

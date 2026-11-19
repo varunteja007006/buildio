@@ -1,11 +1,10 @@
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { ConfettiSideCannonsBtn } from "@workspace/ui/components/confetti/side-cannons";
 import { useMutation, useQuery } from "convex/react";
 import { PartyPopper } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-
-import { useUserStore } from "@/lib/store/user.store";
 
 export const ConfettiSideCanonsNotifier = () => {
   const params = useParams();

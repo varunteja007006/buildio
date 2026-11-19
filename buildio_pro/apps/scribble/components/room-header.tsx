@@ -1,5 +1,8 @@
 "use client";
 
+import { CopyBtn } from "@workspace/game-ui/components/atoms/copy-btn";
+import { ShareBtn } from "@workspace/game-ui/components/atoms/share-btn";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -11,10 +14,7 @@ import { useQuery } from "convex/react";
 import { Play, Settings } from "lucide-react";
 import { useParams } from "next/navigation";
 
-import { CopyBtn } from "@/components/atoms/copy-btn";
-import { ShareBtn } from "@/components/atoms/share-btn";
 import { GameSettingsDialog } from "@/components/game-settings-dialog";
-import { useUserStore } from "@/lib/store/user.store";
 
 export function RoomHeader() {
   const params = useParams();

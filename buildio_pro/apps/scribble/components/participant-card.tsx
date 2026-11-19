@@ -1,6 +1,5 @@
+import { getEmojiForUserId } from "@workspace/game-ui/lib/emoji";
 import { Crown } from "lucide-react";
-
-import { getEmojiForUserId } from "@/lib/utils";
 
 export function ParticipantCard({
   name,

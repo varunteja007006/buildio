@@ -1,5 +1,6 @@
 "use client";
 
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -7,7 +8,6 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { Layer, Line, Stage } from "react-konva";
 
-import { useUserStore } from "@/lib/store/user.store";
 
 import { CanvasToolbar } from "./canvas-toolbar";
 

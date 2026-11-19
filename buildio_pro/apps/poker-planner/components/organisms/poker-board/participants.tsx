@@ -1,14 +1,15 @@
 import usePresence from "@convex-dev/presence/react";
+import { ParticipantCard } from "@workspace/game-ui/components/participant-card";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
+import type { Role } from "@workspace/game-ui/lib/validators";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import React from "react";
 
-import { useUserStore } from "@/lib/store/user.store";
-
 import { FireworksNotifier } from "./fireworks";
-import { ParticipantCard } from "./participant-card";
+import { ReactionsMenu } from "./participant-card";
 import { ConfettiSideCanonsNotifier } from "./reaction-collection";
 
 const findUserStoryPoint = (
@@ -58,10 +59,10 @@ export function Participants({
 
   type Participant = NonNullable<typeof presenceState>[number] & {
     emoji?: string;
+    role?: string;
     isCurrentUser?: boolean;
     hasVoted: boolean;
   };
-
   const participantList = React.useMemo<Participant[]>(
     () =>
       presenceState?.map((p) => {
@@ -91,8 +92,12 @@ export function Participants({
             lastDisconnected={innerUser.lastDisconnected}
             emojiId={innerUser.userId}
             emoji={innerUser.emoji}
+            role={innerUser.role as Role | undefined}
             isUser={innerUser.userId === userId}
             index={index}
+            actions={
+              innerUser.userId === userId ? <ReactionsMenu /> : undefined
+            }
           />
         );
       })}

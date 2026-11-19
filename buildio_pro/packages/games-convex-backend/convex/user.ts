@@ -37,10 +37,19 @@ const profileEmojiValidator = v.union(
   v.literal("🦋"),
 );
 
+const roleValidator = v.union(
+  v.literal("frontend"),
+  v.literal("backend"),
+  v.literal("mobile"),
+  v.literal("qa"),
+  v.literal("ba"),
+);
+
 export const createUser = mutation({
   args: {
     name: v.string(),
     roomCode: v.optional(v.string()),
+    role: v.optional(roleValidator),
   },
   returns: v.object({
     success: v.boolean(),
@@ -58,6 +67,7 @@ export const createUser = mutation({
       user_token: token,
       created_at: now,
       last_active: now,
+      ...(args.role ? { role: args.role } : {}),
     });
 
     let message = "User created successfully";
@@ -102,6 +112,7 @@ export const getUserByToken = query({
       id: v.id("users"),
       username: v.string(),
       emoji: v.optional(profileEmojiValidator),
+      role: v.optional(roleValidator),
       success: v.literal(true),
       message: v.string(),
       isFound: v.literal(true),
@@ -132,6 +143,24 @@ export const setProfileEmoji = mutation({
     }
 
     await ctx.db.patch(user.id, { emoji: args.emoji });
+    return null;
+  },
+});
+
+export const setUserRole = mutation({
+  args: {
+    token: v.string(),
+    // Optional so passing undefined (or omitting) clears the role.
+    role: v.optional(roleValidator),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.token);
+    if (!user.success || !user.id) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user.id, { role: args.role });
     return null;
   },
 });

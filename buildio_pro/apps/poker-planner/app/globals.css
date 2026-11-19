@@ -3,9 +3,12 @@
 /* Import the UI library styles */
 @import "../node_modules/@workspace/ui/src/styles/globals.css";
 
+/* Pick up class names used by the shared game-ui package sources */
+@source "../../../packages/game-ui/src";
+
 /* Import the theme styles */
 @import "../node_modules/@workspace/theme/caffeine.css";
-@import "./palette-themes.css";
+@import "../node_modules/@workspace/game-ui/src/styles/palette-themes.css";
 
 @theme {
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);

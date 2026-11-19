@@ -1,4 +1,6 @@
 "use client";
+import { useJoinRoom } from "@workspace/game-ui/hooks/use-join-room";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { StartStopButton } from "@workspace/ui/components/start-stop-button";
@@ -6,9 +8,6 @@ import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
-
-import { useJoinRoom } from "@/hooks/useJoinRoom";
-import { useUserStore } from "@/lib/store/user.store";
 
 import { Participants } from "./participants";
 import { PokerBoardHeader } from "./poker-board-header";

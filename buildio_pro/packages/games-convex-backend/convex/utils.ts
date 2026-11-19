@@ -17,6 +17,7 @@ export const getUserFromToken = async (ctx: QueryCtx, token: string) => {
     id: user._id,
     username: user.username,
     ...(user.emoji ? { emoji: user.emoji } : {}),
+    ...(user.role ? { role: user.role } : {}),
     message: "User found.",
     isFound: true as const,
   };

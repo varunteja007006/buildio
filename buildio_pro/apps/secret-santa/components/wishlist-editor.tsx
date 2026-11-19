@@ -1,5 +1,7 @@
 "use client";
 
+import { getErrorMessage } from "@workspace/game-ui/lib/convex-errors";
+import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { Button } from "@workspace/ui/components/button";
@@ -19,8 +21,6 @@ import { toast } from "sonner";
 
 import { WishItemRow } from "@/components/wish-item-row";
 import { useLinkPreviews } from "@/hooks/use-link-previews";
-import { getErrorMessage } from "@/lib/convex-errors";
-import { useUserStore } from "@/lib/store/user.store";
 
 export function WishlistEditor() {
   const params = useParams();

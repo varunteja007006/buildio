@@ -15,6 +15,7 @@
   "dependencies": {
     "@convex-dev/presence": "^0.4.0",
     "@hookform/resolvers": "catalog:",
+    "@workspace/game-ui": "workspace:*",
     "@workspace/games-convex-backend": "workspace:*",
     "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",
