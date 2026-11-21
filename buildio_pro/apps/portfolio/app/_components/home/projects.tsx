@@ -28,9 +28,11 @@ const featuredProjectOrder = [
 
 const ProjectLink = ({
   URL,
+  projectName,
   type,
 }: {
   URL: string;
+  projectName: string;
   type: "github" | "website";
 }) => {
   if (type === "website") {
@@ -38,7 +40,7 @@ const ProjectLink = ({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button size={"icon"} variant={"outline"} asChild>
-            <a href={URL}>
+            <a href={URL} aria-label={`${projectName} website`}>
               <GrDeploy className="h-4 w-4" />
             </a>
           </Button>
@@ -53,7 +55,7 @@ const ProjectLink = ({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button size={"icon"} variant={"outline"} asChild>
-            <a href={URL}>
+            <a href={URL} aria-label={`${projectName} GitHub repository`}>
               <FaGithub className="h-4 w-4" />
             </a>
           </Button>
@@ -67,7 +69,7 @@ const ProjectLink = ({
 
 export default function Projects() {
   return (
-    <section id="certifications" className="space-y-4">
+    <section id="projects" className="space-y-4">
       <h3 className="text-xl font-semibold">Projects</h3>
 
       <div className="grid grid-cols-1 gap-5">
@@ -114,10 +116,18 @@ export default function Projects() {
                   </CardContent>
                   <CardFooter className="gap-5">
                     {item.project_github && (
-                      <ProjectLink type="github" URL={item.project_github} />
+                      <ProjectLink
+                        type="github"
+                        URL={item.project_github}
+                        projectName={item.project_title}
+                      />
                     )}
                     {item.project_link && (
-                      <ProjectLink type="website" URL={item.project_link} />
+                      <ProjectLink
+                        type="website"
+                        URL={item.project_link}
+                        projectName={item.project_title}
+                      />
                     )}
                   </CardFooter>
                 </div>

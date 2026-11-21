@@ -3,6 +3,16 @@
 import { getErrorMessage } from "@workspace/game-ui/lib/convex-errors";
 import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -15,7 +25,7 @@ import { Input } from "@workspace/ui/components/input";
 import { useMutation } from "convex/react";
 import { Gift, PiggyBank, RotateCcw, Sparkles } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { MAX_BUDGET_VALUE } from "@/lib/utils";
@@ -47,6 +57,13 @@ export function DrawControl({
   const [maxInput, setMaxInput] = useState(
     maxBudget === undefined ? "" : String(maxBudget),
   );
+  const [confirmAction, setConfirmAction] = useState<"redraw" | "reset" | null>(
+    null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const drawHeading = useRef<HTMLDivElement>(null);
+  const dialogOpener = useRef<HTMLButtonElement>(null);
+  const dialogCancel = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     setMinInput(minBudget === undefined ? "" : String(minBudget));
   }, [minBudget]);
@@ -55,6 +72,8 @@ export function DrawControl({
   }, [maxBudget]);
 
   const handleRunDraw = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const result = await runDraw({
         roomCode: roomCode as string,
@@ -68,16 +87,22 @@ export function DrawControl({
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to run the draw"));
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleResetDraw = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await resetDraw({ roomCode: roomCode as string, userToken });
       toast.success("Draw reset. Back to the lobby 🎄");
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to reset the draw"));
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -117,7 +142,11 @@ export function DrawControl({
   return (
     <Card className="border-primary/40 bg-primary/5">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-primary">
+        <CardTitle
+          ref={drawHeading}
+          tabIndex={-1}
+          className="flex items-center gap-2 text-primary"
+        >
           <Gift className="size-5" />
           Host corner
         </CardTitle>
@@ -125,9 +154,7 @@ export function DrawControl({
           {status === "drawn"
             ? pendingParticipants > 0
               ? `${pendingParticipants} new ${
-                  pendingParticipants === 1
-                    ? "participant"
-                    : "participants"
+                  pendingParticipants === 1 ? "participant" : "participants"
                 } joined since the draw 🎲 redraw to match them in!`
               : "Snow is settled ⛄️ Redraw unlocks when someone new joins; Reset reshuffles instead."
             : "Everyone here? Time to shuffle the names! Everyone gets a secret recipient (never themselves 🤝)"}
@@ -135,8 +162,17 @@ export function DrawControl({
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
         <Button
-          onClick={handleRunDraw}
-          disabled={status === "drawn" && pendingParticipants === 0}
+          onClick={(event) => {
+            if (status === "lobby") {
+              void handleRunDraw();
+              return;
+            }
+            dialogOpener.current = event.currentTarget;
+            setConfirmAction("redraw");
+          }}
+          disabled={
+            isSubmitting || (status === "drawn" && pendingParticipants === 0)
+          }
           className="cursor-pointer"
         >
           <Sparkles className="size-4" />
@@ -145,7 +181,11 @@ export function DrawControl({
         {status === "drawn" && (
           <Button
             variant="outline"
-            onClick={handleResetDraw}
+            onClick={(event) => {
+              dialogOpener.current = event.currentTarget;
+              setConfirmAction("reset");
+            }}
+            disabled={isSubmitting}
             className="cursor-pointer"
           >
             <RotateCcw className="size-4" />
@@ -153,6 +193,48 @@ export function DrawControl({
           </Button>
         )}
       </CardContent>
+      <AlertDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => !open && setConfirmAction(null)}
+      >
+        <AlertDialogContent
+          initialFocus={dialogCancel}
+          finalFocus={() => {
+            const opener = dialogOpener.current;
+            return opener?.isConnected && !opener.disabled
+              ? opener
+              : drawHeading.current;
+          }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction === "redraw"
+                ? "Redraw recipients?"
+                : "Reset the draw?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction === "redraw"
+                ? "Redrawing replaces all assignments. Anyone who already bought a gift may get a different recipient."
+                : "Resetting clears all assignments and returns everyone to the lobby."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel ref={dialogCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isSubmitting}
+              onClick={() => {
+                const action = confirmAction;
+                setConfirmAction(null);
+                if (action === "redraw") void handleRunDraw();
+                if (action === "reset") void handleResetDraw();
+              }}
+            >
+              {confirmAction === "redraw" ? "Redraw" : "Reset draw"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <CardContent className="flex flex-wrap items-end gap-2 border-t border-primary/10 pt-4">
         <div className="w-28 space-y-1">
           <Input

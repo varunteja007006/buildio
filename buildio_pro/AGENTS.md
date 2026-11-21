@@ -2,6 +2,11 @@
 
 This is a pnpm 11.4 + Turborepo monorepo of Next.js 16 apps (plus one Expo app). Run commands from `buildio_pro/` (the parent `Buildio/` directory contains only workspace-level docs and license files). Node.js `>=20` is required.
 
+## Delegation
+
+- By default, the primary agent delegates small, self-contained implementation tasks to one GPT-6 Luna subagent (`gpt-6-luna`). Typical tasks include UI polish, copy changes, and fixes isolated to one component or app. Honor any model or workflow the user explicitly requests.
+- Give Luna a clear scope and verification steps. The primary agent reviews the diff, verifies the result, and handles cross-app or high-risk changes. Subagents complete their assigned work directly.
+
 ## Commands
 
 - `pnpm install` installs the workspace.

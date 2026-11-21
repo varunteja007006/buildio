@@ -37,6 +37,26 @@ pnpm format           # format TypeScript and Markdown with Prettier
 
 See `AGENTS.md` for conventions: adding shadcn components, theme wiring, env setup, and deploy notes.
 
+### Local development ports
+
+| App | Port | Command |
+| --- | ---: | --- |
+| Buildio landing page | 3015 | `pnpm dev:web` |
+| Portfolio | 3016 | `pnpm dev:portfolio` |
+| Book | 3017 | `pnpm dev:book` |
+| Expense Tracker | 3018 | `pnpm dev:expense-tracker` |
+| Cortex AI | 3019 | `pnpm dev:cortex-ai` |
+| Billezy | 3020 | `pnpm dev:billezy` |
+| Poker Planner | 3021 | `pnpm dev:poker-planner` |
+| Housie | 3022 | `pnpm dev:housie-game` |
+| Scribble | 3023 | `pnpm dev:scribble` |
+| Secret Santa | 3024 | `pnpm dev:secret-santa` |
+| Eggsy (Expo) | 3025 | `pnpm --filter eggsy start` |
+
+Ports 3026–3030 are available for future apps. For local sign-in, match the app
+URL and OAuth callback origins to the ports above. Book also needs its Convex
+development deployment's `SITE_URL` to match the Book frontend origin.
+
 ## Apps
 
 ### Realtime games (Convex)
