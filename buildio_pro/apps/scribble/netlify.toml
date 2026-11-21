@@ -1,0 +1,7 @@
+[build]
+base = "buildio_pro"
+command = "pnpm build:scribble"
+publish = "apps/scribble/.next"
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
