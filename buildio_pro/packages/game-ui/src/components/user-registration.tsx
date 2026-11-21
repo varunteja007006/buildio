@@ -35,6 +35,7 @@ export function UserRegistration({
   animated = false,
   delayMs = 0,
   askRole = false,
+  joinOnRegister = true,
 }: Readonly<{
   onSuccess?: () => void;
   className?: string;
@@ -44,6 +45,8 @@ export function UserRegistration({
   delayMs?: number;
   /** Ask for the participant role (poker planner only). */
   askRole?: boolean;
+  /** Let an app handle room entry after creating the guest session. */
+  joinOnRegister?: boolean;
 }>) {
   const rise = (delay: number, className?: string) =>
     animated
@@ -82,7 +85,7 @@ export function UserRegistration({
     try {
       const res = await createUserMutation({
         name: data.name,
-        roomCode: roomCode as string,
+        ...(joinOnRegister && typeof roomCode === "string" ? { roomCode } : {}),
         ...(data.role ? { role: data.role } : {}),
       });
       if (res.token) {
@@ -110,16 +113,17 @@ export function UserRegistration({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={className ?? "w-[calc(var(--container-sm)+2rem)] lg:w-[calc(var(--container-md)+2rem)]"}
+        className={
+          className ??
+          "w-[calc(var(--container-sm)+2rem)] lg:w-[calc(var(--container-md)+2rem)]"
+        }
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel {...rise(100, "text-primary")}>
-                Username
-              </FormLabel>
+              <FormLabel {...rise(100, "text-primary")}>Username</FormLabel>
               <FormControl>
                 <div
                   {...rise(
@@ -140,6 +144,7 @@ export function UserRegistration({
                   />
                   <Button
                     type="submit"
+                    aria-label="Continue as guest"
                     size={"icon"}
                     disabled={form.formState.isSubmitting}
                     className="size-10 shrink-0 cursor-pointer rounded-lg"

@@ -4,7 +4,7 @@
   "tasks": {
     "test": {
       "cache": false,
-      "env": ["BILLEZY_TEST_CONVEX_URL"]
+      "env": ["BILLEZY_TEST_CONVEX_URL", "SCRIBBLE_TEST_CONVEX_URL"]
     },
     "build": {
       "dependsOn": [

@@ -36,6 +36,7 @@ export const createRoom = mutation({
   args: {
     roomName: v.string(),
     userToken: v.string(),
+    game: v.optional(v.literal("scribble")),
   },
   returns: v.object({
     success: v.boolean(),
@@ -63,9 +64,24 @@ export const createRoom = mutation({
       };
     }
 
+    const roomName = args.roomName.trim();
+    if (args.game === "scribble" && (!roomName || roomName.length > 100)) {
+      return {
+        success: false,
+        message: "Enter a room name up to 100 characters.",
+      };
+    }
+
     // Generate unique room code
     function generateCode() {
-      return Math.random().toString(36).substring(2, 8).toUpperCase();
+      if (!args.game) {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+      }
+      return globalThis.crypto
+        .randomUUID()
+        .replaceAll("-", "")
+        .slice(0, 8)
+        .toUpperCase();
     }
 
     let roomCode: string;
@@ -81,10 +97,11 @@ export const createRoom = mutation({
     // Create room
     const now = Date.now();
     const roomId = await ctx.db.insert("rooms", {
-      room_name: args.roomName,
+      room_name: args.game ? roomName : args.roomName,
       room_code: roomCode,
       created_at: now,
       ownerId,
+      ...(args.game ? { game: args.game } : {}),
     });
 
     // Create team record for owner
@@ -175,7 +192,7 @@ export const joinRoom = mutation({
       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
       .unique();
 
-    if (!room) {
+    if (!room || room.game === "scribble") {
       return {
         success: false,
         message: "Room not found",

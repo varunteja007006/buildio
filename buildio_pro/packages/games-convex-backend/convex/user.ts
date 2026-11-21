@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
@@ -60,10 +60,14 @@ export const createUser = mutation({
   }),
 
   handler: async (ctx, args) => {
+    const name = args.name.trim();
+    if (!name || name.length > 100) {
+      throw new ConvexError("Enter a display name up to 100 characters.");
+    }
     const token = globalThis.crypto.randomUUID();
     const now = Date.now();
     const userId = await ctx.db.insert("users", {
-      username: args.name,
+      username: name,
       user_token: token,
       created_at: now,
       last_active: now,
@@ -80,7 +84,7 @@ export const createUser = mutation({
         .withIndex("by_room_code", (q) => q.eq("room_code", roomCode))
         .unique();
 
-      if (room) {
+      if (room && room.game !== "scribble") {
         teamId = await ctx.db.insert("teams", {
           roomId: room._id,
           userId,

@@ -22,9 +22,9 @@ export function CopyBtn({
   children,
   ...props
 }: Readonly<CopyBtnProps>) {
-  const handleCopyRoomCode = () => {
+  const handleCopyRoomCode = async () => {
     try {
-      navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(text);
       toast.success("Copied to clipboard");
     } catch (error) {
       toast.error("Failed to copy");

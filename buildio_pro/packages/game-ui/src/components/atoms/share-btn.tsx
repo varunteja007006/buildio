@@ -11,10 +11,10 @@ import { toast } from "sonner";
 
 type ShareBtnProps = React.ComponentProps<typeof Button>;
 
-export function ShareBtn({ ...props }: Readonly<ShareBtnProps>) {
-  const handleCopyLink = () => {
+export function ShareBtn({ children, ...props }: Readonly<ShareBtnProps>) {
+  const handleCopyLink = async () => {
     try {
-      navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(window.location.href);
       toast.success("Share link copied");
     } catch (error) {
       toast.error("Failed to copy");
@@ -27,6 +27,7 @@ export function ShareBtn({ ...props }: Readonly<ShareBtnProps>) {
       <TooltipTrigger asChild>
         <Button onClick={handleCopyLink} className="cursor-pointer" {...props}>
           <Share2 />
+          {children}
         </Button>
       </TooltipTrigger>
       <TooltipContent>

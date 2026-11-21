@@ -69,7 +69,21 @@ function Click(props: ClickProps): React.ReactElement | null {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const el: any = isDoc ? document : target;
     if (!el) return;
+    const ignoredPointers = new Set<number>();
+    function ignoresEffect(event: PointerEvent) {
+      return event.composedPath().some(
+        (node) => node instanceof Element && node.hasAttribute('data-click-effect-ignore'),
+      );
+    }
+    function onPointerDown(event: PointerEvent) {
+      if (ignoresEffect(event)) ignoredPointers.add(event.pointerId);
+      else ignoredPointers.delete(event.pointerId);
+    }
+    function onPointerCancel(event: PointerEvent) {
+      ignoredPointers.delete(event.pointerId);
+    }
     function onPointerUp(e: PointerEvent) {
+      if (ignoredPointers.delete(e.pointerId) || ignoresEffect(e)) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (!isDoc) {
         const rect = (el as HTMLElement).getBoundingClientRect();
@@ -99,8 +113,14 @@ function Click(props: ClickProps): React.ReactElement | null {
         setItems((prev) => prev.filter((it) => it.id !== id));
       }, duration + 300);
     }
+    el.addEventListener('pointerdown', onPointerDown, { passive: true });
+    el.addEventListener('pointercancel', onPointerCancel, { passive: true });
     el.addEventListener('pointerup', onPointerUp, { passive: true });
-    return () => el.removeEventListener('pointerup', onPointerUp);
+    return () => {
+      el.removeEventListener('pointerdown', onPointerDown);
+      el.removeEventListener('pointercancel', onPointerCancel);
+      el.removeEventListener('pointerup', onPointerUp);
+    };
   }, [scope, variant, color, size, duration, disabled]);
 
   const portal = mounted ? document.body : null;

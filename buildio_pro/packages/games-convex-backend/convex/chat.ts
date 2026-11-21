@@ -1,6 +1,13 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import {
+  getMatch,
+  getTurnKey,
+  normalizeGuess,
+  recordGuess,
+} from "./lib/scribbleMatch";
+import { requireScribbleMember } from "./lib/scribbleRoom";
 import { getUserFromToken } from "./utils";
 
 const MAX_MESSAGE_LENGTH = 1000;
@@ -8,7 +15,7 @@ const MAX_REACTION_LENGTH = 64;
 const MAX_MESSAGES_RETURNED = 100;
 
 export const getMessages = query({
-  args: { roomCode: v.string() },
+  args: { roomCode: v.string(), userToken: v.string() },
   returns: v.array(
     v.object({
       _id: v.id("chats"),
@@ -22,12 +29,7 @@ export const getMessages = query({
     }),
   ),
   handler: async (ctx, args) => {
-    const room = await ctx.db
-      .query("rooms")
-      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-      .unique();
-
-    if (!room) return [];
+    const { room } = await requireScribbleMember(ctx, args);
 
     // Cap history shipped to subscribers: most recent messages only.
     const messages = await ctx.db
@@ -62,37 +64,55 @@ export const sendMessage = mutation({
     roomCode: v.string(),
     userToken: v.string(),
     message: v.string(),
+    turnKey: v.union(v.string(), v.null()),
   },
-  returns: v.null(),
+  returns: v.union(
+    v.literal("sent"),
+    v.literal("correct"),
+    v.literal("hidden"),
+  ),
   handler: async (ctx, args) => {
-    if (args.message.length === 0 || args.message.length > MAX_MESSAGE_LENGTH) {
-      throw new Error(
-        `Message must be between 1 and ${MAX_MESSAGE_LENGTH} characters`,
+    const message = args.message.trim();
+    if (!message || message.length > MAX_MESSAGE_LENGTH) {
+      throw new ConvexError(
+        `Messages must be 1–${MAX_MESSAGE_LENGTH} characters.`,
       );
     }
+    const { room, user } = await requireScribbleMember(ctx, args);
+    const now = Date.now();
+    const recent = await ctx.db
+      .query("chats")
+      .withIndex("by_room_and_user_and_created_at", (q) =>
+        q
+          .eq("roomId", room._id)
+          .eq("userId", user.id)
+          .gt("created_at", now - 5000),
+      )
+      .take(8);
+    if (recent.length >= 8)
+      throw new ConvexError("Slow down before sending another message.");
 
-    const user = await getUserFromToken(ctx, args.userToken);
-    if (!user.success || !user.id) throw new Error("User not found");
-
-    const room = await ctx.db
-      .query("rooms")
-      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-      .unique();
-
-    if (!room) throw new Error("Room not found");
-
-    // TODO: Get current word and check if message matches
-    const isGuess = false;
+    const match = await getMatch(ctx, room._id);
+    const matchesPrompt =
+      match?.phase === "drawing" &&
+      normalizeGuess(message) ===
+        normalizeGuess(match.prompts[match.turnIndex]!);
+    let isGuess = false;
+    if (matchesPrompt) {
+      if (match.endsAt <= now || args.turnKey !== getTurnKey(match))
+        return "hidden";
+      isGuess = await recordGuess(ctx, match, user.id);
+      if (!isGuess) return "hidden";
+    }
 
     await ctx.db.insert("chats", {
       roomId: room._id,
       userId: user.id,
-      message: isGuess ? "Guessed the word!✅" : args.message,
+      message: isGuess ? "Guessed the drawing!" : message,
       isGuess,
-      created_at: Date.now(),
+      created_at: now,
     });
-
-    return null;
+    return isGuess ? "correct" : "sent";
   },
 });
 

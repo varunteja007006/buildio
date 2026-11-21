@@ -29,6 +29,13 @@ crons.interval(
 );
 
 crons.interval(
+  "prune legacy scribble strokes",
+  { hours: 24 },
+  internal.cleanup.deleteLegacyScribbleLines,
+  {},
+);
+
+crons.interval(
   "prune old team reactions",
   { minutes: 60 }, // every hour
   internal.cleanup.deleteOldTeamReactions,
@@ -38,6 +45,7 @@ crons.interval(
   "prune old secret santa data",
   { hours: 24 },
   internal.cleanup.deleteOldSantaData,
+  {},
 );
 
 crons.interval(

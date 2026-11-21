@@ -1,19 +1,19 @@
 "use client";
 
-import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { Layer, Line, Stage } from "react-konva";
+import { toast } from "sonner";
 
+import { getGameError } from "@/lib/game-error";
 
 import { CanvasToolbar } from "./canvas-toolbar";
 
 interface LineData {
   id: string;
-  tool: string;
+  tool: "pen" | "eraser";
   points: number[];
   strokeWidth: number;
   strokeColor: string;
@@ -21,7 +21,8 @@ interface LineData {
 
 // How often the in-progress stroke is streamed to the server while drawing.
 // Final points are always sent on mouseup regardless of this throttle.
-const STREAM_INTERVAL_MS = 80;
+const STREAM_INTERVAL_MS = 140;
+const MAX_COORDINATES = 512;
 
 // Fixed logical drawing space. Strokes are always stored in these
 // coordinates regardless of screen size, so resize (and players on
@@ -29,7 +30,39 @@ const STREAM_INTERVAL_MS = 80;
 const LOGICAL_WIDTH = 800;
 const LOGICAL_HEIGHT = 600;
 
-export function Canvas() {
+function DrawingLine({
+  line,
+}: {
+  line: Pick<LineData, "points" | "strokeWidth" | "strokeColor"> & {
+    tool: string;
+  };
+}) {
+  return (
+    <Line
+      points={line.points}
+      stroke={line.strokeColor}
+      strokeWidth={line.strokeWidth}
+      tension={0.5}
+      lineCap="round"
+      lineJoin="round"
+      globalCompositeOperation={
+        line.tool === "eraser" ? "destination-out" : "source-over"
+      }
+    />
+  );
+}
+
+export function Canvas({
+  roomCode,
+  userToken,
+  canvasId,
+  canDraw,
+}: {
+  roomCode: string;
+  userToken: string;
+  canvasId: string;
+  canDraw: boolean;
+}) {
   // Measure the stage area (below the toolbar) so the logical canvas can be
   // scaled to fit at any screen size. Strokes are always stored in logical
   // coordinates, so resize (and players on different devices) zoom the
@@ -41,16 +74,12 @@ export function Canvas() {
     const el = stageAreaRef.current;
     if (!el) return;
 
-    const updateDimensions = () => {
-      setStageSize({
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-      });
-    };
-
-    updateDimensions();
-
-    const resizeObserver = new ResizeObserver(updateDimensions);
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (entry) {
+        const { width, height } = entry.contentRect;
+        setStageSize({ width, height });
+      }
+    });
     resizeObserver.observe(el);
 
     return () => resizeObserver.disconnect();
@@ -64,127 +93,152 @@ export function Canvas() {
         )
       : 0;
 
-  const params = useParams();
-  const roomCode = params.roomCode as string;
-
-  // Server-side source of truth: every player's strokes, ordered by draw
-  // time. Convex pushes updates reactively, so all clients stay in sync.
-  const strokesFromQuery = useQuery(api.scribble.getStrokes, { roomCode });
-  const saveStroke = useMutation(api.scribble.saveStroke);
+  const canvasArgs = { roomCode, userToken, canvasId };
+  const strokesFromQuery = useQuery(api.scribble.getStrokes, canvasArgs);
+  const saveStroke = useMutation(api.scribble.saveStroke).withOptimisticUpdate(
+    (store, args) => {
+      const list = store.getQuery(api.scribble.getStrokes, canvasArgs);
+      if (!list) return;
+      const { id: strokeId, ...stroke } = args.stroke;
+      const line = { ...stroke, strokeId };
+      const next = list.some((item) => item.strokeId === strokeId)
+        ? list.map((item) => (item.strokeId === strokeId ? line : item))
+        : [...list, line];
+      store.setQuery(api.scribble.getStrokes, canvasArgs, next);
+    },
+  );
   const clearCanvasMutation = useMutation(api.scribble.clearCanvas);
-
-  const { userToken } = useUserStore();
-
-  const [tool, setTool] = useState("pen");
-  const isDrawing = useRef(false);
-  // The stroke currently being drawn by this user. Rendered locally so
-  // drawing feels instant; the server copy streams in the background and
-  // is deduplicated against by stroke id on mouseup.
+  const [tool, setTool] = useState<LineData["tool"]>("pen");
   const [currentStroke, setCurrentStroke] = useState<LineData | null>(null);
   const currentStrokeRef = useRef<LineData | null>(null);
+  const activePointer = useRef<number | null>(null);
   const lastStreamedAt = useRef(0);
+  const lastErrorAt = useRef(0);
+  const [clearing, setClearing] = useState(false);
 
   const [strokeWidth, setStrokeWidth] = useState(5);
-  const [eraserWidth, setEraserWidth] = useState(12);
+  const [eraserWidth, setEraserWidth] = useState(14);
   const [strokeColor, setStrokeColor] = useState("#000000");
 
-  const persistStroke = (stroke: LineData, isComplete: boolean) => {
-    saveStroke({ roomCode, userToken, stroke, isComplete }).catch((err) =>
-      console.error("Failed to save stroke:", err),
-    );
-  };
+  function reportError(cause: unknown) {
+    const now = Date.now();
+    if (now - lastErrorAt.current < 3000) return;
+    lastErrorAt.current = now;
+    toast.error(getGameError(cause, "Could not update the canvas. Try again."));
+  }
 
-  const handleMouseDown = (e: KonvaEventObject<Event>) => {
-    isDrawing.current = true;
-    const pos = e.target.getStage()?.getPointerPosition();
-    if (!pos) return;
+  function persistStroke(stroke: LineData, isComplete: boolean) {
+    void saveStroke({ ...canvasArgs, stroke, isComplete }).catch(reportError);
+  }
 
-    const widthForTool = tool === "eraser" ? eraserWidth : strokeWidth;
+  function pointFromEvent(event: KonvaEventObject<PointerEvent>) {
+    const point = event.target.getStage()?.getPointerPosition();
+    if (!point) return null;
+    return [
+      Math.min(LOGICAL_WIDTH, Math.max(0, point.x)),
+      Math.min(LOGICAL_HEIGHT, Math.max(0, point.y)),
+    ];
+  }
+
+  function handlePointerDown(event: KonvaEventObject<PointerEvent>) {
+    if (
+      !canDraw ||
+      clearing ||
+      event.evt.button !== 0 ||
+      activePointer.current !== null
+    )
+      return;
+    const point = pointFromEvent(event);
+    if (!point) return;
+    activePointer.current = event.evt.pointerId;
 
     const stroke: LineData = {
       id: crypto.randomUUID(),
       tool,
-      strokeWidth: widthForTool,
+      strokeWidth: tool === "eraser" ? eraserWidth : strokeWidth,
       strokeColor,
-      points: [pos.x, pos.y],
+      points: [...point, ...point],
     };
-
     currentStrokeRef.current = stroke;
     setCurrentStroke(stroke);
     lastStreamedAt.current = Date.now();
-
-    // Create the doc immediately so stroke order on the server matches
-    // draw order across players.
     persistStroke(stroke, false);
-  };
+  }
 
-  const handleMouseMove = (e: KonvaEventObject<Event>) => {
-    // no drawing - skipping
-    if (!isDrawing.current) {
+  function handlePointerMove(event: KonvaEventObject<PointerEvent>) {
+    const stroke = currentStrokeRef.current;
+    if (!canDraw || !stroke || activePointer.current !== event.evt.pointerId)
       return;
-    }
-    const stage = e.target.getStage();
-    const point = stage?.getPointerPosition();
+    const point = pointFromEvent(event);
     if (!point) return;
 
-    const stroke = currentStrokeRef.current;
-    if (!stroke) return;
-
+    const split = stroke.points.length >= MAX_COORDINATES;
+    if (split) persistStroke(stroke, true);
     const updated: LineData = {
       ...stroke,
-      points: stroke.points.concat([point.x, point.y]),
+      id: split ? crypto.randomUUID() : stroke.id,
+      points: [...(split ? stroke.points.slice(-2) : stroke.points), ...point],
     };
     currentStrokeRef.current = updated;
     setCurrentStroke(updated);
 
-    // Stream in-progress points at a throttled rate so viewers can watch
-    // the stroke being drawn live without flooding the backend.
     const now = Date.now();
-    if (now - lastStreamedAt.current >= STREAM_INTERVAL_MS) {
+    if (split || now - lastStreamedAt.current >= STREAM_INTERVAL_MS) {
       lastStreamedAt.current = now;
       persistStroke(updated, false);
     }
-  };
+  }
 
-  const handleMouseUp = () => {
-    if (!isDrawing.current) return;
-    isDrawing.current = false;
-
+  function handlePointerEnd(event: KonvaEventObject<PointerEvent>) {
+    if (activePointer.current !== event.evt.pointerId) return;
     const stroke = currentStrokeRef.current;
-    if (stroke) {
-      // Always send the final points so the server copy is complete even
-      // if the last throttled stream was dropped.
-      persistStroke(stroke, true);
-    }
+    activePointer.current = null;
+    if (stroke && canDraw) persistStroke(stroke, true);
     currentStrokeRef.current = null;
     setCurrentStroke(null);
-  };
+  }
 
-  const handleClear = () => {
+  async function handleClear() {
+    if (!canDraw || clearing) return;
+    activePointer.current = null;
     currentStrokeRef.current = null;
     setCurrentStroke(null);
-    clearCanvasMutation({ roomCode, userToken }).catch((err) =>
-      console.error("Failed to clear canvas:", err),
-    );
-  };
+    setClearing(true);
+    try {
+      await clearCanvasMutation(canvasArgs);
+    } catch (cause) {
+      reportError(cause);
+    } finally {
+      setClearing(false);
+    }
+  }
 
   return (
-    <div className="flex flex-col h-full w-full border rounded-md overflow-hidden bg-white">
-      <CanvasToolbar
-        onSelectTool={(nextTool) => setTool(nextTool)}
-        onClear={handleClear}
-        onSelectColor={setStrokeColor}
-        onSelectStrokeWidth={setStrokeWidth}
-        onSelectEraserWidth={setEraserWidth}
-      />
+    <div className="flex w-full flex-col overflow-hidden lg:h-full">
+      {canDraw && (
+        <CanvasToolbar
+          tool={tool}
+          color={strokeColor}
+          strokeWidth={strokeWidth}
+          eraserWidth={eraserWidth}
+          onSelectTool={(nextTool) => setTool(nextTool)}
+          onClear={handleClear}
+          onSelectColor={setStrokeColor}
+          onSelectStrokeWidth={setStrokeWidth}
+          onSelectEraserWidth={setEraserWidth}
+        />
+      )}
 
       <div
         ref={stageAreaRef}
-        className="flex-1 min-h-0 flex items-center justify-center overflow-hidden"
+        className="flex aspect-4/3 max-h-[48svh] min-h-0 items-center justify-center overflow-hidden bg-(--scribble-matte) p-1.5 lg:aspect-auto lg:max-h-none lg:flex-1 lg:bg-(--scribble-panel)"
+        role="region"
+        aria-label="Drawing canvas"
+        data-click-effect-ignore
       >
         {scale > 0 && (
           <div
-            className="shrink-0"
+            className="shrink-0 bg-white shadow-md ring-1 ring-black/10"
             style={{
               width: LOGICAL_WIDTH * scale,
               height: LOGICAL_HEIGHT * scale,
@@ -192,6 +246,8 @@ export function Canvas() {
           >
             <div
               style={{
+                width: LOGICAL_WIDTH,
+                height: LOGICAL_HEIGHT,
                 transform: `scale(${scale})`,
                 transformOrigin: "top left",
               }}
@@ -199,46 +255,24 @@ export function Canvas() {
               <Stage
                 width={LOGICAL_WIDTH}
                 height={LOGICAL_HEIGHT}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onTouchStart={handleMouseDown}
-                onTouchMove={handleMouseMove}
-                onTouchEnd={handleMouseUp}
+                style={{
+                  touchAction: canDraw ? "none" : "auto",
+                  cursor: canDraw ? "crosshair" : "default",
+                }}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerEnd}
+                onPointerLeave={handlePointerEnd}
+                onPointerCancel={handlePointerEnd}
               >
-                <Layer>
+                <Layer listening={false}>
                   {strokesFromQuery
                     ?.filter((s) => s.strokeId !== currentStroke?.id)
                     .map((line) => (
-                      <Line
-                        key={line.strokeId}
-                        points={line.points}
-                        stroke={line.strokeColor}
-                        strokeWidth={line.strokeWidth}
-                        tension={0.5}
-                        lineCap="round"
-                        lineJoin="round"
-                        globalCompositeOperation={
-                          line.tool === "eraser"
-                            ? "destination-out"
-                            : "source-over"
-                        }
-                      />
+                      <DrawingLine key={line.strokeId} line={line} />
                     ))}
-                  {currentStroke && (
-                    <Line
-                      points={currentStroke.points}
-                      stroke={currentStroke.strokeColor}
-                      strokeWidth={currentStroke.strokeWidth}
-                      tension={0.5}
-                      lineCap="round"
-                      lineJoin="round"
-                      globalCompositeOperation={
-                        currentStroke.tool === "eraser"
-                          ? "destination-out"
-                          : "source-over"
-                      }
-                    />
+                  {canDraw && currentStroke && (
+                    <DrawingLine line={currentStroke} />
                   )}
                 </Layer>
               </Stage>

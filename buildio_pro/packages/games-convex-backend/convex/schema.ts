@@ -57,6 +57,8 @@ export default defineSchema({
     room_code: v.string(),
     created_at: v.number(),
     ownerId: v.id("users"), // replaces inference from teams
+    game: v.optional(v.literal("scribble")),
+    scribbleHostId: v.optional(v.id("users")),
     // Room-wide pause after a game ends, so an accidental double-click on
     // "Stop" cannot immediately start the next game.
     startCooldownUntil: v.optional(v.number()),
@@ -68,9 +70,11 @@ export default defineSchema({
     roomId: v.id("rooms"),
     userId: v.id("users"),
     created_at: v.number(),
+    scribbleSeenAt: v.optional(v.number()),
   })
     .index("by_room", ["roomId"])
     .index("by_user", ["userId"])
+    .index("by_room_and_scribble_seen_at", ["roomId", "scribbleSeenAt"])
     .index("by_room_and_user", ["roomId", "userId"]),
 
   team_reactions: defineTable({
@@ -114,6 +118,11 @@ export default defineSchema({
     created_at: v.number(),
   })
     .index("by_room", ["roomId"])
+    .index("by_room_and_user_and_created_at", [
+      "roomId",
+      "userId",
+      "created_at",
+    ])
     .index("by_created_at", ["created_at"]),
 
   // One document per stroke. Concurrent drawers upsert their own strokes by
@@ -127,12 +136,15 @@ export default defineSchema({
     strokeWidth: v.number(),
     strokeColor: v.string(),
     isComplete: v.boolean(), // false while drawing, true when mouse up
+    canvasId: v.optional(v.string()),
     // timestamps to allow cleanup of stale canvases
     created_at: v.optional(v.number()),
     updated_at: v.optional(v.number()),
   })
     .index("by_room", ["roomId"])
     .index("by_room_and_stroke", ["roomId", "strokeId"])
+    .index("by_room_and_canvas", ["roomId", "canvasId"])
+    .index("by_room_and_canvas_and_stroke", ["roomId", "canvasId", "strokeId"])
     .index("by_created_at", ["created_at"]),
 
   scribble_games: defineTable({
@@ -144,6 +156,25 @@ export default defineSchema({
     score: v.record(v.string(), v.number()), // userId -> score
     created_at: v.number(),
   }).index("by_room_code", ["room_code"]),
+
+  scribble_matches: defineTable({
+    roomId: v.id("rooms"),
+    phase: v.union(
+      v.literal("drawing"),
+      v.literal("reveal"),
+      v.literal("finished"),
+    ),
+    players: v.array(v.object({ id: v.id("users"), name: v.string() })),
+    scores: v.record(v.id("users"), v.number()),
+    guessed: v.array(v.id("users")),
+    prompts: v.array(v.string()),
+    rounds: v.number(),
+    turnIndex: v.number(),
+    turnTimeMs: v.number(),
+    endsAt: v.number(),
+    canvasId: v.string(),
+    strokeCount: v.number(),
+  }).index("by_room", ["roomId"]),
 
   // Group expense splitting (bill-splitter app)
   bill_groups: defineTable({
