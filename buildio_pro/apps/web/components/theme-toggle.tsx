@@ -5,6 +5,8 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import * as React from "react";
 
+import { runViewTransition } from "./showcase/run-view-transition";
+
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -35,7 +37,11 @@ export function ThemeToggle() {
       aria-label="Toggle light and dark theme"
       title="Toggle light and dark theme"
       className="border-border bg-background text-foreground shadow-sm"
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      onClick={() =>
+        runViewTransition(() =>
+          setTheme(resolvedTheme === "dark" ? "light" : "dark"),
+        )
+      }
     >
       <Moon className="size-4 dark:hidden" aria-hidden="true" />
       <Sun className="hidden size-4 dark:block" aria-hidden="true" />

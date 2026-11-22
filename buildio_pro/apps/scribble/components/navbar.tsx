@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoutBtn } from "@workspace/game-ui/components/logout-btn";
+import { ModeToggle } from "@workspace/game-ui/components/mode-toggle";
 import { Navbar as SharedNavbar } from "@workspace/game-ui/components/navbar";
 import { UserCard } from "@workspace/game-ui/components/user-card";
 import { Effect } from "@workspace/ui/components/animate-ui/primitives/effects/effect";
@@ -36,6 +37,7 @@ export function Navbar({
           {roomActions}
           <div className="flex max-w-full items-center gap-1.5 border-l pl-2 [&>[aria-label='User_menu']]:mr-0 [&>[aria-label='User_menu']>p]:max-w-28 [&>[aria-label='User_menu']>p]:truncate">
             <UserCard roomNoun="Scribble room" />
+            <ModeToggle />
             <LogoutBtn />
           </div>
         </div>
@@ -69,12 +71,6 @@ export function Navbar({
             </h1>
           </div>
         </Link>
-      }
-      right={
-        <div className="flex items-center gap-2.5">
-          <UserCard />
-          <LogoutBtn />
-        </div>
       }
     />
   );

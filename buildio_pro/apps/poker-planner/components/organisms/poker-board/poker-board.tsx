@@ -25,8 +25,14 @@ export function PokerBoard() {
 
   const startedStory = useQuery(api.stories.getStartedStory, {
     userToken,
-    roomCode: roomCode as string,
+    roomCode,
   });
+  const roomDetails = useQuery(
+    api.rooms.getRoomDetails,
+    userToken && roomCode ? { userToken, roomCode } : "skip",
+  );
+  const room = roomDetails?.room;
+  const isHost = user?.success === true && user.id === room?.ownerId;
 
   const prevStartedStoryRef = React.useRef<typeof startedStory>(undefined);
 
@@ -86,16 +92,21 @@ export function PokerBoard() {
   }, [roomCode, joinRoom]);
 
   const handleClick = async () => {
-    if (!userToken || !roomCode || startedStory === undefined) return;
+    if (!userToken || !room || startedStory === undefined) return;
 
     if (startedStory?.success && startedStory.story) {
+      if (!isHost) return;
       // Stop the story, then start the room's cooldown right away so the
       // button can't be clicked again before the server round-trip lands.
       const result = await completeMutation({
         storyId: startedStory.story._id,
         userToken,
       });
-      if (result.success) setCooldownRemainingMs(10_000);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      setCooldownRemainingMs(10_000);
       setStoryId(null);
     } else {
       // Start a new story
@@ -115,7 +126,11 @@ export function PokerBoard() {
 
   const hasActiveStory =
     startedStory !== undefined && startedStory.success && !!startedStory.story;
-  const isDisabled = !userToken || !roomCode || startedStory === undefined;
+  const isDisabled =
+    !userToken ||
+    !room ||
+    startedStory === undefined ||
+    (hasActiveStory && !isHost);
 
   if (user?.success !== true) {
     return null;
@@ -124,7 +139,7 @@ export function PokerBoard() {
   return (
     <div className="w-full flex flex-col gap-4 md:flex-row px-4 py-2">
       <div className="flex flex-col w-full gap-4">
-        <PokerBoardHeader />
+        <PokerBoardHeader roomName={room?.room_name} />
 
         <div
           className="flex-1 flex flex-col items-center py-4 justify-center min-h-[40rem] gap-10 bg-card rounded-md shadow-lg border-gray-300 border animate-in fade-in slide-in-from-bottom duration-700 ease-out"
@@ -138,31 +153,45 @@ export function PokerBoard() {
               active={hasActiveStory}
               disabled={isDisabled || (!hasActiveStory && cooldownSeconds > 0)}
               className="h-[50px] w-[140px] cursor-pointer"
+              stopLabel="Reveal votes"
               startLabel={
                 cooldownSeconds > 0 ? `Start (${cooldownSeconds}s)` : "Start"
               }
               onClick={handleClick}
             />
+            {hasActiveStory && !isHost && (
+              <p className="mt-2 text-center text-sm text-muted-foreground">
+                The host reveals the votes.
+              </p>
+            )}
           </div>
 
           <div
             className="animate-in fade-in slide-in-from-bottom-16 duration-500 ease-out"
             style={{ animationDelay: "1070ms", animationFillMode: "backwards" }}
           >
-            <PokerCards storyId={storyId} />
+            <PokerCards key={storyId ?? "idle"} storyId={storyId} />
           </div>
 
           <div
-            className="animate-in fade-in slide-in-from-bottom-16 duration-500 ease-out"
+            className="w-full min-w-0 max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-16 duration-500 ease-out motion-reduce:animate-none"
             style={{ animationDelay: "1190ms", animationFillMode: "backwards" }}
           >
-            <PokerResults storyId={storyId} />
+            <PokerResults key={storyId ?? roomCode} storyId={storyId} />
           </div>
+        </div>
+        <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+          <span>
+            <span aria-hidden="true">👑</span> Host
+          </span>
+          <span>
+            <span aria-hidden="true">👍</span> Voted
+          </span>
         </div>
       </div>
 
       <div className="sm:w-xs">
-        <Participants storyId={storyId} />
+        <Participants storyId={storyId} ownerId={room?.ownerId} />
       </div>
     </div>
   );

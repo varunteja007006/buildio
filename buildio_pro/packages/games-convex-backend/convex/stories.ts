@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { getUserFromToken } from "./utils";
+import { getUserFromToken, isRoomMember } from "./utils";
 
 // Pause after a game ends before the room can start the next one. Protects
 // against accidental double-clicks on "Stop".
@@ -42,6 +42,13 @@ export const createStory = mutation({
       };
     }
 
+    if (!(await isRoomMember(ctx, room._id, userId))) {
+      return {
+        success: false,
+        message: "Join the room before starting a story.",
+      };
+    }
+
     const cooldownRemainingMs = (room.startCooldownUntil ?? 0) - Date.now();
     if (cooldownRemainingMs > 0) {
       return {
@@ -50,6 +57,16 @@ export const createStory = mutation({
           cooldownRemainingMs / 1000,
         )}s before starting a new game.`,
       };
+    }
+
+    const activeStory = await ctx.db
+      .query("stories")
+      .withIndex("by_room_status", (q) =>
+        q.eq("roomId", room._id).eq("status", "started"),
+      )
+      .first();
+    if (activeStory) {
+      return { success: false, message: "A story is already in progress." };
     }
 
     // Generate random strings if empty
@@ -105,7 +122,13 @@ export const completeStory = mutation({
       };
     }
 
-    // Optional: Check if user is the creator or in the room, but task doesn't specify
+    const room = await ctx.db.get(story.roomId);
+    if (!room || room.ownerId !== userResult.id) {
+      return {
+        success: false,
+        message: "Only the room host can reveal votes.",
+      };
+    }
 
     // Don't let a repeated stop (e.g. a stale double-click) restart the pause.
     if (story.status === "completed") {
@@ -117,7 +140,7 @@ export const completeStory = mutation({
 
     const completedAt = Date.now();
     await ctx.db.patch(args.storyId, { status: "completed" });
-    await ctx.db.patch(story.roomId, {
+    await ctx.db.patch(room._id, {
       startCooldownUntil: completedAt + START_COOLDOWN_MS,
     });
 
@@ -173,6 +196,14 @@ export const getStartedStory = query({
       return {
         success: false,
         message: "Room not found.",
+        serverNow: Date.now(),
+      };
+    }
+
+    if (!(await isRoomMember(ctx, room._id, userResult.id))) {
+      return {
+        success: false,
+        message: "Join the room to view its active story.",
         serverNow: Date.now(),
       };
     }

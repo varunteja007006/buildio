@@ -45,6 +45,14 @@ const roleValidator = v.union(
   v.literal("ba"),
 );
 
+function validateDisplayName(value: string) {
+  const name = value.trim();
+  if (!name || name.length > 100) {
+    throw new ConvexError("Enter a display name up to 100 characters.");
+  }
+  return name;
+}
+
 export const createUser = mutation({
   args: {
     name: v.string(),
@@ -60,10 +68,7 @@ export const createUser = mutation({
   }),
 
   handler: async (ctx, args) => {
-    const name = args.name.trim();
-    if (!name || name.length > 100) {
-      throw new ConvexError("Enter a display name up to 100 characters.");
-    }
+    const name = validateDisplayName(args.name);
     const token = globalThis.crypto.randomUUID();
     const now = Date.now();
     const userId = await ctx.db.insert("users", {
@@ -147,6 +152,23 @@ export const setProfileEmoji = mutation({
     }
 
     await ctx.db.patch(user.id, { emoji: args.emoji });
+    return null;
+  },
+});
+
+export const renameUser = mutation({
+  args: { token: v.string(), name: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.token);
+    if (!user.success) {
+      throw new ConvexError("Your guest session has expired.");
+    }
+
+    const name = validateDisplayName(args.name);
+    if (name !== user.username) {
+      await ctx.db.patch(user.id, { username: name });
+    }
     return null;
   },
 });

@@ -18,6 +18,7 @@ import { OverlaysMenusSection } from "@/components/showcase/overlays-menus-secti
 import { OverlaysSection } from "@/components/showcase/overlays-section";
 import { PrimitivesSection } from "@/components/showcase/primitives-section";
 import { RegistryExtrasSection } from "@/components/showcase/registry-extras-section";
+import { StartStopDemo } from "@/components/showcase/start-stop-demo";
 import { VoiceSection } from "@/components/showcase/voice-section";
 
 export function Showcase() {
@@ -38,6 +39,7 @@ export function Showcase() {
       <ExtrasSection />
       <ContentSection />
       <RegistryExtrasSection />
+      <StartStopDemo />
       <AiElementsSection />
       <FormFieldsSection />
       <VoiceSection />

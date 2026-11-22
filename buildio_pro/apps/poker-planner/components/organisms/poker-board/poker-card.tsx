@@ -5,6 +5,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { useMutation } from "convex/react";
 import { Coffee } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
 const POKER_CARDS = [
   {
@@ -48,33 +49,32 @@ export function PokerCards({
   storyId: Id<"stories"> | null;
 }>) {
   const [selectedCard, setSelectedCard] = React.useState<number | null>(null);
+  const [isVoting, setIsVoting] = React.useState(false);
 
   const { userToken } = useUserStore();
   const captureStoryPoint = useMutation(api.storyPoints.captureStoryPoint);
 
   const onCardClick = async (value: number) => {
-    if (selectedCard !== value) {
-      setSelectedCard(value);
-      if (userToken && storyId) {
-        try {
-          await captureStoryPoint({
-            storyId,
-            storypoint: value,
-            token: userToken,
-          });
-        } catch (error) {
-          console.error("Failed to capture story point:", error);
-        }
+    if (!userToken || !storyId || isVoting || selectedCard === value) return;
+
+    setIsVoting(true);
+    try {
+      const result = await captureStoryPoint({
+        storyId,
+        storypoint: value,
+        token: userToken,
+      });
+      if (result.success) {
+        setSelectedCard(value);
+      } else {
+        toast.error(result.message);
       }
+    } catch {
+      toast.error("Could not save your vote. Please try again.");
+    } finally {
+      setIsVoting(false);
     }
   };
-
-  // Reset when story is completed
-  React.useEffect(() => {
-    if (!storyId) {
-      setSelectedCard(null);
-    }
-  }, [storyId]);
 
   return (
     <div className="flex flex-row flex-wrap items-center justify-center gap-5">
@@ -87,7 +87,7 @@ export function PokerCards({
               "bg-primary dark:bg-primary text-primary-foreground",
           )}
           onClick={() => onCardClick(card.value)}
-          disabled={!storyId}
+          disabled={!userToken || !storyId || isVoting}
         >
           {card.name}
         </button>

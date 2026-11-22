@@ -1,4 +1,19 @@
 import type { QueryCtx } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+
+export async function isRoomMember(
+  ctx: QueryCtx,
+  roomId: Id<"rooms">,
+  userId: Id<"users">,
+) {
+  const membership = await ctx.db
+    .query("teams")
+    .withIndex("by_room_and_user", (q) =>
+      q.eq("roomId", roomId).eq("userId", userId),
+    )
+    .unique();
+  return membership !== null;
+}
 
 export const getUserFromToken = async (ctx: QueryCtx, token: string) => {
   const user = await ctx.db

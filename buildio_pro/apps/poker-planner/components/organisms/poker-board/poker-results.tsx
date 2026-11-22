@@ -2,10 +2,11 @@ import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { AutoHeight } from "@workspace/ui/components/animate-ui/primitives/effects/auto-height";
+import { cn } from "@workspace/ui/lib/utils";
 import { useQuery } from "convex/react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { PokerResultChart } from "./poker-chart-result";
 import { PokerResultTable } from "./poker-table-result";
@@ -20,6 +21,8 @@ export function PokerResults({
   const roomCode = params?.roomCode as string;
 
   const [showMore, setShowMore] = useState(false);
+  const detailsId = useId();
+  const prefersReducedMotion = useReducedMotion();
 
   const onClickShowMore = () => {
     setShowMore((prev) => !prev);
@@ -48,37 +51,61 @@ export function PokerResults({
 
   return (
     <AutoHeight
-      className="w-full"
+      className="@container/results w-full"
       deps={[showMore, stats.chartData.length]}
-      initial={{ opacity: 0, y: 16 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        height: {
-          type: "spring",
-          stiffness: 300,
-          damping: 30,
-          bounce: 0,
-          restDelta: 0.01,
+        height: prefersReducedMotion
+          ? { duration: 0 }
+          : { type: "spring", stiffness: 300, damping: 30 },
+        opacity: {
+          duration: prefersReducedMotion ? 0 : 0.4,
+          ease: "easeOut",
         },
-        opacity: { duration: 0.4, ease: "easeOut" },
-        y: { duration: 0.4, ease: "easeOut" },
+        y: { duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" },
       }}
     >
-      <div className="flex flex-col md:flex-row gap-4 w-full">
-        <div onClick={onClickShowMore} className="cursor-pointer">
+      <div
+        className={cn(
+          "grid grid-cols-1 items-start transition-[grid-template-columns,gap] duration-300 ease-in-out motion-reduce:transition-none",
+          showMore
+            ? "gap-4 @3xl/results:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+            : "gap-0 @3xl/results:grid-cols-[minmax(0,1fr)_minmax(0,0fr)]",
+        )}
+      >
+        <div
+          onClick={onClickShowMore}
+          className="mx-auto flex w-full min-w-0 max-w-xl cursor-pointer flex-col"
+        >
           <PokerResultChart chartData={stats.chartData} />
+          <button
+            type="button"
+            aria-expanded={showMore}
+            aria-controls={detailsId}
+            className="cursor-pointer self-center rounded-md px-2 py-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {showMore ? "Hide vote details" : "Show vote details"}
+          </button>
         </div>
         <motion.div
+          id={detailsId}
           initial={false}
+          inert={!showMore}
           animate={{
             height: showMore ? "auto" : 0,
             opacity: showMore ? 1 : 0,
           }}
           transition={{
-            height: { type: "spring", stiffness: 300, damping: 30, bounce: 0 },
-            opacity: { duration: 0.25, ease: "easeOut" },
+            height: prefersReducedMotion
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 300, damping: 30, bounce: 0 },
+            opacity: {
+              duration: prefersReducedMotion ? 0 : 0.25,
+              ease: "easeOut",
+            },
           }}
-          className="overflow-hidden w-full md:w-[28rem] shrink-0"
+          className="w-full min-w-0 overflow-hidden"
         >
           <div className="p-2 border bg-card rounded-lg w-full">
             <PokerResultTable chartData={stats.chartData} />

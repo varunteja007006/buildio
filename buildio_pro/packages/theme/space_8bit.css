@@ -18,6 +18,14 @@
   --border: oklch(0.82 0.02 235);
   --input: oklch(0.82 0.02 235);
   --ring: oklch(0.6 0.15 220);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--card-foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 .space_8bit.dark {

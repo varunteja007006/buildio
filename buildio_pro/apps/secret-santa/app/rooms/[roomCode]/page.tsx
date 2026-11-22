@@ -2,9 +2,11 @@
 
 import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import { Button } from "@workspace/ui/components/button";
 import { useMutation, useQuery } from "convex/react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { DrawControl } from "@/components/draw-control";
 import { MyMatchCard } from "@/components/my-match-card";
@@ -13,39 +15,143 @@ import { RecipientWishlist } from "@/components/recipient-wishlist";
 import { RoomHeader } from "@/components/room-header";
 import { WishlistEditor } from "@/components/wishlist-editor";
 
+type EntryState =
+  | { status: "joining" | "joined" }
+  | { status: "unavailable" | "failed"; message: string };
+
 export default function RoomPage() {
   const { user, userToken } = useUserStore();
-  const params = useParams();
-  const roomCode = params.roomCode as string;
+  const { roomCode } = useParams<{ roomCode: string }>();
 
-  const gameState = useQuery(api.secretSanta.getGameState, {
-    roomCode,
-    userToken,
-  });
-  const initializeGame = useMutation(api.secretSanta.initializeGame);
-  const joinRoom = useMutation(api.rooms.joinRoom);
-  const isOwner =
-    user?.success === true && gameState?.room?.ownerId === user.id;
+  if (user === undefined) {
+    return <RoomEntryStatus message="Checking your profile…" />;
+  }
 
-  // Initialize the game doc when the owner joins, and (re)join the room
-  // so membership is always up to date.
-  useEffect(() => {
-    if (isOwner && userToken && roomCode) {
-      initializeGame({ roomCode, userToken }).catch(console.error);
-    }
-    if (userToken && roomCode) {
-      joinRoom({ roomCode, userToken }).catch(console.error);
-    }
-  }, [isOwner, userToken, roomCode, initializeGame, joinRoom]);
-
-  if (user?.success !== true) {
+  if (!user?.success) {
     return (
-      <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
-        <p>Loading… 🎄</p>
-      </div>
+      <RoomEntryStatus
+        message="Your profile is unavailable. Return home to set up your profile again."
+        exitHref="/"
+      />
     );
   }
 
+  return (
+    <RoomSession
+      key={JSON.stringify([roomCode, userToken])}
+      roomCode={roomCode}
+      userToken={userToken}
+      userId={user.id}
+    />
+  );
+}
+
+function RoomEntryStatus({
+  message,
+  exitHref,
+  onRetry,
+}: {
+  message: string;
+  exitHref?: "/" | "/rooms";
+  onRetry?: () => void;
+}) {
+  return (
+    <div className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center gap-4 p-4 text-center">
+      <p role="status">{message}</p>
+      <div className="flex gap-2">
+        {onRetry && <Button onClick={onRetry}>Retry</Button>}
+        {exitHref === "/" && (
+          <Button variant="outline" onClick={() => window.location.assign("/")}>
+            Back to home
+          </Button>
+        )}
+        {exitHref === "/rooms" && (
+          <Button asChild variant="outline">
+            <Link href="/rooms">Back to rooms</Link>
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RoomSession({
+  roomCode,
+  userToken,
+  userId,
+}: {
+  roomCode: string;
+  userToken: string;
+  userId: string;
+}) {
+  const [entry, setEntry] = useState<EntryState>({ status: "joining" });
+  const [attempt, setAttempt] = useState(0);
+  const joinRoom = useMutation(api.rooms.joinRoom);
+  const initializeGame = useMutation(api.secretSanta.initializeGame);
+  const gameState = useQuery(
+    api.secretSanta.getGameState,
+    entry.status === "joined" ? { roomCode, userToken } : "skip",
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    async function enterRoom() {
+      try {
+        const result = await joinRoom({ roomCode, userToken });
+        if (!active) return;
+        if (!result.success) {
+          setEntry({
+            status:
+              result.message === "Room not found" ? "unavailable" : "failed",
+            message: result.message,
+          });
+          return;
+        }
+
+        // The mutation initializes the game for the owner and is a no-op for guests.
+        await initializeGame({ roomCode, userToken });
+        if (active) setEntry({ status: "joined" });
+      } catch {
+        if (active) {
+          setEntry({
+            status: "failed",
+            message: "Could not enter the room. Please try again.",
+          });
+        }
+      }
+    }
+
+    void enterRoom();
+    return () => {
+      active = false;
+    };
+  }, [attempt, initializeGame, joinRoom, roomCode, userToken]);
+
+  function retry() {
+    setEntry({ status: "joining" });
+    setAttempt((count) => count + 1);
+  }
+
+  if (entry.status === "unavailable" || entry.status === "failed") {
+    return (
+      <RoomEntryStatus
+        message={entry.message}
+        exitHref="/rooms"
+        onRetry={entry.status === "failed" ? retry : undefined}
+      />
+    );
+  }
+
+  if (entry.status === "joining" || gameState === undefined) {
+    return <RoomEntryStatus message="Joining the room…" exitHref="/rooms" />;
+  }
+
+  if (!gameState.success) {
+    return <RoomEntryStatus message={gameState.message} exitHref="/rooms" />;
+  }
+
+  const isOwner = gameState.room?.ownerId === userId;
   const isDrawn = gameState?.status === "drawn";
   const myRecipientUsername = gameState?.my_recipient?.username;
 

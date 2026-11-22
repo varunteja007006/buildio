@@ -39,7 +39,7 @@ export function Navbar() {
       }
       right={
         <>
-          <UserCard roomNoun="poker room" />
+          <UserCard roomNoun="poker room" showRole />
           <PaletteToggle />
           <LogoutBtn />
         </>

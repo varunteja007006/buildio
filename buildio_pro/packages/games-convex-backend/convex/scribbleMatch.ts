@@ -124,7 +124,10 @@ export const getState = query({
           ? {
               id: match._id,
               phase: match.phase,
-              drawer,
+              drawer: {
+                id: drawer.id,
+                name: profiles.get(drawer.id)?.username ?? drawer.name,
+              },
               canvasId: match.canvasId,
               turnKey: getTurnKey(match),
               endsAt: match.endsAt,
@@ -141,6 +144,7 @@ export const getState = query({
               scores: match.players
                 .map((player) => ({
                   ...player,
+                  name: profiles.get(player.id)?.username ?? player.name,
                   emoji: profiles.get(player.id)?.emoji,
                   count: match.scores[player.id] ?? 0,
                 }))

@@ -2,7 +2,7 @@ import { v } from "convex/values";
 
 import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { getUserFromToken } from "./utils";
+import { getUserFromToken, isRoomMember } from "./utils";
 
 export const captureStoryPoint = mutation({
   args: {
@@ -34,6 +34,13 @@ export const captureStoryPoint = mutation({
         success: false,
         message: "Story not found.",
       };
+    }
+
+    if (!(await isRoomMember(ctx, story.roomId, userId))) {
+      return { success: false, message: "Join the room before voting." };
+    }
+    if (story.status !== "started") {
+      return { success: false, message: "Voting is closed for this story." };
     }
 
     const existing = await ctx.db
@@ -90,7 +97,6 @@ export const getStoryPoints = query({
       return {
         success: false,
         message: currentUserResult.message,
-        storyPoints: undefined,
       };
     }
     const currentUserId = currentUserResult.id;
@@ -101,24 +107,29 @@ export const getStoryPoints = query({
       return {
         success: false,
         message: "Story not found.",
-        storyPoints: undefined,
       };
     }
 
-    const storyPoints = await ctx.db
+    if (!(await isRoomMember(ctx, story.roomId, currentUserId))) {
+      return { success: false, message: "Join the room to view its votes." };
+    }
+
+    const storyPoints = ctx.db
       .query("storyPoints")
-      .withIndex("by_story", (q) => q.eq("storyId", args.storyId))
-      .collect();
+      .withIndex("by_story", (q) => q.eq("storyId", args.storyId));
 
     const result = [];
-    for (const sp of storyPoints) {
+    for await (const sp of storyPoints) {
       const user = await ctx.db.get(sp.userId);
       if (user) {
+        const isCurrentUser = sp.userId === currentUserId;
         result.push({
           userId: sp.userId,
           username: user.username,
-          story_point: sp.story_point,
-          isCurrentUser: sp.userId === currentUserId,
+          ...(isCurrentUser || story.status === "completed"
+            ? { story_point: sp.story_point }
+            : {}),
+          isCurrentUser,
         });
       }
     }
@@ -158,9 +169,6 @@ export const getStoryPointsStats = query({
       return {
         success: false,
         message: currentUserResult.message,
-        chartData: undefined,
-        avgPoints: undefined,
-        totalVoters: undefined,
       };
     }
 
@@ -174,18 +182,6 @@ export const getStoryPointsStats = query({
         return {
           success: false,
           message: "Story not found.",
-          chartData: undefined,
-          avgPoints: undefined,
-          totalVoters: undefined,
-        };
-      }
-      if (story.status !== "completed") {
-        return {
-          success: true,
-          message: "Story is not completed.",
-          chartData: undefined,
-          avgPoints: undefined,
-          totalVoters: undefined,
         };
       }
       room = await ctx.db.get(story.roomId);
@@ -193,10 +189,16 @@ export const getStoryPointsStats = query({
         return {
           success: false,
           message: "Room not found.",
-          chartData: undefined,
-          avgPoints: undefined,
-          totalVoters: undefined,
         };
+      }
+      if (!(await isRoomMember(ctx, room._id, currentUserResult.id))) {
+        return {
+          success: false,
+          message: "Join the room to view its results.",
+        };
+      }
+      if (story.status !== "completed") {
+        return { success: true, message: "Story is not completed." };
       }
     } else if (args.roomCode) {
       // Get room from roomCode
@@ -208,9 +210,13 @@ export const getStoryPointsStats = query({
         return {
           success: false,
           message: "Room not found.",
-          chartData: undefined,
-          avgPoints: undefined,
-          totalVoters: undefined,
+        };
+      }
+
+      if (!(await isRoomMember(ctx, room._id, currentUserResult.id))) {
+        return {
+          success: false,
+          message: "Join the room to view its results.",
         };
       }
 
@@ -226,9 +232,6 @@ export const getStoryPointsStats = query({
         return {
           success: false,
           message: "No completed stories found in the room.",
-          chartData: undefined,
-          avgPoints: undefined,
-          totalVoters: undefined,
         };
       }
       storyId = lastStory._id;
@@ -236,22 +239,18 @@ export const getStoryPointsStats = query({
       return {
         success: false,
         message: "Either storyId or roomCode must be provided.",
-        chartData: undefined,
-        avgPoints: undefined,
-        totalVoters: undefined,
       };
     }
 
-    const storyPoints = await ctx.db
+    const storyPoints = ctx.db
       .query("storyPoints")
-      .withIndex("by_story", (q) => q.eq("storyId", storyId))
-      .collect();
+      .withIndex("by_story", (q) => q.eq("storyId", storyId));
 
-    const pointCounts = new Map();
+    const pointCounts = new Map<string, number>();
     let total = 0;
     let validCount = 0;
 
-    for (const sp of storyPoints) {
+    for await (const sp of storyPoints) {
       const point = sp.story_point;
       if (point !== undefined) {
         const numPoint = typeof point === "string" ? parseFloat(point) : point;
@@ -264,12 +263,10 @@ export const getStoryPointsStats = query({
       }
     }
 
-    const chartData = Array.from(pointCounts.entries()).map(
-      ([name, value]) => ({
-        name,
-        value: value as number,
-      }),
-    );
+    const chartData = Array.from(pointCounts, ([name, value]) => ({
+      name,
+      value,
+    }));
 
     // Sort by numeric value ascending
     chartData.sort((a, b) => parseFloat(a.name) - parseFloat(b.name));

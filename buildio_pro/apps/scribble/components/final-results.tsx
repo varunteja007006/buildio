@@ -73,14 +73,13 @@ export function FinalResults({
 
   const first = podium[0];
   const best = first?.count ?? 0;
-  const winnerNames = first?.players.map((player) => player.name).join(", ");
-  const tied = (first?.players.length ?? 0) > 1;
+  const winnerCount = first?.players.length ?? 0;
   const summary =
     best === 0
       ? "No correct guesses this game."
-      : tied
-        ? `${winnerNames} tie for first with ${best} correct each.`
-        : `${winnerNames} wins with ${best} correct ${best === 1 ? "guess" : "guesses"}.`;
+      : winnerCount > 1
+        ? `${winnerCount} players tie for first with ${best} correct each.`
+        : `${first?.players[0]?.name} wins with ${best} correct ${best === 1 ? "guess" : "guesses"}.`;
 
   return (
     <section className="shrink-0 px-2 py-2 lg:rounded-xl lg:border lg:bg-(--scribble-panel) lg:px-3">
@@ -118,7 +117,10 @@ export function FinalResults({
               </div>
               <DialogTitle className="text-2xl">Game over!</DialogTitle>
             </DialogHeader>
-            <div className="min-h-0 space-y-4 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5">
+            <div
+              tabIndex={0}
+              className="min-h-0 space-y-4 overflow-y-auto overscroll-contain px-3 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:px-5"
+            >
               <DialogDescription className="wrap-break-word text-center text-base font-medium text-foreground">
                 {summary}
               </DialogDescription>
@@ -137,9 +139,13 @@ export function FinalResults({
                           medal.position,
                         )}
                       >
-                        <ul className="space-y-2">
-                          {players.map((player) => (
-                            <li
+                        {players.length > 1 ? (
+                          <span className="text-xs font-semibold sm:text-sm">
+                            {players.length} tied
+                          </span>
+                        ) : (
+                          players.map((player) => (
+                            <div
                               key={player.id}
                               className="flex min-w-0 flex-col items-center gap-1"
                             >
@@ -151,9 +157,9 @@ export function FinalResults({
                               <span className="max-w-full wrap-break-word text-xs font-semibold sm:text-sm">
                                 {player.name}
                               </span>
-                            </li>
-                          ))}
-                        </ul>
+                            </div>
+                          ))
+                        )}
                         <p className="text-xs text-muted-foreground">
                           {count} correct
                         </p>
@@ -185,7 +191,7 @@ export function FinalResults({
                 ))}
               </ul>
             </div>
-            <DialogFooter className="shrink-0 items-stretch border-t px-4 py-3 sm:items-start">
+            <DialogFooter className="shrink-0 flex-wrap items-stretch border-t px-4 py-3 sm:items-start">
               <DialogClose asChild>
                 <Button variant="outline" className="min-h-11">
                   Back to room

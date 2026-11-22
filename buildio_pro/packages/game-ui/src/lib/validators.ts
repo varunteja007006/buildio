@@ -14,11 +14,14 @@ export const ROLE_LABELS: Record<Role, string> = {
   ba: "BA",
 };
 
+export const displayNameSchema = z
+  .string()
+  .trim()
+  .min(1, "Enter a display name.")
+  .max(100, "Display name must be 100 characters or fewer.");
+
 export const createUserSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(100, "Name must be less than 100 characters"),
+  name: displayNameSchema,
   role: z.optional(z.enum(ROLES)),
 });
 

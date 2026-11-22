@@ -1,7 +1,5 @@
 import { CopyBtn } from "@workspace/game-ui/components/atoms/copy-btn";
 import { ShareBtn } from "@workspace/game-ui/components/atoms/share-btn";
-import { useUserStore } from "@workspace/game-ui/lib/store/user.store";
-import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -9,21 +7,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { useQuery } from "convex/react";
 import { Copy, Menu } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
-export function PokerBoardHeader() {
+export function PokerBoardHeader({ roomName }: { roomName?: string }) {
   const params = useParams();
   const roomCode = params?.roomCode ?? "";
-  const { userToken } = useUserStore();
-
-  const roomDetails = useQuery(api.rooms.getRoomDetails, {
-    userToken,
-    roomCode: roomCode as string,
-  });
 
   return (
     <div className="w-full flex justify-between gap-2 items-center">
@@ -32,7 +23,7 @@ export function PokerBoardHeader() {
         style={{ animationDelay: "0ms", animationFillMode: "backwards" }}
       >
         <p className="font-bold text-lg text-primary underline underline-offset-8">
-          {roomDetails?.room?.room_name}
+          {roomName}
         </p>
       </div>
       <div

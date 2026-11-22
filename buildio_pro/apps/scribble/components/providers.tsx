@@ -5,12 +5,11 @@ import { Providers as SharedProviders } from "@workspace/game-ui/components/prov
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
 
-
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider
       attribute="class"
-      forcedTheme="light"
+      defaultTheme="system"
       disableTransitionOnChange
       enableColorScheme
     >

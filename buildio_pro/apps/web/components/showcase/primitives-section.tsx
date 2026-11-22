@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import { DirectionProvider, useDirection } from "@workspace/ui/components/direction";
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@workspace/ui/components/item";
 import { Kbd, KbdGroup } from "@workspace/ui/components/kbd";
 import { Marker, MarkerContent, MarkerIcon } from "@workspace/ui/components/marker";
@@ -141,7 +142,30 @@ export function PrimitivesSection() {
         <RelativeTime date={new Date(Date.now() - 2 * 60 * 1000)} />
         <RelativeTime date={new Date(Date.now() - 5 * 60 * 60 * 1000)} prefix="Synced" />
       </Example>
+      <Example title="Direction">
+        <DirectionProvider dir="rtl">
+          <DirectionDemo />
+        </DirectionProvider>
+      </Example>
+
+      <Example title="Typography">
+        <div className="space-y-2">
+          <p className="text-2xl font-semibold tracking-tight">Heading</p>
+          <p className="text-base">Body text</p>
+          <p className="text-sm text-muted-foreground">Muted text</p>
+          <code className="rounded bg-muted px-1 font-mono text-sm">inline code</code>
+        </div>
+      </Example>
     </Section>
+  );
+}
+
+function DirectionDemo() {
+  const direction = useDirection();
+  return (
+    <p dir={direction} lang="ar" className="w-full rounded-md border p-2 text-start">
+      نص من اليمين إلى اليسار
+    </p>
   );
 }
 

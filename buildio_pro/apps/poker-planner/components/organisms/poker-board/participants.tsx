@@ -12,21 +12,12 @@ import { FireworksNotifier } from "./fireworks";
 import { ReactionsMenu } from "./participant-card";
 import { ConfettiSideCanonsNotifier } from "./reaction-collection";
 
-const findUserStoryPoint = (
-  userId: string,
-  list: {
-    userId: string;
-    isCurrentUser: boolean;
-    storyPoint: string | number | undefined;
-  }[],
-) => {
-  return list.find((item) => item.userId === userId);
-};
-
 export function Participants({
   storyId,
+  ownerId,
 }: Readonly<{
   storyId: Id<"stories"> | null;
+  ownerId?: string;
 }>) {
   const params = useParams();
   const roomCode = params?.roomCode ?? "unknown-room";
@@ -45,35 +36,22 @@ export function Participants({
     storyId && userToken ? { storyId, token: userToken } : "skip",
   );
 
-  const updatedRoomStoryPoints = React.useMemo(
+  const voters = React.useMemo(
     () =>
-      roomStoryPoints?.success && roomStoryPoints.storyPoints
-        ? roomStoryPoints.storyPoints.map((item) => ({
-            userId: item.userId,
-            isCurrentUser: item.isCurrentUser,
-            storyPoint: item.story_point,
-          }))
-        : [],
+      new Set<string>(roomStoryPoints?.storyPoints?.map((vote) => vote.userId)),
     [roomStoryPoints],
   );
 
   type Participant = NonNullable<typeof presenceState>[number] & {
     emoji?: string;
     role?: string;
-    isCurrentUser?: boolean;
     hasVoted: boolean;
   };
   const participantList = React.useMemo<Participant[]>(
     () =>
-      presenceState?.map((p) => {
-        const foundUser = findUserStoryPoint(p.userId, updatedRoomStoryPoints);
-        return {
-          ...p,
-          isCurrentUser: foundUser?.isCurrentUser,
-          hasVoted: !!foundUser?.userId,
-        };
-      }) ?? [],
-    [presenceState, updatedRoomStoryPoints],
+      presenceState?.map((p) => ({ ...p, hasVoted: voters.has(p.userId) })) ??
+      [],
+    [presenceState, voters],
   );
 
   if (!presenceState) {
@@ -94,6 +72,7 @@ export function Participants({
             emoji={innerUser.emoji}
             role={innerUser.role as Role | undefined}
             isUser={innerUser.userId === userId}
+            isOwner={innerUser.userId === ownerId}
             index={index}
             actions={
               innerUser.userId === userId ? <ReactionsMenu /> : undefined

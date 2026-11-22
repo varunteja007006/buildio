@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 import { and, eq, isNull } from "drizzle-orm";
 
-import { db, dbSchema } from "@/lib/db";
+import { type db, dbSchema } from "@/lib/db";
 
 import type { ExtractedTransaction } from "../schema";
 import { CURRENCY_DEFAULTS, slugify } from "./normalizers";
@@ -20,14 +20,17 @@ export class ReferenceResolver {
   private paymentMethodCache = new Map<string, string>();
   private categoryCache = new Map<string, string>();
 
-  constructor(private readonly userId: string) {}
+  constructor(
+    private readonly userId: string,
+    private readonly tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  ) {}
 
   async currency(code: string): Promise<string> {
     const key = code.trim().toUpperCase();
     const cached = this.currencyCache.get(key);
     if (cached) return cached;
 
-    let row = await db.query.currency.findFirst({
+    let row = await this.tx.query.currency.findFirst({
       where: eq(dbSchema.currency.code, key),
     });
 
@@ -38,7 +41,7 @@ export class ReferenceResolver {
         symbolNative: key,
         decimalDigits: 2,
       };
-      [row] = await db
+      [row] = await this.tx
         .insert(dbSchema.currency)
         .values({
           code: key,
@@ -62,12 +65,12 @@ export class ReferenceResolver {
     const cached = this.bankCache.get(key);
     if (cached) return cached;
 
-    let row = await db.query.banks.findFirst({
+    let row = await this.tx.query.banks.findFirst({
       where: eq(dbSchema.banks.name, key),
     });
 
     if (!row) {
-      [row] = await db
+      [row] = await this.tx
         .insert(dbSchema.banks)
         .values({
           name: key,
@@ -91,12 +94,12 @@ export class ReferenceResolver {
     const cached = this.accountTypeCache.get(key);
     if (cached) return cached;
 
-    let row = await db.query.bankAccountTypes.findFirst({
+    let row = await this.tx.query.bankAccountTypes.findFirst({
       where: eq(dbSchema.bankAccountTypes.name, key),
     });
 
     if (!row) {
-      [row] = await db
+      [row] = await this.tx
         .insert(dbSchema.bankAccountTypes)
         .values({ name: key, description: key })
         .returning();
@@ -119,7 +122,7 @@ export class ReferenceResolver {
     const cached = this.bankAccountCache.get(matchKey);
     if (cached) return cached;
 
-    let row = await db.query.userBankAccount.findFirst({
+    let row = await this.tx.query.userBankAccount.findFirst({
       where: and(
         eq(dbSchema.userBankAccount.user_id, this.userId),
         input.lastFour
@@ -129,7 +132,7 @@ export class ReferenceResolver {
     });
 
     if (!row) {
-      [row] = await db
+      [row] = await this.tx
         .insert(dbSchema.userBankAccount)
         .values({
           user_id: this.userId,
@@ -161,22 +164,22 @@ export class ReferenceResolver {
     const cached = this.paymentMethodCache.get(key);
     if (cached) return cached;
 
-    let row = await db.query.paymentMethods.findFirst({
+    let row = await this.tx.query.paymentMethods.findFirst({
       where: eq(dbSchema.paymentMethods.name, key),
     });
 
     if (!row) {
-      let provider = await db.query.paymentProvider.findFirst({
+      let provider = await this.tx.query.paymentProvider.findFirst({
         where: eq(dbSchema.paymentProvider.name, "Banking"),
       });
       if (!provider) {
-        [provider] = await db
+        [provider] = await this.tx
           .insert(dbSchema.paymentProvider)
           .values({ name: "Banking", description: "Bank payment channels" })
           .returning();
       }
       if (!provider) throw new Error("Failed to resolve payment provider");
-      [row] = await db
+      [row] = await this.tx
         .insert(dbSchema.paymentMethods)
         .values({
           name: key,
@@ -197,7 +200,7 @@ export class ReferenceResolver {
     const cached = this.categoryCache.get(key);
     if (cached) return cached;
 
-    let row = await db.query.expenseCategory.findFirst({
+    let row = await this.tx.query.expenseCategory.findFirst({
       where: and(
         eq(dbSchema.expenseCategory.name, name.trim()),
         parentId
@@ -207,7 +210,7 @@ export class ReferenceResolver {
     });
 
     if (!row) {
-      [row] = await db
+      [row] = await this.tx
         .insert(dbSchema.expenseCategory)
         .values({
           name: name.trim(),

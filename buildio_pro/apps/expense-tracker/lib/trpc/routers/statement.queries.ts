@@ -2,17 +2,15 @@ import { TRPCError } from "@trpc/server";
 import { and, count, eq, inArray, isNotNull } from "drizzle-orm";
 
 import { getDefaultExtractionModel, listGatewayModels } from "@/lib/ai";
+import { statementProcessingCutoff } from "@/lib/statement-processing";
 import { getPresignedDownloadUrl } from "@/lib/storage/s3";
 
 import { protectedProcedure } from "../init";
 import {
-  listStatementsInput,
-  uploadIdInput,
-} from "./statement.schemas";
-import {
   calculatePagination,
   createPaginationMeta,
 } from "../schemas/pagination.schema";
+import { listStatementsInput, uploadIdInput } from "./statement.schemas";
 
 export const listStatements = protectedProcedure
   .input(listStatementsInput)
@@ -69,11 +67,20 @@ export const listStatements = protectedProcedure
       }
     }
 
+    const cutoff = statementProcessingCutoff();
     return {
-      data: records.map((record) => ({
-        ...record,
-        supersededTransactionsCount: supersededCounts.get(record.id) ?? 0,
-      })),
+      data: records.map((record) => {
+        const timedOut =
+          record.status === "processing" && record.updatedAt <= cutoff;
+        return {
+          ...record,
+          status: timedOut ? ("failed" as const) : record.status,
+          processingError: timedOut
+            ? "Processing timed out. Run extraction again to retry."
+            : record.processingError,
+          supersededTransactionsCount: supersededCounts.get(record.id) ?? 0,
+        };
+      }),
       meta: createPaginationMeta(input, totalItems),
     };
   });

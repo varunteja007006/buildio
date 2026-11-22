@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull, sql } from "drizzle-orm";
 
 import {
   buildStatementKey,
@@ -76,6 +76,8 @@ export const completeUpload = protectedProcedure
       });
     }
 
+    if (record.status !== "pending") return record;
+
     const uploaded = await statementObjectExists(record.s3Key);
     if (!uploaded) {
       throw new TRPCError({
@@ -91,10 +93,16 @@ export const completeUpload = protectedProcedure
         uploadedAt: new Date(),
         updatedAt: new Date(),
       })
-      .where(eq(dbSchema.statementUpload.id, input.uploadId))
+      .where(
+        and(
+          eq(dbSchema.statementUpload.id, input.uploadId),
+          eq(dbSchema.statementUpload.userId, user.id),
+          eq(dbSchema.statementUpload.status, "pending"),
+        ),
+      )
       .returning();
 
-    return updated;
+    return updated ?? record;
   });
 
 export const renameUpload = protectedProcedure
@@ -120,7 +128,9 @@ export const renameUpload = protectedProcedure
       .update(dbSchema.statementUpload)
       .set({
         originalFilename: input.filename,
-        updatedAt: new Date(),
+        // During processing, updatedAt identifies the active extraction attempt.
+        updatedAt: sql`case when ${dbSchema.statementUpload.status} = 'processing'
+          then ${dbSchema.statementUpload.updatedAt} else now() end`,
       })
       .where(eq(dbSchema.statementUpload.id, input.uploadId))
       .returning();
