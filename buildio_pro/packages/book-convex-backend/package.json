@@ -11,7 +11,7 @@
     "license": "ISC",
     "dependencies": {
         "@convex-dev/better-auth": "0.13.0",
-        "better-auth": "1.7.22",
+        "better-auth": "catalog:",
         "convex": "catalog:"
     },
     "devDependencies": {

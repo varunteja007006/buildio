@@ -27,7 +27,7 @@
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:",
-    "recharts": "^3.10.1",
+    "recharts": "catalog:",
     "sonner": "catalog:",
     "tailwindcss": "catalog:",
     "zod": "catalog:"
