@@ -1,16 +1,26 @@
-import type { ColumnSort, Row, RowData } from "@tanstack/react-table";
+import type {
+  CellData,
+  ColumnSort,
+  Row,
+  RowData,
+  TableFeatures,
+} from "@tanstack/react-table";
 
 import type { DataTableConfig } from "@workspace/ui/config/data-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import type { FilterItemSchema } from "@workspace/ui/lib/parsers";
 
+/* eslint-disable @typescript-eslint/no-unused-vars -- These generic parameters mirror TanStack Table for declaration merging. */
 declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TData must match @tanstack/react-table's generic declaration for interface merging
-  interface TableMeta<TData extends RowData> {
+  interface TableMeta<TFeatures extends TableFeatures, TData extends RowData> {
     queryKeys?: QueryKeys;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TData/TValue must match @tanstack/react-table's generic declaration for interface merging
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<
+    TFeatures extends TableFeatures,
+    TData extends RowData,
+    TValue extends CellData = CellData,
+  > {
     label?: string;
     placeholder?: string;
     variant?: FilterVariant;
@@ -20,6 +30,8 @@ declare module "@tanstack/react-table" {
     icon?: React.FC<React.SVGProps<SVGSVGElement>>;
   }
 }
+
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export interface QueryKeys {
   page: string;
@@ -48,7 +60,7 @@ export interface ExtendedColumnFilter<TData> extends FilterItemSchema {
   id: Extract<keyof TData, string>;
 }
 
-export interface DataTableRowAction<TData> {
-  row: Row<TData>;
+export interface DataTableRowAction<TData extends RowData> {
+  row: Row<DataTableFeatures, TData>;
   variant: "update" | "delete";
 }

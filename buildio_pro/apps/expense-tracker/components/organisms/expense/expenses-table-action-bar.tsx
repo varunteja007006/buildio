@@ -1,4 +1,5 @@
 import type { Table } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import {
   AlertDialog,
@@ -19,12 +20,16 @@ import { useDeleteExpenses } from "@/hooks";
 
 import type { ExpenseRecord } from "./expense-table-types";
 
-export function ExpenseTableActionBar({ table }: { table: Table<ExpenseRecord> }) {
+export function ExpenseTableActionBar({
+  table,
+}: {
+  table: Table<DataTableFeatures, ExpenseRecord>;
+}) {
   const rows = table.getFilteredSelectedRowModel().rows;
   const onOpenChange = React.useCallback(
     (open: boolean) => {
       if (!open) {
-        table.toggleAllRowsSelected(false);
+        table.resetRowSelection(true);
       }
     },
     [table],
@@ -32,7 +37,7 @@ export function ExpenseTableActionBar({ table }: { table: Table<ExpenseRecord> }
 
   const deleteExpenses = useDeleteExpenses({
     onSuccess: () => {
-      table.toggleAllRowsSelected(false);
+      table.resetRowSelection(true);
     },
   });
 

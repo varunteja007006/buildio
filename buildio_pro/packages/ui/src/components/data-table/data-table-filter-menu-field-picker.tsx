@@ -1,6 +1,7 @@
 "use client";
 
-import type { Column } from "@tanstack/react-table";
+import type { RowData, Column } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { BadgeCheck, Text } from "lucide-react";
 import * as React from "react";
 
@@ -13,17 +14,20 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 
-interface DataTableFilterMenuFieldPickerProps<TData> {
-  columns: Column<TData>[];
-  selectedColumn: Column<TData> | null;
+interface DataTableFilterMenuFieldPickerProps<TData extends RowData> {
+  columns: Column<DataTableFeatures, TData>[];
+  selectedColumn: Column<DataTableFeatures, TData> | null;
   inputValue: string;
   onInputValueChange: (value: string) => void;
   onInputKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  onSelectColumn: (column: Column<TData>) => void;
-  onFilterAdd: (column: Column<TData>, value: string) => void;
+  onSelectColumn: (column: Column<DataTableFeatures, TData>) => void;
+  onFilterAdd: (
+    column: Column<DataTableFeatures, TData>,
+    value: string,
+  ) => void;
 }
 
-export function DataTableFilterMenuFieldPicker<TData>({
+export function DataTableFilterMenuFieldPicker<TData extends RowData>({
   columns,
   selectedColumn,
   inputValue,
@@ -35,7 +39,7 @@ export function DataTableFilterMenuFieldPicker<TData>({
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const handleColumnSelect = React.useCallback(
-    (column: Column<TData>) => {
+    (column: Column<DataTableFeatures, TData>) => {
       onSelectColumn(column);
       onInputValueChange("");
       requestAnimationFrame(() => {
@@ -96,13 +100,13 @@ export function DataTableFilterMenuFieldPicker<TData>({
   );
 }
 
-interface FilterValueSelectorProps<TData> {
-  column: Column<TData>;
+interface FilterValueSelectorProps<TData extends RowData> {
+  column: Column<DataTableFeatures, TData>;
   value: string;
   onSelect: (value: string) => void;
 }
 
-function FilterValueSelector<TData>({
+function FilterValueSelector<TData extends RowData>({
   column,
   value,
   onSelect,

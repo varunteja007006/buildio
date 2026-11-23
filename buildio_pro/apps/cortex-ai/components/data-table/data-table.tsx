@@ -1,6 +1,11 @@
 "use client";
 
-import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
+import {
+  type RowData,
+  flexRender,
+  type ReactTable,
+} from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import {
   Table,
   TableBody,
@@ -14,14 +19,16 @@ import * as React from "react";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import { cn } from "@/lib/utils";
 
-interface DataTableProps<TData> extends React.ComponentProps<"div"> {
-  table: TanstackTable<TData>;
+interface DataTableProps<
+  TData extends RowData,
+> extends React.ComponentProps<"div"> {
+  table: ReactTable<DataTableFeatures, TData>;
   loading?: boolean;
   emptyState?: React.ReactNode;
   total?: number;
 }
 
-export function DataTable<TData>({
+export function DataTable<TData extends RowData>({
   table,
   loading = false,
   emptyState,
@@ -60,7 +67,7 @@ export function DataTable<TData>({
             {loading ? (
               <TableRow>
                 <TableCell colSpan={visibleColumns} className="h-24 p-0">
-                  <LoadingRows rows={table.getState().pagination.pageSize} />
+                  <LoadingRows rows={table.state.pagination.pageSize} />
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (

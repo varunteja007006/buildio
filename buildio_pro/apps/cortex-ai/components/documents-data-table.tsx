@@ -2,8 +2,7 @@
 
 import {
   flexRender,
-  getCoreRowModel,
-  useReactTable,
+  useTable,
   type RowSelectionState,
   type SortingState,
 } from "@tanstack/react-table";
@@ -15,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { dataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { Trash2 } from "lucide-react";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import * as React from "react";
@@ -101,10 +101,11 @@ export function DocumentsDataTable() {
     [sorting, setSort, setSortDir],
   );
 
-  const table = useReactTable({
+  const table = useTable({
+    features: dataTableFeatures,
     data: flatData,
     columns: documentsColumns,
-    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
     manualSorting: true,
     enableRowSelection: true,
     state: { sorting, rowSelection },

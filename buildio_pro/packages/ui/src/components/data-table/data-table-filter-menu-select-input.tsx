@@ -1,6 +1,7 @@
 "use client";
 
-import type { Column } from "@tanstack/react-table";
+import type { RowData, Column } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { Check } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -20,9 +21,9 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 import type { ExtendedColumnFilter } from "@workspace/ui/types/data-table";
 
-interface DataTableFilterMenuSelectInputProps<TData> {
+interface DataTableFilterMenuSelectInputProps<TData extends RowData> {
   filter: ExtendedColumnFilter<TData>;
-  column: Column<TData>;
+  column: Column<DataTableFeatures, TData>;
   inputId: string;
   onFilterUpdate: (
     filterId: string,
@@ -32,7 +33,7 @@ interface DataTableFilterMenuSelectInputProps<TData> {
   setShowValueSelector: (value: boolean) => void;
 }
 
-export function DataTableFilterMenuSelectInput<TData>({
+export function DataTableFilterMenuSelectInput<TData extends RowData>({
   filter,
   column,
   inputId,
@@ -90,11 +91,7 @@ export function DataTableFilterMenuSelectInput<TData>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        id={inputListboxId}
-        align="start"
-        className="w-48 p-0"
-      >
+      <PopoverContent id={inputListboxId} align="start" className="w-48 p-0">
         <Command>
           <CommandInput placeholder="Search options..." />
           <CommandList>

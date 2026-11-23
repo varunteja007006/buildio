@@ -1,8 +1,12 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, FilterFn } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { Badge } from "@workspace/ui/components/badge";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import {
+  DataTableSelectPage,
+  DataTableSelectRow,
+} from "@workspace/ui/components/data-table/data-table-selection";
 import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { DataTableColumnHeader } from "@workspace/ui/components/data-table/data-table-column-header";
 import { DataTableToolbar } from "@workspace/ui/components/data-table/data-table-toolbar";
@@ -52,24 +56,17 @@ const tasks: Task[] = [
   { id: "T-10", title: "Publish carousel plugins guide", status: "in-progress", assignee: "ada", createdAt: "2026-11-08" },
 ];
 
-const columns: ColumnDef<Task>[] = [
+const filterByOption: FilterFn<DataTableFeatures, Task> = (
+  row,
+  columnId,
+  values: string[],
+) => values.includes(row.getValue<string>(columnId));
+
+const columns: ColumnDef<DataTableFeatures, Task>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    header: ({ table }) => <DataTableSelectPage table={table} />,
+    cell: ({ row }) => <DataTableSelectRow row={row} />,
     size: 32,
     enableSorting: false,
     enableHiding: false,
@@ -80,14 +77,18 @@ const columns: ColumnDef<Task>[] = [
     enableSorting: false,
   },
   {
+    id: "title",
     accessorKey: "title",
+    enableColumnFilter: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Title" />
     ),
     meta: { label: "Title", placeholder: "Filter titles…", variant: "text" },
   },
   {
+    id: "status",
     accessorKey: "status",
+    enableColumnFilter: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Status" />
     ),
@@ -97,10 +98,12 @@ const columns: ColumnDef<Task>[] = [
       </Badge>
     ),
     meta: { label: "Status", variant: "select", options: statusOptions },
-    filterFn: "arrIncludesSome",
+    filterFn: filterByOption,
   },
   {
+    id: "assignee",
     accessorKey: "assignee",
+    enableColumnFilter: true,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Assignee" />
     ),
@@ -108,7 +111,7 @@ const columns: ColumnDef<Task>[] = [
       assigneeOptions.find((option) => option.value === row.original.assignee)
         ?.label ?? row.original.assignee,
     meta: { label: "Assignee", variant: "select", options: assigneeOptions },
-    filterFn: "arrIncludesSome",
+    filterFn: filterByOption,
   },
   {
     accessorKey: "createdAt",
@@ -121,7 +124,10 @@ export function DataTableDemo() {
   const { table } = useDataTable({
     data: tasks,
     columns,
-    pageCount: -1,
+    getRowId: (row) => row.id,
+    manualFiltering: false,
+    manualPagination: false,
+    manualSorting: false,
     initialState: {
       pagination: { pageIndex: 0, pageSize: 5 },
     },

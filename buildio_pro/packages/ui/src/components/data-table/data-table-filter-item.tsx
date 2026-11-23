@@ -1,6 +1,7 @@
 "use client";
 
-import type { Column } from "@tanstack/react-table";
+import type { RowData, Column } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { GripVertical, Trash2 } from "lucide-react";
 import * as React from "react";
 
@@ -27,13 +28,13 @@ import type {
   JoinOperator,
 } from "@workspace/ui/types/data-table";
 
-interface DataTableFilterItemProps<TData> {
+interface DataTableFilterItemProps<TData extends RowData> {
   filter: ExtendedColumnFilter<TData>;
   index: number;
   filterItemId: string;
   joinOperator: JoinOperator;
   setJoinOperator: (value: JoinOperator) => void;
-  columns: Column<TData>[];
+  columns: Column<DataTableFeatures, TData>[];
   onFilterUpdate: (
     filterId: string,
     updates: Partial<Omit<ExtendedColumnFilter<TData>, "filterId">>,
@@ -41,7 +42,7 @@ interface DataTableFilterItemProps<TData> {
   onFilterRemove: (filterId: string) => void;
 }
 
-export function DataTableFilterItem<TData>({
+export function DataTableFilterItem<TData extends RowData>({
   filter,
   index,
   filterItemId,

@@ -1,6 +1,7 @@
 "use client";
 
-import type { Column, Table } from "@tanstack/react-table";
+import type { RowData, Column, Table } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { ListFilter, X } from "lucide-react";
 import { useQueryState } from "nuqs";
 import * as React from "react";
@@ -26,17 +27,17 @@ import type { ExtendedColumnFilter } from "@workspace/ui/types/data-table";
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;
 
-interface DataTableFilterMenuProps<TData> extends React.ComponentProps<
-  typeof PopoverContent
-> {
-  table: Table<TData>;
+interface DataTableFilterMenuProps<
+  TData extends RowData,
+> extends React.ComponentProps<typeof PopoverContent> {
+  table: Table<DataTableFeatures, TData>;
   debounceMs?: number;
   throttleMs?: number;
   shallow?: boolean;
   disabled?: boolean;
 }
 
-export function DataTableFilterMenu<TData>({
+export function DataTableFilterMenu<TData extends RowData>({
   table,
   debounceMs = DEBOUNCE_MS,
   throttleMs = THROTTLE_MS,
@@ -53,8 +54,10 @@ export function DataTableFilterMenu<TData>({
   }, [table]);
 
   const [open, setOpen] = React.useState(false);
-  const [selectedColumn, setSelectedColumn] =
-    React.useState<Column<TData> | null>(null);
+  const [selectedColumn, setSelectedColumn] = React.useState<Column<
+    DataTableFeatures,
+    TData
+  > | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
@@ -100,7 +103,7 @@ export function DataTableFilterMenu<TData>({
   const debouncedSetFilters = useDebouncedCallback(setFilters, debounceMs);
 
   const onFilterAdd = React.useCallback(
-    (column: Column<TData>, value: string) => {
+    (column: Column<DataTableFeatures, TData>, value: string) => {
       if (!value.trim() && column.columnDef.meta?.variant !== "boolean") {
         return;
       }

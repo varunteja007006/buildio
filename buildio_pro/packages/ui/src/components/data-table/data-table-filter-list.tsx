@@ -1,6 +1,7 @@
 "use client";
 
-import type { Table } from "@tanstack/react-table";
+import type { RowData, Table } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import * as React from "react";
 
@@ -29,17 +30,17 @@ import { generateId } from "@workspace/ui/lib/id";
 import { getFiltersStateParser } from "@workspace/ui/lib/parsers";
 import type { ExtendedColumnFilter } from "@workspace/ui/types/data-table";
 
-interface DataTableFilterListProps<TData> extends React.ComponentProps<
-  typeof PopoverContent
-> {
-  table: Table<TData>;
+interface DataTableFilterListProps<
+  TData extends RowData,
+> extends React.ComponentProps<typeof PopoverContent> {
+  table: Table<DataTableFeatures, TData>;
   debounceMs?: number;
   throttleMs?: number;
   shallow?: boolean;
   disabled?: boolean;
 }
 
-export function DataTableFilterList<TData>({
+export function DataTableFilterList<TData extends RowData>({
   table,
   debounceMs = DEBOUNCE_MS,
   throttleMs = THROTTLE_MS,

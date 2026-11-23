@@ -1,4 +1,5 @@
-import { ColumnDef, Table } from "@tanstack/react-table";
+import type { ColumnDef, Table } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import {
   AlertDialog,
@@ -12,7 +13,10 @@ import {
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 import { Button } from "@workspace/ui/components/button";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import {
+  DataTableSelectPage,
+  DataTableSelectRow,
+} from "@workspace/ui/components/data-table/data-table-selection";
 import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
 import { useDataTable } from "@workspace/ui/hooks/use-data-table";
@@ -34,24 +38,11 @@ type IncomeRecord = {
   sourceId?: string | null;
 };
 
-const columns: ColumnDef<IncomeRecord>[] = [
+const columns: ColumnDef<DataTableFeatures, IncomeRecord>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    header: ({ table }) => <DataTableSelectPage table={table} />,
+    cell: ({ row }) => <DataTableSelectRow row={row} />,
     size: 32,
     enableSorting: false,
     enableHiding: false,
@@ -125,6 +116,7 @@ export const IncomeListTable = () => {
     data: records,
     columns,
     pageCount: totalPages,
+    getRowId: (row) => row.id,
   });
 
   if (isError) {
@@ -141,12 +133,16 @@ export const IncomeListTable = () => {
   );
 };
 
-function TableActionBar({ table }: { table: Table<IncomeRecord> }) {
+function TableActionBar({
+  table,
+}: {
+  table: Table<DataTableFeatures, IncomeRecord>;
+}) {
   const rows = table.getFilteredSelectedRowModel().rows;
   const onOpenChange = React.useCallback(
     (open: boolean) => {
       if (!open) {
-        table.toggleAllRowsSelected(false);
+        table.resetRowSelection(true);
       }
     },
     [table],
@@ -154,7 +150,7 @@ function TableActionBar({ table }: { table: Table<IncomeRecord> }) {
 
   const deleteIncomes = useDeleteIncomes({
     onSuccess: () => {
-      table.toggleAllRowsSelected(false);
+      table.resetRowSelection(true);
     },
   });
 

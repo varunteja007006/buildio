@@ -1,6 +1,7 @@
 "use client";
 
-import type { Column } from "@tanstack/react-table";
+import type { RowData, Column } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -21,10 +22,10 @@ import { getDefaultFilterOperator } from "@workspace/ui/lib/data-table";
 import { cn } from "@workspace/ui/lib/utils";
 import type { ExtendedColumnFilter } from "@workspace/ui/types/data-table";
 
-interface DataTableFilterFieldProps<TData> {
+interface DataTableFilterFieldProps<TData extends RowData> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  columns: Column<TData>[];
+  columns: Column<DataTableFeatures, TData>[];
   filterId: string;
   selectedFieldId: string;
   fieldListboxId: string;
@@ -34,7 +35,7 @@ interface DataTableFilterFieldProps<TData> {
   ) => void;
 }
 
-export function DataTableFilterField<TData>({
+export function DataTableFilterField<TData extends RowData>({
   open,
   onOpenChange,
   columns,

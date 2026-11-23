@@ -1,14 +1,20 @@
 "use client";
 
-import type { ColumnSort, Table } from "@tanstack/react-table";
+import type { RowData, ColumnSort, ReactTable } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import * as React from "react";
 
-import { REMOVE_SORT_SHORTCUTS, SORT_SHORTCUT_KEY } from "@workspace/ui/components/data-table/data-table-sort-list-utils";
+import {
+  REMOVE_SORT_SHORTCUTS,
+  SORT_SHORTCUT_KEY,
+} from "@workspace/ui/components/data-table/data-table-sort-list-utils";
 
-export function useDataTableSortList<TData>(table: Table<TData>) {
+export function useDataTableSortList<TData extends RowData>(
+  table: ReactTable<DataTableFeatures, TData>,
+) {
   const [open, setOpen] = React.useState(false);
 
-  const sorting = table.getState().sorting;
+  const sorting = table.state.sorting;
   const onSortingChange = table.setSorting;
 
   const { columnLabels, columns } = React.useMemo(() => {

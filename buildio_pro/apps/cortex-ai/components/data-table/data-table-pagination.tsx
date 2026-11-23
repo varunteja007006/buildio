@@ -1,6 +1,7 @@
 "use client";
 
-import type { Table } from "@tanstack/react-table";
+import type { ReactTable, RowData } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { Button } from "@workspace/ui/components/button";
 import {
   Select,
@@ -17,22 +18,22 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>;
+interface DataTablePaginationProps<TData extends RowData> {
+  table: ReactTable<DataTableFeatures, TData>;
   total?: number;
   pageSizeOptions?: number[];
 }
 
-export function DataTablePagination<TData>({
+export function DataTablePagination<TData extends RowData>({
   table,
   total,
   pageSizeOptions = [10, 25, 50, 100],
 }: DataTablePaginationProps<TData>) {
   const {
     pagination: { pageIndex, pageSize },
-  } = table.getState();
+  } = table.state;
   const pageCount = Math.max(1, table.getPageCount());
-  const rowCount = total ?? table.getPrePaginationRowModel().rows.length;
+  const rowCount = total ?? table.getPrePaginatedRowModel().rows.length;
 
   return (
     <div className="flex flex-col gap-2.5 px-2 sm:flex-row sm:items-center sm:justify-between">

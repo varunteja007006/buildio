@@ -1,6 +1,7 @@
 "use client";
 
-import type { Column, ColumnMeta } from "@tanstack/react-table";
+import type { RowData, Column, ColumnMeta } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 
 import { DataTableFilterDateInput } from "@workspace/ui/components/data-table/data-table-filter-date-input";
 import { DataTableFilterSelectInput } from "@workspace/ui/components/data-table/data-table-filter-select-input";
@@ -15,7 +16,7 @@ import {
 } from "@workspace/ui/components/select";
 import type { ExtendedColumnFilter } from "@workspace/ui/types/data-table";
 
-export function onFilterInputRender<TData>({
+export function onFilterInputRender<TData extends RowData>({
   filter,
   inputId,
   column,
@@ -26,8 +27,8 @@ export function onFilterInputRender<TData>({
 }: {
   filter: ExtendedColumnFilter<TData>;
   inputId: string;
-  column: Column<TData>;
-  columnMeta?: ColumnMeta<TData, unknown>;
+  column: Column<DataTableFeatures, TData>;
+  columnMeta?: ColumnMeta<DataTableFeatures, TData, unknown>;
   onFilterUpdate: (
     filterId: string,
     updates: Partial<Omit<ExtendedColumnFilter<TData>, "filterId">>,

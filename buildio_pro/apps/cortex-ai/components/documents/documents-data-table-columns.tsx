@@ -1,8 +1,12 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { Badge } from "@workspace/ui/components/badge";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import {
+  DataTableSelectPage,
+  DataTableSelectRow,
+} from "@workspace/ui/components/data-table/data-table-selection";
 import { FileText } from "lucide-react";
 
 import { formatDate, truncateHash } from "@/api/documents/helpers";
@@ -12,23 +16,14 @@ import { DocumentRowActions } from "@/components/documents/document-delete-butto
 import { DocumentExtractionBadge } from "@/components/documents/document-extraction-badge";
 import { DocumentIngestErrorBadge } from "@/components/documents/document-ingest-error-badge";
 
-export const documentsColumns: ColumnDef<Document>[] = [
+export const documentsColumns: ColumnDef<DataTableFeatures, Document>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all documents"
-      />
+      <DataTableSelectPage table={table} label="Select all documents" />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label={`Select ${row.original.filename}`}
-      />
+      <DataTableSelectRow row={row} label={`Select ${row.original.filename}`} />
     ),
     enableSorting: false,
     enableHiding: false,

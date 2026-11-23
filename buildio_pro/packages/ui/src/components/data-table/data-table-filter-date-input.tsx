@@ -1,6 +1,7 @@
 "use client";
 
-import type { ColumnMeta } from "@tanstack/react-table";
+import type { RowData, ColumnMeta } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { CalendarIcon } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -14,10 +15,10 @@ import { formatDate } from "@workspace/ui/lib/format";
 import { cn } from "@workspace/ui/lib/utils";
 import type { ExtendedColumnFilter } from "@workspace/ui/types/data-table";
 
-interface DataTableFilterDateInputProps<TData> {
+interface DataTableFilterDateInputProps<TData extends RowData> {
   filter: ExtendedColumnFilter<TData>;
   inputId: string;
-  columnMeta?: ColumnMeta<TData, unknown>;
+  columnMeta?: ColumnMeta<DataTableFeatures, TData, unknown>;
   onFilterUpdate: (
     filterId: string,
     updates: Partial<Omit<ExtendedColumnFilter<TData>, "filterId">>,
@@ -26,7 +27,7 @@ interface DataTableFilterDateInputProps<TData> {
   setShowValueSelector: (value: boolean) => void;
 }
 
-export function DataTableFilterDateInput<TData>({
+export function DataTableFilterDateInput<TData extends RowData>({
   filter,
   inputId,
   columnMeta,

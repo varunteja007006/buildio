@@ -1,10 +1,12 @@
 "use client";
 
 import {
+  type RowData,
   type ColumnFiltersState,
   type TableOptions,
   type Updater,
 } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import {
   type SingleParser,
   type UseQueryStateOptions,
@@ -18,15 +20,15 @@ import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback
 
 const ARRAY_SEPARATOR = ",";
 
-export interface UseDataTableFiltersOptions<TData> {
-  columns: TableOptions<TData>["columns"];
+export interface UseDataTableFiltersOptions<TData extends RowData> {
+  columns: TableOptions<DataTableFeatures, TData>["columns"];
   enableAdvancedFilter: boolean;
   queryStateOptions: Omit<UseQueryStateOptions<string>, "parse">;
   debounceMs: number;
   setPage: (value: number) => void;
 }
 
-export function useDataTableFilters<TData>({
+export function useDataTableFilters<TData extends RowData>({
   columns,
   enableAdvancedFilter,
   queryStateOptions,
@@ -73,16 +75,7 @@ export function useDataTableFilters<TData>({
     return Object.entries(filterValues).reduce<ColumnFiltersState>(
       (filters, [key, value]) => {
         if (value !== null) {
-          const processedValue = Array.isArray(value)
-            ? value
-            : typeof value === "string" && /[^a-zA-Z0-9]/.test(value)
-              ? value.split(/[^a-zA-Z0-9]+/).filter(Boolean)
-              : [value];
-
-          filters.push({
-            id: key,
-            value: processedValue,
-          });
+          filters.push({ id: key, value });
         }
         return filters;
       },

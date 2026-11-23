@@ -1,6 +1,7 @@
 "use client";
 
-import type { Table } from "@tanstack/react-table";
+import type { ReactTable, RowData } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import { ArrowDownUp } from "lucide-react";
 import * as React from "react";
 
@@ -20,14 +21,14 @@ import {
 } from "@workspace/ui/components/sortable";
 import { cn } from "@workspace/ui/lib/utils";
 
-interface DataTableSortListProps<TData> extends React.ComponentProps<
-  typeof PopoverContent
-> {
-  table: Table<TData>;
+interface DataTableSortListProps<
+  TData extends RowData,
+> extends React.ComponentProps<typeof PopoverContent> {
+  table: ReactTable<DataTableFeatures, TData>;
   disabled?: boolean;
 }
 
-export function DataTableSortList<TData>({
+export function DataTableSortList<TData extends RowData>({
   table,
   disabled,
   ...props

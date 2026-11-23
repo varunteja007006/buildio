@@ -1,18 +1,19 @@
 "use client";
 
-import type { Table } from "@tanstack/react-table";
+import type { RowData, Table } from "@tanstack/react-table";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
 import type * as React from "react";
 
 import { DataTableViewOptions } from "@workspace/ui/components/data-table/data-table-view-options";
 import { cn } from "@workspace/ui/lib/utils";
 
 interface DataTableAdvancedToolbarProps<
-  TData,
+  TData extends RowData,
 > extends React.ComponentProps<"div"> {
-  table: Table<TData>;
+  table: Table<DataTableFeatures, TData>;
 }
 
-export function DataTableAdvancedToolbar<TData>({
+export function DataTableAdvancedToolbar<TData extends RowData>({
   table,
   children,
   className,

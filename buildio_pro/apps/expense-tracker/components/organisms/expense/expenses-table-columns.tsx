@@ -1,5 +1,9 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import type { DataTableFeatures } from "@workspace/ui/config/data-table-features";
+import {
+  DataTableSelectPage,
+  DataTableSelectRow,
+} from "@workspace/ui/components/data-table/data-table-selection";
 
 import {
   ExpenseDeleteDialog,
@@ -8,24 +12,11 @@ import {
 } from ".";
 import type { ExpenseRecord } from "./expense-table-types";
 
-export const expenseColumns: ColumnDef<ExpenseRecord>[] = [
+export const expenseColumns: ColumnDef<DataTableFeatures, ExpenseRecord>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={table.getIsSomePageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    header: ({ table }) => <DataTableSelectPage table={table} />,
+    cell: ({ row }) => <DataTableSelectRow row={row} />,
     size: 32,
     enableSorting: false,
     enableHiding: false,

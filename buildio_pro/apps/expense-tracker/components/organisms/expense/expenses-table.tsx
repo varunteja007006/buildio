@@ -68,6 +68,7 @@ export const ExpenseListTable = () => {
     data: transactions,
     columns: expenseColumns,
     pageCount: totalPages,
+    getRowId: (row) => row.id,
   });
 
   // Fetch filters data
