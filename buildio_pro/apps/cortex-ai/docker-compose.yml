@@ -31,35 +31,29 @@ services:
       timeout: 3s
       retries: 5
 
-  minio:
-    image: minio/minio:latest
-    container_name: cortex_ai_minio
+  s3:
+    image: chrislusf/seaweedfs:4.54@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15
     restart: always
-    command: server /data --console-address ":9001"
+    command: ["mini", "-dir=/data", "-master.telemetry=false"]
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
-      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-http://localhost:9003}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-minioadmin}
+      S3_BUCKET: ${S3_BUCKET:-cortex-ai}
     ports:
-      # 9000/9001 are used by expense-tracker's MinIO; offset to avoid conflicts
-      - "9002:9000"
-      - "9003:9001"
+      - "9002:8333"
     volumes:
-      - minio_data:/data
+      - seaweedfs_data:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test:
+        - CMD-SHELL
+        - >-
+          curl -fsSI --aws-sigv4 aws:amz:us-east-1:s3
+          --user "$${AWS_ACCESS_KEY_ID}:$${AWS_SECRET_ACCESS_KEY}"
+          "http://127.0.0.1:8333/$${S3_BUCKET}" >/dev/null
       interval: 5s
       timeout: 5s
       retries: 5
-
-  minio-init:
-    image: minio/mc:latest
-    container_name: cortex_ai_minio_init
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin} && mc mb --ignore-existing local/${S3_BUCKET:-cortex-ai}"
+      start_period: 30s
 
   # Dedicated Postgres for testing the connector feature.
   # The main app's Postgres (above) stays separate and untouched.
@@ -136,7 +130,7 @@ volumes:
   postgres_data:
   connector_postgres_data:
   valkey_data:
-  minio_data:
+  seaweedfs_data:
   mongo_data:
   mysql_data:
   sqlite_data:

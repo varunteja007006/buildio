@@ -14,7 +14,7 @@ const { S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET } = process.env;
 
 if (!S3_ENDPOINT || !S3_ACCESS_KEY || !S3_SECRET_KEY || !S3_BUCKET) {
   throw new Error(
-    "Missing MinIO/S3 configuration. Set S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY and S3_BUCKET.",
+    "Missing S3 configuration. Set S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY and S3_BUCKET.",
   );
 }
 
@@ -22,6 +22,8 @@ const client = new S3Client({
   endpoint: S3_ENDPOINT,
   region: "us-east-1",
   forcePathStyle: true,
+  // The browser supplies the upload body after the URL has been signed.
+  requestChecksumCalculation: "WHEN_REQUIRED",
   credentials: { accessKeyId: S3_ACCESS_KEY, secretAccessKey: S3_SECRET_KEY },
 });
 

@@ -67,6 +67,8 @@ development deployment's `SITE_URL` to match the Book frontend origin.
 
 `expense-tracker` and `cortex-ai` each have their own `.env.example` — copy it to `.env` before developing. All required variables are listed in `turbo.json` `globalEnv`.
 
+See [local S3 storage](docs/knowledge-base/local-s3-storage-23-11-2026.md) for SeaweedFS setup and MinIO migration.
+
 ## Adding a shadcn/ui component
 
 Components for the shared apps install into `packages/ui/src/components`:

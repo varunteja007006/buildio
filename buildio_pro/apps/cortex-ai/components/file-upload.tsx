@@ -107,7 +107,7 @@ export function FileUpload({
             body: file,
             headers: { "Content-Type": details.contentType },
           });
-          if (!put.ok) throw new Error("Failed to upload file to MinIO");
+          if (!put.ok) throw new Error("Object storage upload failed");
 
           const complete = await fetch("/api/documents/complete", {
             method: "POST",
