@@ -40,7 +40,22 @@ export default function App() {
 	const numColumns = Math.max(3, Math.floor((width - 32) / 80));
 
 	useEffect(() => {
-		loadData();
+		async function loadData() {
+			try {
+				const stored = await AsyncStorage.getItem(STORAGE_KEY);
+
+				if (!stored) return;
+
+				const parsed: StoredData = JSON.parse(stored);
+
+				setEggs(parsed.eggs);
+				setCount(String(parsed.count ?? ""));
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		void loadData();
 	}, []);
 
 	const initialized = useRef(false);
@@ -51,37 +66,22 @@ export default function App() {
 			return;
 		}
 
-		saveData();
+		async function saveData() {
+			try {
+				await AsyncStorage.setItem(
+					STORAGE_KEY,
+					JSON.stringify({
+						count: eggs.length,
+						eggs,
+					}),
+				);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+
+		void saveData();
 	}, [eggs]);
-
-	const loadData = async () => {
-		try {
-			const stored = await AsyncStorage.getItem(STORAGE_KEY);
-
-			if (!stored) return;
-
-			const parsed: StoredData = JSON.parse(stored);
-
-			setEggs(parsed.eggs);
-			setCount(String(parsed.count ?? ""));
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	const saveData = async () => {
-		try {
-			await AsyncStorage.setItem(
-				STORAGE_KEY,
-				JSON.stringify({
-					count: eggs.length,
-					eggs,
-				}),
-			);
-		} catch (error) {
-			console.error(error);
-		}
-	};
 
 	const toggleEgg = async (id: number) => {
 		await Haptics.selectionAsync();

@@ -32,7 +32,7 @@ This is a pnpm 11.4 + Turborepo monorepo of Next.js 16 apps (plus one Expo app).
 - `apps/cortex-ai` is an AI chat/RAG app using HTTP API modules, better-auth, Drizzle, and UploadThing.
 - `apps/poker-planner`, `apps/housie-game`, `apps/scribble`, `apps/secret-santa`, and `apps/billezy` are Convex-backed apps sharing `packages/games-convex-backend`.
 - `apps/book` is a Next.js + Mantine + BlockNote app on its own backend, `packages/book-convex-backend` (shared `packages/theme`).
-- `apps/eggsy` is Expo/React Native (SDK 56) + Convex with its own local `apps/eggsy/convex/`. Expo APIs change per release: read the versioned docs at https://docs.expo.dev/versions/v56.0.0/ before writing eggsy code.
+- `apps/eggsy` is Expo/React Native (SDK 58) + Convex with its own local `apps/eggsy/convex/`. Expo APIs change per release: read the versioned docs at https://docs.expo.dev/versions/v58.0.0/ before writing eggsy code.
 - `packages/ui` is the shared UI registry. Search `packages/ui/src/components/` before creating UI; import it as `@workspace/ui/...`, never by relative path. Add missing shadcn components with `pnpm dlx shadcn@latest add <name> -c apps/web`, which installs into the shared package. Other apps share that package too; do not install components with `-c apps/<other-app>`.
 - Workspace packages are consumed through `@workspace/*` exports.
 - Ignore `buildio_pro/convex/` — a stray committed `_generated/` directory that belongs to no workspace package.

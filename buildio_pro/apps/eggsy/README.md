@@ -1,8 +1,10 @@
 # eggsy
 
-An Expo (~56) / React Native app backed by Convex, living in the Buildio monorepo (pnpm + Turborepo) at `apps/eggsy`.
+An Expo SDK 58 / React Native app backed by Convex, living in the Buildio monorepo (pnpm + Turborepo) at `apps/eggsy`.
 
 ## Get started
+
+Use a [Node.js version supported by Expo SDK 58](https://docs.expo.dev/versions/v58.0.0/).
 
 Dependencies are workspace-managed — install from the **monorepo root** (`buildio_pro/`), not from inside this folder:
 
