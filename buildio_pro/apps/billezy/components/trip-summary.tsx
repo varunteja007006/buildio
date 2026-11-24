@@ -45,20 +45,35 @@ export function TripSummary({
         </p>
       </CardHeader>
       <CardContent className="space-y-3 px-4">
-        <p className="text-sm text-muted-foreground">
-          Already paid means expenses paid to shops, restaurants, etc. Your
-          share is your actual trip cost. Repayments only change what remains to
-          settle.
-        </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {summaries.map((summary) => (
             <section
               key={summary.memberId}
-              className="min-w-0 rounded-lg border p-3 space-y-2"
+              className="min-w-0 space-y-2 rounded-lg border p-3"
             >
-              <h3 className="font-semibold break-words">
+              <h3 className="font-semibold wrap-anywhere">
                 {members.find((m) => m.id === summary.memberId)?.name}
               </h3>
+              <div
+                className={`flex min-h-16 flex-col justify-center rounded-md border px-3 py-2 ${
+                  summary.netCents > 0
+                    ? "border-green-300 bg-green-50 text-green-950 dark:border-green-800 dark:bg-green-950/40 dark:text-green-100"
+                    : summary.netCents < 0
+                      ? "border-amber-300 bg-amber-50 text-amber-950 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
+                      : "border-border bg-muted/50 text-foreground"
+                }`}
+              >
+                {summary.netCents !== 0 && (
+                  <p className="text-xs font-medium uppercase tracking-wide">
+                    {summary.netCents > 0 ? "Still receives" : "Still owes"}
+                  </p>
+                )}
+                <p className="font-mono text-xl font-bold wrap-anywhere">
+                  {summary.netCents === 0
+                    ? "Settled"
+                    : money(Math.abs(summary.netCents))}
+                </p>
+              </div>
               <dl className="space-y-1 text-sm">
                 <div className="flex justify-between gap-2">
                   <dt>Already paid</dt>
@@ -84,20 +99,6 @@ export function TripSummary({
                     </div>
                   </>
                 )}
-                <div className="flex justify-between gap-2 border-t pt-2">
-                  <dt>
-                    {summary.netCents > 0
-                      ? "Still receives"
-                      : summary.netCents < 0
-                        ? "Still owes"
-                        : "Settlement"}
-                  </dt>
-                  <dd className="font-mono font-semibold">
-                    {summary.netCents === 0
-                      ? "Settled"
-                      : money(Math.abs(summary.netCents))}
-                  </dd>
-                </div>
               </dl>
               <details className="text-sm">
                 <summary className="cursor-pointer font-medium">
@@ -144,6 +145,11 @@ export function TripSummary({
             </section>
           ))}
         </div>
+        <p className="text-sm text-muted-foreground">
+          Already paid means expenses paid to shops, restaurants, etc. Your
+          share is your actual trip cost. Repayments only change what remains to
+          settle.
+        </p>
       </CardContent>
     </Card>
   );
