@@ -13,6 +13,7 @@ import { ExpenseTrash } from "@/components/expense-trash";
 import { GroupArchive } from "@/components/group-archive";
 import { GroupHeader } from "@/components/group-header";
 import { MemberExpenseCard } from "@/components/member-expense-card";
+import type { SavePaymentDetails } from "@/components/member-payment-details";
 import { MembersCard } from "@/components/members-card";
 import { SettlementCard } from "@/components/settlement-card";
 import { TripSummary } from "@/components/trip-summary";
@@ -24,6 +25,15 @@ export function GroupView({ groupId }: { groupId: string }) {
   });
   const deleteExpense = useMutation(api.bills.deleteExpense);
   const restoreExpense = useMutation(api.billTrash.restoreExpense);
+  const setMemberPaymentDetails = useMutation(
+    api.billEdits.setMemberPaymentDetails,
+  );
+  const savePaymentDetails: SavePaymentDetails = (memberId, paymentDetails) =>
+    setMemberPaymentDetails({
+      groupId: groupId as Id<"bill_groups">,
+      memberId,
+      paymentDetails,
+    });
 
   useEffect(() => {
     if (group === null) forgetGroup(groupId);
@@ -87,7 +97,11 @@ export function GroupView({ groupId }: { groupId: string }) {
 
       <GroupArchive groupId={groupId} expiresAt={group.expiresAt} />
 
-      <MembersCard groupId={groupId} members={group.members} />
+      <MembersCard
+        groupId={groupId}
+        members={group.members}
+        onSavePaymentDetails={savePaymentDetails}
+      />
 
       <TripSummary
         members={group.members}
@@ -103,6 +117,7 @@ export function GroupView({ groupId }: { groupId: string }) {
         expenses={group.expenses}
         payments={group.payments}
         currency={group.currency}
+        onSavePaymentDetails={savePaymentDetails}
       />
 
       <div className="space-y-3">

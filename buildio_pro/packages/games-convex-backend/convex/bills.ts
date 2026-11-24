@@ -68,6 +68,7 @@ export const createGroup = mutation({
 const memberShape = v.object({
   id: v.id("bill_members"),
   name: v.string(),
+  paymentDetails: v.optional(v.string()),
 });
 
 /** Loads a group with all members and expenses, or null if it does not exist. */
@@ -113,7 +114,11 @@ export const getGroup = query({
       expiresAt: billExpiresAt(group.created_at),
       members: members
         .sort((a, b) => a.created_at - b.created_at)
-        .map((m) => ({ id: m._id, name: m.name })),
+        .map((m) => ({
+          id: m._id,
+          name: m.name,
+          paymentDetails: m.payment_details,
+        })),
       expenses: expenses
         .filter((e) => !e.deleted_at)
         .sort((a, b) => b.created_at - a.created_at)

@@ -45,6 +45,28 @@ export const renameMember = mutation({
   },
 });
 
+/** Saves receiving details shared with anyone who has the group link. */
+export const setMemberPaymentDetails = mutation({
+  args: {
+    groupId: v.id("bill_groups"),
+    memberId: v.id("bill_members"),
+    paymentDetails: v.string(),
+  },
+  returns: v.null(),
+  handler: async (ctx, { groupId, memberId, paymentDetails }) => {
+    const details = paymentDetails.trim();
+    if (details.length > 500) {
+      throw new Error("Payment details must be at most 500 characters");
+    }
+    const member = await ctx.db.get(memberId);
+    if (!member || member.groupId !== groupId || !(await ctx.db.get(groupId))) {
+      throw new Error("Member not found in this group");
+    }
+    await ctx.db.patch(memberId, { payment_details: details || undefined });
+    return null;
+  },
+});
+
 /**
  * Removes a member. Blocked while any expense still references them
  * (as payer or participant), and while they are the only member left.

@@ -23,6 +23,11 @@ import { Copy, HandCoins } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import type {
+  PaymentDetailsMember,
+  SavePaymentDetails,
+} from "@/components/member-payment-details";
+import { SettlementTransferRow } from "@/components/settlement-transfer-row";
 import {
   computeBalances,
   computeSettlement,
@@ -43,24 +48,28 @@ export function SettlementCard({
   expenses,
   payments,
   currency,
+  onSavePaymentDetails,
 }: {
   groupId: string;
   name: string;
-  members: { id: string; name: string }[];
+  members: PaymentDetailsMember[];
   expenses: Expense[];
   payments: Payment[];
   currency: string;
+  onSavePaymentDetails: SavePaymentDetails;
 }) {
   const recordPayment = useMutation(api.billPayments.recordPayment);
   const undoPayment = useMutation(api.billPayments.undoPayment);
   const [pending, setPending] = useState<SettlementTransfer | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [undoingId, setUndoingId] = useState<string | null>(null);
-  const nameById = new Map(members.map((m) => [m.id, m.name]));
+  const memberById = new Map<string, PaymentDetailsMember>(
+    members.map((member) => [member.id, member]),
+  );
   const balances = computeBalances(members, expenses, payments);
   const transfers = computeSettlement(balances);
   const describe = (t: SettlementTransfer) =>
-    `${nameById.get(t.fromId)} → ${nameById.get(t.toId)}: ${formatMoney(t.amountCents, currency)}`;
+    `${memberById.get(t.fromId)?.name} → ${memberById.get(t.toId)?.name}: ${formatMoney(t.amountCents, currency)}`;
 
   const copySummary = async () => {
     const lines = [
@@ -139,14 +148,13 @@ export function SettlementCard({
         </Button>
       </CardHeader>
       <CardContent className="space-y-3 px-4">
-        <p className="text-sm text-muted-foreground">
-          Pay outside Billezy, then record it here. Anyone with this link can
-          record or undo payments; these are not bank-verified. Editing or
-          deleting expenses recalculates the remaining transfers, but does not
-          erase recorded repayments.
-        </p>
         <section className="space-y-2" aria-label="Remaining transfers">
           <h3 className="text-sm font-medium">Remaining transfers</h3>
+          {transfers.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              Pay outside Billezy first, then record it as paid.
+            </p>
+          )}
           {!transfers.length ? (
             <p className="text-sm text-muted-foreground">
               {!expenses.length && !payments.length
@@ -155,24 +163,29 @@ export function SettlementCard({
             </p>
           ) : (
             <ul className="space-y-2">
-              {transfers.map((transfer) => (
-                <li
-                  key={`${transfer.fromId}-${transfer.toId}`}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/30 p-3 text-sm"
-                >
-                  <span>{describe(transfer)}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPending(transfer)}
-                  >
-                    Record as paid
-                  </Button>
-                </li>
-              ))}
+              {transfers.map((transfer) => {
+                const payer = memberById.get(transfer.fromId);
+                const recipient = memberById.get(transfer.toId);
+                if (!payer || !recipient) return null;
+                return (
+                  <SettlementTransferRow
+                    key={`${transfer.fromId}-${transfer.toId}`}
+                    payerName={payer.name}
+                    recipient={recipient}
+                    amount={formatMoney(transfer.amountCents, currency)}
+                    onSavePaymentDetails={onSavePaymentDetails}
+                    onRecord={() => setPending(transfer)}
+                  />
+                );
+              })}
             </ul>
           )}
         </section>
+        <p className="text-sm text-muted-foreground">
+          Anyone with this link can record or undo repayments. These records are
+          manually entered and unverified. Editing or deleting expenses
+          recalculates what’s owed and keeps past repayment records.
+        </p>
         {payments.length > 0 && (
           <section className="space-y-2" aria-label="Recorded repayments">
             <h3 className="text-sm font-medium">

@@ -186,6 +186,7 @@ export default defineSchema({
   bill_members: defineTable({
     groupId: v.id("bill_groups"),
     name: v.string(),
+    payment_details: v.optional(v.string()),
     created_at: v.number(),
   }).index("by_group", ["groupId"]),
 

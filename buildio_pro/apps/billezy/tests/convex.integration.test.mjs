@@ -7,7 +7,7 @@ import { computeBalances } from "../../../packages/games-convex-backend/convex/l
 const url = process.env.BILLEZY_TEST_CONVEX_URL;
 
 test(
-  "development backend: expenses, repayments, undo, trash, and group scoping",
+  "development backend: expenses, repayments, payment details, trash, and group scoping",
   { skip: !url },
   async () => {
     const call = async (kind, path, args) => {
@@ -47,6 +47,30 @@ test(
         participantIds: [a, b, c],
       };
       const read = () => call("query", "bills:getGroup", { groupId });
+      const memberDetails = async () =>
+        (await read()).members.find((member) => member.id === a).paymentDetails;
+      const saveDetails = (paymentDetails, memberId = a) =>
+        mutate("billEdits:setMemberPaymentDetails", {
+          groupId,
+          memberId,
+          paymentDetails,
+        });
+      assert.equal(await memberDetails(), undefined);
+      await assert.rejects(
+        () => saveDetails("wrong@bank", other.memberIds[0]),
+        /Member not found in this group/,
+      );
+      await assert.rejects(
+        () => saveDetails("x".repeat(501)),
+        /500 characters/,
+      );
+      await saveDetails("  example@bank\nPayment note  ");
+      assert.equal(await memberDetails(), "example@bank\nPayment note");
+      await saveDetails("new@bank");
+      assert.equal(await memberDetails(), "new@bank");
+      await saveDetails("");
+      assert.equal(await memberDetails(), undefined);
+
       const expenseId = await mutate("bills:addExpense", args);
       for (const invalid of [
         { participantIds: [a, b, b] },

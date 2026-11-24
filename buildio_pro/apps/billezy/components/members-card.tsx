@@ -15,17 +15,20 @@ import { Check, Pencil, UserRound, X } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
 
-interface Member {
-  id: string;
-  name: string;
-}
+import {
+  MemberPaymentDetails,
+  type PaymentDetailsMember,
+  type SavePaymentDetails,
+} from "@/components/member-payment-details";
 
 export function MembersCard({
   groupId,
   members,
+  onSavePaymentDetails,
 }: {
   groupId: string;
-  members: Member[];
+  members: PaymentDetailsMember[];
+  onSavePaymentDetails: SavePaymentDetails;
 }) {
   const addMember = useMutation(api.bills.addMember);
   const renameMember = useMutation(api.billEdits.renameMember);
@@ -61,7 +64,7 @@ export function MembersCard({
     }
   };
 
-  const startEdit = (member: Member) => {
+  const startEdit = (member: PaymentDetailsMember) => {
     setEditingId(member.id);
     setEditingName(member.name);
   };
@@ -91,11 +94,11 @@ export function MembersCard({
     }
   };
 
-  const handleRemove = async (member: Member) => {
+  const handleRemove = async (member: PaymentDetailsMember) => {
     if (isBusy) return;
     setIsBusy(true);
     try {
-      await removeMember({ memberId: member.id as Id<"bill_members"> });
+      await removeMember({ memberId: member.id });
       toast.success(`${member.name} removed`);
     } catch (error) {
       toast.error(
@@ -169,6 +172,10 @@ export function MembersCard({
               >
                 <UserRound className="size-4 text-muted-foreground" />
                 {member.name}
+                <MemberPaymentDetails
+                  member={member}
+                  onSave={onSavePaymentDetails}
+                />
                 <Button
                   type="button"
                   variant="ghost"
