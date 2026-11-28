@@ -13,6 +13,7 @@ import {
 import { useMutation, useQuery } from "convex/react";
 import { Users } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { ParticipantCard } from "@/components/participant-card";
@@ -28,10 +29,36 @@ export function Participants() {
   );
 
   const participants = gameState?.participants ?? [];
-  const isViewerOwner =
-    user?.success === true && gameState?.room?.ownerId === user.id;
+  const hostId = gameState?.room?.hostId;
+  const isViewerHost = user?.success === true && hostId === user.id;
 
   const kickParticipant = useMutation(api.secretSanta.kickParticipant);
+  const transferHost = useMutation(api.secretSanta.transferHost);
+  const [transferring, setTransferring] = useState(false);
+
+  const handleTransfer = async (userId: Id<"users">, username: string) => {
+    if (
+      transferring ||
+      !window.confirm(
+        `Make ${username} the host? They’ll manage the draw, gift budget, and participants.`,
+      )
+    )
+      return;
+
+    setTransferring(true);
+    try {
+      await transferHost({
+        roomCode: roomCode as string,
+        userToken,
+        targetUserId: userId,
+      });
+      toast.success(`${username} is now the host`);
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to transfer the host role"));
+    } finally {
+      setTransferring(false);
+    }
+  };
 
   const handleKick = async (userId: Id<"users">, username: string) => {
     const isDrawn = gameState?.status === "drawn";
@@ -76,19 +103,34 @@ export function Participants() {
             Nobody yet — share the room code! 👋
           </p>
         ) : (
-          participants.map((participant) => (
-            <ParticipantCard
-              key={participant.user_id}
-              name={participant.username}
-              emojiId={participant.user_id}
-              isOwner={participant.is_owner}
-              onKick={
-                isViewerOwner && !participant.is_owner
-                  ? () => handleKick(participant.user_id, participant.username)
-                  : undefined
-              }
-            />
-          ))
+          participants.map((participant) => {
+            const isHost = participant.user_id === hostId;
+            const canManage = isViewerHost && !isHost;
+            return (
+              <ParticipantCard
+                key={participant.user_id}
+                name={participant.username}
+                emojiId={participant.user_id}
+                isHost={isHost}
+                actionsDisabled={transferring}
+                onTransferHost={
+                  canManage
+                    ? () =>
+                        handleTransfer(
+                          participant.user_id,
+                          participant.username,
+                        )
+                    : undefined
+                }
+                onKick={
+                  canManage && !participant.is_owner
+                    ? () =>
+                        handleKick(participant.user_id, participant.username)
+                    : undefined
+                }
+              />
+            );
+          })
         )}
       </CardContent>
     </Card>

@@ -22,6 +22,15 @@ async function getRoomOrThrow(ctx: QueryCtx, roomCode: string) {
   return room;
 }
 
+function getMembership(ctx: QueryCtx, roomId: Id<"rooms">, userId: Id<"users">) {
+  return ctx.db
+    .query("teams")
+    .withIndex("by_room_and_user", (q) =>
+      q.eq("roomId", roomId).eq("userId", userId),
+    )
+    .unique();
+}
+
 // Resolves the caller from their token and verifies they are a member of the
 // room via the teams table. Never trusts a userId from the client.
 export async function requireRoomMember(
@@ -35,12 +44,7 @@ export async function requireRoomMember(
 
   const room = await getRoomOrThrow(ctx, roomCode);
 
-  const membership = await ctx.db
-    .query("teams")
-    .withIndex("by_room_and_user", (q) =>
-      q.eq("roomId", room._id).eq("userId", user.id),
-    )
-    .unique();
+  const membership = await getMembership(ctx, room._id, user.id);
   if (!membership) throw new Error("You are not a member of this room");
 
   return { room, userId: user.id };
@@ -71,6 +75,17 @@ async function getGame(ctx: QueryCtx, roomId: Id<"rooms">) {
     .query("santa_games")
     .withIndex("by_room", (q) => q.eq("room_id", roomId))
     .unique();
+}
+
+async function requireHost(
+  ctx: QueryCtx,
+  { roomCode, userToken }: { roomCode: string; userToken: string },
+) {
+  const { room, userId } = await requireRoomMember(ctx, roomCode, userToken);
+  if ((room.santaHostId ?? room.ownerId) !== userId) {
+    throw new Error("Only the host can do that");
+  }
+  return { room, hostId: userId };
 }
 
 // Random derangement via Fisher-Yates plus a fix-up pass so NO participant
@@ -104,9 +119,8 @@ function derange(count: number): number[] {
   return perm;
 }
 
-// Full room state for the Secret Santa page: room, draw status, participants
-// and ONLY the caller's own recipient (recipient names are never exposed
-// to anyone but their santa).
+// Each player gets their own recipient. Only the current host can get the
+// complete draw, and only with every current participant's approval.
 export const getGameState = query({
   args: {
     roomCode: v.string(),
@@ -121,6 +135,7 @@ export const getGameState = query({
         room_name: v.string(),
         room_code: v.string(),
         ownerId: v.id("users"),
+        hostId: v.id("users"),
         created_at: v.number(),
       }),
     ),
@@ -140,6 +155,24 @@ export const getGameState = query({
       v.object({
         user_id: v.id("users"),
         username: v.string(),
+      }),
+    ),
+    reveal: v.optional(
+      v.object({
+        version: v.number(),
+        assignmentId: v.optional(v.id("santa_assignments")),
+        approved: v.boolean(),
+        approvedCount: v.number(),
+        participantCount: v.number(),
+        allMatched: v.boolean(),
+        pairings: v.optional(
+          v.array(
+            v.object({
+              santaId: v.id("users"),
+              recipientId: v.id("users"),
+            }),
+          ),
+        ),
       }),
     ),
   }),
@@ -169,12 +202,7 @@ export const getGameState = query({
       };
     }
 
-    const membership = await ctx.db
-      .query("teams")
-      .withIndex("by_room_and_user", (q) =>
-        q.eq("roomId", room._id).eq("userId", user.id),
-      )
-      .unique();
+    const membership = await getMembership(ctx, room._id, user.id);
     if (!membership) {
       return {
         success: false,
@@ -187,12 +215,13 @@ export const getGameState = query({
 
     const game = await getGame(ctx, room._id);
     const status = game?.status ?? "lobby";
+    const hostId = room.santaHostId ?? room.ownerId;
 
-    // Join teams -> users, in join order.
+    // Read one extra membership so a capped roster can never count as unanimous.
     const teams = await ctx.db
       .query("teams")
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
-      .take(MAX_PARTICIPANTS);
+      .take(MAX_PARTICIPANTS + 1);
     teams.sort((a, b) => a.created_at - b.created_at);
 
     const participants: {
@@ -200,7 +229,7 @@ export const getGameState = query({
       username: string;
       is_owner: boolean;
     }[] = [];
-    for (const team of teams) {
+    for (const team of teams.slice(0, MAX_PARTICIPANTS)) {
       const member: Doc<"users"> | null = await ctx.db.get(team.userId);
       if (member) {
         participants.push({
@@ -211,36 +240,35 @@ export const getGameState = query({
       }
     }
 
-    // Participants who joined after the last draw and are not matched yet.
-    let pendingParticipants = 0;
-    if (status === "drawn") {
-      const covered = coveredUserIds(await listAssignments(ctx, room._id));
-      pendingParticipants = teams.filter(
-        (team) => !covered.has(team.userId),
-      ).length;
-    }
+    const assignments =
+      status === "drawn" ? await listAssignments(ctx, room._id) : [];
+    const bySanta = new Map(assignments.map((row) => [row.santa_user_id, row]));
+    const myAssignment = bySanta.get(user.id);
+    const recipient = myAssignment
+      ? await ctx.db.get(myAssignment.recipient_user_id)
+      : null;
+    const covered = coveredUserIds(assignments);
+    const pendingParticipants =
+      status === "drawn"
+        ? teams.filter((team) => !covered.has(team.userId)).length
+        : 0;
 
-    // Each santa sees only their own recipient.
-    let myRecipient: { user_id: Id<"users">; username: string } | undefined;
-    if (status === "drawn") {
-      const assignment = await ctx.db
-        .query("santa_assignments")
-        .withIndex("by_room_and_santa", (q) =>
-          q.eq("room_id", room._id).eq("santa_user_id", user.id),
-        )
-        .unique();
-      if (assignment) {
-        const recipient: Doc<"users"> | null = await ctx.db.get(
-          assignment.recipient_user_id,
-        );
-        if (recipient) {
-          myRecipient = {
-            user_id: recipient._id,
-            username: recipient.username,
-          };
-        }
-      }
-    }
+    const version = room.santaRevealVersion ?? 0;
+    const approvedCount = teams.filter(
+      ({ userId }) => bySanta.get(userId)?.reveal_version === version,
+    ).length;
+    const recipientIds = new Set(
+      assignments.map((row) => row.recipient_user_id),
+    );
+    const allMatched =
+      teams.length >= MIN_PARTICIPANTS &&
+      teams.length === participants.length &&
+      teams.length === assignments.length &&
+      teams.every(
+        ({ userId }) => bySanta.has(userId) && recipientIds.has(userId),
+      );
+    const canReveal =
+      user.id === hostId && allMatched && approvedCount === teams.length;
 
     return {
       success: true,
@@ -250,6 +278,7 @@ export const getGameState = query({
         room_name: room.room_name,
         room_code: room.room_code,
         ownerId: room.ownerId,
+        hostId,
         created_at: room.created_at,
       },
       status,
@@ -258,12 +287,31 @@ export const getGameState = query({
       min_budget: game?.min_budget,
       max_budget: game?.max_budget,
       participants,
-      my_recipient: myRecipient,
+      my_recipient: recipient
+        ? { user_id: recipient._id, username: recipient.username }
+        : undefined,
+      reveal:
+        status === "drawn"
+          ? {
+              version,
+              assignmentId: myAssignment?._id,
+              approved: myAssignment?.reveal_version === version,
+              approvedCount,
+              participantCount: teams.length,
+              allMatched,
+              pairings: canReveal
+                ? assignments.map((row) => ({
+                    santaId: row.santa_user_id,
+                    recipientId: row.recipient_user_id,
+                  }))
+                : undefined,
+            }
+          : undefined,
     };
   },
 });
 
-// Idempotently creates the per-room game doc. The owner calls this on mount,
+// Idempotently creates the per-room game doc. The host calls this on mount,
 // mirroring scribble's initializeGameSettings pattern.
 export const initializeGame = mutation({
   args: {
@@ -276,7 +324,7 @@ export const initializeGame = mutation({
     if (!user.success || !user.id) throw new Error("Unauthorized");
 
     const room = await getRoomOrThrow(ctx, args.roomCode);
-    if (room.ownerId !== user.id) return null;
+    if ((room.santaHostId ?? room.ownerId) !== user.id) return null;
 
     const existing = await getGame(ctx, room._id);
     if (existing) return existing._id;
@@ -289,7 +337,73 @@ export const initializeGame = mutation({
   },
 });
 
-// Owner-only draw. A redraw is rejected unless at least one participant joined
+export const transferHost = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+    targetUserId: v.id("users"),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { room, hostId } = await requireHost(ctx, args);
+    if (room.game === "scribble") {
+      throw new Error("Secret Santa room not found");
+    }
+    if (args.targetUserId === hostId) return null;
+
+    const [membership, recipient] = await Promise.all([
+      getMembership(ctx, room._id, args.targetUserId),
+      ctx.db.get(args.targetUserId),
+    ]);
+    if (!membership || !recipient) {
+      throw new Error("Choose a participant in this room");
+    }
+
+    await ctx.db.patch(room._id, {
+      santaHostId: args.targetUserId,
+      santaRevealVersion: (room.santaRevealVersion ?? 0) + 1,
+    });
+    return null;
+  },
+});
+
+export const setRevealConsent = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+    assignmentId: v.id("santa_assignments"),
+    version: v.number(),
+    approved: v.boolean(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { room, userId } = await requireRoomMember(
+      ctx,
+      args.roomCode,
+      args.userToken,
+    );
+    const [game, assignment] = await Promise.all([
+      getGame(ctx, room._id),
+      ctx.db.get(args.assignmentId),
+    ]);
+    if (
+      game?.status !== "drawn" ||
+      assignment?.room_id !== room._id ||
+      assignment.santa_user_id !== userId ||
+      assignment.created_at !== game.drawn_at ||
+      args.version !== (room.santaRevealVersion ?? 0)
+    ) {
+      throw new Error("Approval does not match your current draw and host");
+    }
+
+    await ctx.db.patch(assignment._id, {
+      reveal_version: args.approved ? args.version : undefined,
+    });
+    return null;
+  },
+});
+
+// Host-only draw. A redraw is rejected unless at least one participant joined
 // after the last draw and isn't covered by it. Builds a fair random
 // derangement and bulk-inserts the assignments.
 export const runDraw = mutation({
@@ -302,15 +416,7 @@ export const runDraw = mutation({
     message: v.string(),
   }),
   handler: async (ctx, args) => {
-    const { room, userId } = await requireRoomMember(
-      ctx,
-      args.roomCode,
-      args.userToken,
-    );
-    if (room.ownerId !== userId) {
-      throw new Error("Only the room owner can run the draw");
-    }
-
+    const { room } = await requireHost(ctx, args);
     const game = await getGame(ctx, room._id);
     if (!game) throw new Error("Game not initialized");
 
@@ -364,7 +470,7 @@ export const runDraw = mutation({
   },
 });
 
-// Owner-only reset back to the lobby; deletes all assignments.
+// Host-only reset back to the lobby; deletes all assignments.
 export const resetDraw = mutation({
   args: {
     roomCode: v.string(),
@@ -372,15 +478,7 @@ export const resetDraw = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const { room, userId } = await requireRoomMember(
-      ctx,
-      args.roomCode,
-      args.userToken,
-    );
-    if (room.ownerId !== userId) {
-      throw new Error("Only the room owner can reset the draw");
-    }
-
+    const { room } = await requireHost(ctx, args);
     const game = await getGame(ctx, room._id);
     if (!game) throw new Error("Game not initialized");
 
@@ -397,7 +495,7 @@ export const resetDraw = mutation({
   },
 });
 
-// Owner-only gift budget (min and max). Editable at ANY game status — after
+// Host-only gift budget (min and max). Editable at ANY game status — after
 // the draw it still tells each santa how much to spend.
 export const setBudget = mutation({
   args: {
@@ -408,14 +506,7 @@ export const setBudget = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const { room, userId } = await requireRoomMember(
-      ctx,
-      args.roomCode,
-      args.userToken,
-    );
-    if (room.ownerId !== userId) {
-      throw new Error("Only the room owner can set the budget");
-    }
+    const { room } = await requireHost(ctx, args);
 
     const budgets = [args.minBudget, args.maxBudget];
     for (const budget of budgets) {
@@ -444,7 +535,7 @@ export const setBudget = mutation({
   },
 });
 
-// Owner-only removal of a participant. Kicking after a draw invalidates every
+// Host-only removal of a participant. Kicking after a draw invalidates every
 // assignment, so the game drops back to the lobby and must be redrawn.
 export const kickParticipant = mutation({
   args: {
@@ -457,24 +548,15 @@ export const kickParticipant = mutation({
     draw_reset: v.boolean(),
   }),
   handler: async (ctx, args) => {
-    const { room, userId } = await requireRoomMember(
-      ctx,
-      args.roomCode,
-      args.userToken,
-    );
-    if (room.ownerId !== userId) {
-      throw new Error("Only the room owner can kick participants");
+    const { room, hostId } = await requireHost(ctx, args);
+    if (args.targetUserId === hostId) {
+      throw new Error("The host can't be kicked");
     }
     if (args.targetUserId === room.ownerId) {
       throw new Error("The room owner can't be kicked");
     }
 
-    const membership = await ctx.db
-      .query("teams")
-      .withIndex("by_room_and_user", (q) =>
-        q.eq("roomId", room._id).eq("userId", args.targetUserId),
-      )
-      .unique();
+    const membership = await getMembership(ctx, room._id, args.targetUserId);
     if (!membership) throw new Error("That user is not a participant");
 
     const teams = await ctx.db
@@ -490,7 +572,7 @@ export const kickParticipant = mutation({
     await ctx.db.delete(membership._id);
 
     // A drawn game is invalid once someone leaves, so reset it like the
-    // owner just hit reset.
+    // host just hit reset.
     let drawReset = false;
     const game = await getGame(ctx, room._id);
     if (game && game.status === "drawn") {

@@ -27,7 +27,8 @@ export function MyMatchCard({
           My match 🎁
         </CardTitle>
         <CardDescription>
-          Only you can see who you&apos;re gifting 🤫
+          Your match is private unless everyone agrees to share the draw with
+          the host.
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -59,6 +59,8 @@ export default defineSchema({
     ownerId: v.id("users"), // replaces inference from teams
     game: v.optional(v.literal("scribble")),
     scribbleHostId: v.optional(v.id("users")),
+    santaHostId: v.optional(v.id("users")),
+    santaRevealVersion: v.optional(v.number()),
     // Room-wide pause after a game ends, so an accidental double-click on
     // "Stop" cannot immediately start the next game.
     startCooldownUntil: v.optional(v.number()),
@@ -229,6 +231,7 @@ export default defineSchema({
     room_id: v.id("rooms"),
     santa_user_id: v.id("users"),
     recipient_user_id: v.id("users"),
+    reveal_version: v.optional(v.number()),
     created_at: v.number(),
   })
     .index("by_room", ["room_id"])

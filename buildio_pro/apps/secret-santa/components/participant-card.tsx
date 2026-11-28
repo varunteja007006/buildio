@@ -1,46 +1,74 @@
 "use client";
 
 import { getEmojiForUserId } from "@workspace/game-ui/lib/emoji";
+import { Button } from "@workspace/ui/components/button";
 import { Crown, X } from "lucide-react";
 
 export function ParticipantCard({
   name,
   emojiId,
-  isOwner,
+  isHost,
+  actionsDisabled,
+  onTransferHost,
   onKick,
 }: Readonly<{
   name: string;
   emojiId: string;
-  isOwner?: boolean;
+  isHost?: boolean;
+  actionsDisabled?: boolean;
+  onTransferHost?: () => void;
   onKick?: () => void;
 }>) {
   return (
     <div className="flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-xl border border-primary/25 bg-white px-2 py-1.5 shadow dark:bg-secondary">
-      <div className="flex flex-row items-center gap-2">
-        <div className="flex size-8 items-center justify-center rounded-full bg-accent text-lg">
+      <div className="flex min-w-0 flex-row items-center gap-2">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-lg">
           {getEmojiForUserId(emojiId)}
         </div>
-        <div className="flex flex-col items-start">
-          <div className="flex items-center gap-1">
+        <div className="flex min-w-0 flex-col">
+          <div className="flex min-w-0 items-center gap-1">
             <p className="truncate overflow-hidden text-[0.75rem] text-ellipsis capitalize text-primary font-semibold">
               {name}
             </p>
-            {isOwner && (
-              <Crown className="size-3 text-yellow-500 fill-yellow-500" />
+            {isHost && (
+              <>
+                <Crown
+                  aria-hidden="true"
+                  className="size-3 shrink-0 text-yellow-500 fill-yellow-500"
+                />
+                <span className="sr-only">Host</span>
+              </>
             )}
           </div>
           <p className="text-[0.6rem] text-green-600 font-semibold">{`Joined ✅`}</p>
         </div>
       </div>
-      {onKick && (
-        <button
-          type="button"
-          onClick={onKick}
-          aria-label={`Kick ${name}`}
-          className="cursor-pointer rounded-md p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-        >
-          <X className="size-3.5" />
-        </button>
+      {(onTransferHost || onKick) && (
+        <div className="flex shrink-0 items-center gap-1">
+          {onTransferHost && (
+            <Button
+              size="xs"
+              variant="outline"
+              onClick={onTransferHost}
+              disabled={actionsDisabled}
+              aria-label={`Make ${name} host`}
+            >
+              Make host
+            </Button>
+          )}
+          {onKick && (
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              onClick={onKick}
+              disabled={actionsDisabled}
+              aria-label={`Kick ${name}`}
+              className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            >
+              <X className="size-3.5" />
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

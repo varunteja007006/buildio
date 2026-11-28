@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 
 import { DrawControl } from "@/components/draw-control";
 import { MyMatchCard } from "@/components/my-match-card";
+import { PairingReveal } from "@/components/pairing-reveal";
 import { Participants } from "@/components/participants";
 import { RecipientWishlist } from "@/components/recipient-wishlist";
 import { RoomHeader } from "@/components/room-header";
@@ -109,7 +110,7 @@ function RoomSession({
           return;
         }
 
-        // The mutation initializes the game for the owner and is a no-op for guests.
+        // The mutation initializes the game for the host and is a no-op for guests.
         await initializeGame({ roomCode, userToken });
         if (active) setEntry({ status: "joined" });
       } catch {
@@ -151,7 +152,7 @@ function RoomSession({
     return <RoomEntryStatus message={gameState.message} exitHref="/rooms" />;
   }
 
-  const isOwner = gameState.room?.ownerId === userId;
+  const isHost = gameState.room?.hostId === userId;
   const isDrawn = gameState?.status === "drawn";
   const myRecipientUsername = gameState?.my_recipient?.username;
 
@@ -161,7 +162,7 @@ function RoomSession({
 
       <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          {isOwner ? (
+          {isHost ? (
             <DrawControl
               status={gameState?.status ?? "lobby"}
               pendingParticipants={gameState?.pending_participants ?? 0}
@@ -181,6 +182,14 @@ function RoomSession({
 
         <div className="space-y-4">
           <Participants />
+          {gameState.reveal && (
+            <PairingReveal
+              roomCode={roomCode}
+              userToken={userToken}
+              reveal={gameState.reveal}
+              participants={gameState.participants}
+            />
+          )}
         </div>
       </div>
     </div>

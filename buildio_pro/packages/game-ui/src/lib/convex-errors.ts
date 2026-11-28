@@ -5,7 +5,7 @@ export function getErrorMessage(error: unknown, fallback: string): string {
   if (!(error instanceof Error)) return fallback;
   // Prefer the text after "Uncaught Error:" when present.
   const [, uncaught = error.message] = error.message.split("Uncaught Error:");
-  const [firstLine = error.message] = uncaught.split("\n");
+  const [firstLine = error.message] = (uncaught ?? error.message).split("\n");
   // Truncate Convex's location suffix (" at handler (...)", " Called by client").
   const cleaned = firstLine
     .replace(/ at handler .*/, "")
