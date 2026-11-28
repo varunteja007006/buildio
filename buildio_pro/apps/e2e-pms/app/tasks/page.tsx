@@ -1,4 +1,5 @@
-import { getTasks, projects, statuses } from "@/lib/tasks";
+import { projects, statuses } from "@/lib/task-filters";
+import { getTasks } from "@/lib/tasks";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 

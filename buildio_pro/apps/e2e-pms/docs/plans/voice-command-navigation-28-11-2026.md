@@ -18,10 +18,10 @@ The original discussion established the voice-to-UI goal and prioritized the SQL
 
 ## Milestone 1 — Filtered navigation by voice or text
 
-- [ ] Add one command control on the dashboard with a labeled text input, submit button, example command, and **Speak command** button. Text entry works with a keyboard and stays available during microphone errors.
-- [ ] Add a small rule-based parser for the `showTasks` action. Support `Show tasks`, `Show tasks for <project>`, `Show <status> tasks`, and `Show <status> tasks for <project>`. Match case-insensitively, tolerate extra whitespace and sentence-ending punctuation, and treat `completed` as `Done`. Share the existing project and status values through a module that the browser can import independently of SQLite.
-- [ ] Validate the action and filter values before navigating. Build the `/tasks` query string from the validated values and omit filters the command leaves unspecified. An unknown project, unknown status, or unsupported request gives the user a short hint and keeps them on the current page.
-- [ ] Use browser speech recognition when available. Start listening only when the user activates **Speak command**. Show a listening state and process a final transcript through the same path as a typed command. If recognition is unavailable, permission is denied, or speech produces no usable transcript, show a short message and keep text entry usable. [SpeechRecognition browser reference](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
+- [x] Add one command control on the dashboard with a labeled text input, submit button, example command, and **Speak command** button. Text entry works with a keyboard and stays available during microphone errors.
+- [x] Add a small rule-based parser for the `showTasks` action. Support `Show tasks`, `Show tasks for <project>`, `Show <status> tasks`, and `Show <status> tasks for <project>`. Match case-insensitively, tolerate extra whitespace and sentence-ending punctuation, and treat `completed` as `Done`. Share the existing project and status values through a module that the browser can import independently of SQLite.
+- [x] Validate the action and filter values before navigating. Build the `/tasks` query string from the validated values and omit filters the command leaves unspecified. An unknown project, unknown status, or unsupported request gives the user a short hint and keeps them on the current page.
+- [x] Use browser speech recognition when available. Start listening only when the user activates **Speak command**. Show a listening state and process a final transcript through the same path as a typed command. If recognition is unavailable, permission is denied, or speech produces no usable transcript, show a short message and keep text entry usable. [SpeechRecognition browser reference](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
 
 | Command                                   | Expected result                                            |
 | ----------------------------------------- | ---------------------------------------------------------- |
@@ -34,10 +34,11 @@ The original discussion established the voice-to-UI goal and prioritized the SQL
 
 ## Verification
 
-- [ ] Check the parser against the examples above, mixed case, extra whitespace, sentence-ending punctuation, and an unsupported action such as `Delete tasks`.
-- [ ] Submit the example command by typing and by speaking. Confirm the destination URL, selected filters, and exact SQLite result. Reload the filtered URL and change a filter manually.
-- [ ] Check keyboard submission, microphone permission denial, unavailable speech recognition, and no speech result. Confirm that typed commands remain usable in each case.
-- [ ] Run the E2E PMS lint, typecheck, and production build. Exercise the flow with Node.js 22.13+ on port `3026`.
+- [x] Check the parser against the examples above, mixed case, extra whitespace, sentence-ending punctuation, and an unsupported action such as `Delete tasks`.
+- [x] Submit the example command by typing and with a mocked speech transcript. Confirm the destination URL, selected filters, and exact SQLite result. Reload the filtered URL and change a filter manually.
+- [x] Check keyboard submission and simulate microphone permission denial, unavailable speech recognition, and no speech result. Confirm that typed commands remain usable in each case.
+- [x] Run the E2E PMS lint, typecheck, and production build. Exercise the flow with Node.js 22.13+ on port `3026`.
+- [ ] Speak the example command into a real microphone in a browser that supports speech recognition.
 
 ## Milestone 2 — AI tool calling
 
@@ -47,8 +48,8 @@ The scope of this demo is read-only navigation on seeded data.
 
 ## What I need from you
 
-Nothing for the first milestone. The AI milestone needs a provider choice and credentials configured in the implementation environment.
+Test with your microphone on the dashboard at `http://localhost:3026/`. The AI milestone needs a provider choice and credentials configured in the implementation environment.
 
 ## What’s next
 
-Implement typed command navigation and verify the example URLs and SQLite results. Then connect browser speech recognition to the same command path.
+Verify that **Speak command** opens the filtered Tasks page after you say “Show completed tasks for Product launch.”

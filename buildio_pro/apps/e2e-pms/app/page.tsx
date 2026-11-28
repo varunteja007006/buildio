@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-import { getTasks, projects } from "@/lib/tasks";
+import { TaskCommandForm } from "@/components/molecules/task-command-form";
+import { projects } from "@/lib/task-filters";
+import { getTasks } from "@/lib/tasks";
 
 export default function DashboardPage() {
   const tasks = getTasks();
@@ -11,6 +13,7 @@ export default function DashboardPage() {
       <p className="muted">
         {projects.length} projects · {tasks.length} tasks
       </p>
+      <TaskCommandForm />
       <ul className="project-grid">
         {projects.map((project) => {
           const projectTasks = tasks.filter((task) => task.project === project);

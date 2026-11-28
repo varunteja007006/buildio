@@ -34,5 +34,3 @@ export function getTasks(project?: string, status?: string): Task[] {
     )
     .all(...values) as Task[];
 }
-export const projects = ["Website refresh", "Product launch", "Internal tools"];
-export const statuses = ["Todo", "In progress", "In review", "Done"];
