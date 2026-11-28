@@ -111,6 +111,7 @@ export function Participants() {
                 key={participant.user_id}
                 name={participant.username}
                 emojiId={participant.user_id}
+                emoji={participant.emoji}
                 isHost={isHost}
                 actionsDisabled={transferring}
                 onTransferHost={

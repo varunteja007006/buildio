@@ -7,6 +7,7 @@ import { Crown, X } from "lucide-react";
 export function ParticipantCard({
   name,
   emojiId,
+  emoji,
   isHost,
   actionsDisabled,
   onTransferHost,
@@ -14,6 +15,7 @@ export function ParticipantCard({
 }: Readonly<{
   name: string;
   emojiId: string;
+  emoji?: string;
   isHost?: boolean;
   actionsDisabled?: boolean;
   onTransferHost?: () => void;
@@ -23,7 +25,7 @@ export function ParticipantCard({
     <div className="flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-xl border border-primary/25 bg-white px-2 py-1.5 shadow dark:bg-secondary">
       <div className="flex min-w-0 flex-row items-center gap-2">
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-lg">
-          {getEmojiForUserId(emojiId)}
+          {emoji ?? getEmojiForUserId(emojiId)}
         </div>
         <div className="flex min-w-0 flex-col">
           <div className="flex min-w-0 items-center gap-1">

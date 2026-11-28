@@ -148,6 +148,7 @@ export const getGameState = query({
       v.object({
         user_id: v.id("users"),
         username: v.string(),
+        emoji: v.optional(v.string()),
         is_owner: v.boolean(),
       }),
     ),
@@ -227,6 +228,7 @@ export const getGameState = query({
     const participants: {
       user_id: Id<"users">;
       username: string;
+      emoji?: string;
       is_owner: boolean;
     }[] = [];
     for (const team of teams.slice(0, MAX_PARTICIPANTS)) {
@@ -235,6 +237,7 @@ export const getGameState = query({
         participants.push({
           user_id: member._id,
           username: member.username,
+          emoji: member.emoji,
           is_owner: member._id === room.ownerId,
         });
       }
