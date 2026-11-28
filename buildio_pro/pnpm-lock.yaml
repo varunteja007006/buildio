@@ -84,6 +84,9 @@ catalogs:
     ai:
       specifier: 7.0.171
       version: 7.0.171
+    axios:
+      specifier: 1.21.1
+      version: 1.21.1
     babel-plugin-react-compiler:
       specifier: 1.0.0
       version: 1.0.0
@@ -806,6 +809,55 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@workspace/eslint-config':
         specifier: workspace:^
+        version: link:../../packages/eslint-config
+      '@workspace/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  apps/meal-card-finder:
+    dependencies:
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
+      '@workspace/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      axios:
+        specifier: 'catalog:'
+        version: 1.21.1
+      lucide-react:
+        specifier: 'catalog:'
+        version: 1.72.0(@types/react@19.3.0)(react@19.3.1)
+      next:
+        specifier: 'catalog:'
+        version: 16.4.6(@babel/core@7.29.13)(@types/node@20.19.43)(babel-plugin-react-compiler@1.0.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react:
+        specifier: catalog:react19
+        version: 19.3.1
+      react-dom:
+        specifier: catalog:react19
+        version: 19.3.1(react@19.3.1)
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.7
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.43
+      '@types/react':
+        specifier: catalog:react19
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: catalog:react19
+        version: 19.3.0(@types/react@19.3.0)
+      '@workspace/eslint-config':
+        specifier: workspace:*
         version: link:../../packages/eslint-config
       '@workspace/typescript-config':
         specifier: workspace:*

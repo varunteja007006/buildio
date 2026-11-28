@@ -1,0 +1,468 @@
+:root {
+  color-scheme: light;
+  --ink: #193327;
+  --muted: #52665b;
+  --forest: #173d2e;
+  --deep: #102e22;
+  --lime: #d9f48f;
+  --line: #dce6da;
+  --surface: #f4f7f0;
+  --white: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font:
+    1rem/1.5 "Instrument Sans",
+    system-ui,
+    sans-serif;
+}
+
+h1,
+h2,
+h3,
+p,
+ul {
+  margin: 0;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid #24754a;
+  outline-offset: 4px;
+}
+
+.wrap {
+  width: min(100% - 3rem, 64rem);
+  margin-inline: auto;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--deep);
+  color: var(--white);
+  padding: 1.6rem 0 5rem;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 auto;
+  width: min(48rem, 76%);
+  pointer-events: none;
+  background:
+    repeating-radial-gradient(
+      ellipse at 76% 42%,
+      transparent 0 27px,
+      #95c89926 28px 29px,
+      transparent 30px 48px
+    ),
+    radial-gradient(ellipse at 75% 40%, #416d47, transparent 66%);
+  mask-image: linear-gradient(90deg, transparent, #000 56%);
+  opacity: 0.7;
+}
+
+.brand,
+.brand-mark {
+  display: flex;
+  align-items: center;
+}
+.brand {
+  gap: 0.75rem;
+  font-weight: 700;
+}
+.brand-mark {
+  justify-content: center;
+  width: 2.5rem;
+  aspect-ratio: 1;
+  border-radius: 0.8rem;
+  background: var(--lime);
+  color: var(--deep);
+}
+
+.intro {
+  margin-top: 1.75rem;
+}
+h1 {
+  max-width: 20ch;
+  font-size: clamp(2.5rem, 6vw, 4.65rem);
+  line-height: 1;
+  letter-spacing: -0.065em;
+}
+.intro p {
+  margin-top: 1rem;
+  color: #d4e6d6;
+  font-size: 1.08rem;
+}
+
+.finder {
+  position: relative;
+  margin-top: -3.6rem;
+}
+.search-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.6rem;
+  row-gap: 1rem;
+  padding: 1.35rem 1.55rem;
+  border: 1px solid var(--line);
+  border-radius: 1.15rem;
+  background: var(--white);
+  box-shadow: 0 12px 30px #1933270b;
+}
+
+.filter-heading,
+.search-panel fieldset {
+  grid-column: 1 / -1;
+}
+.filter-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+.filter-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.025em;
+}
+
+fieldset {
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+legend,
+label {
+  display: block;
+  margin-bottom: 0.45rem;
+  padding: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.city-options,
+.search-controls {
+  display: flex;
+  gap: 0.45rem;
+}
+.city-options {
+  flex-wrap: wrap;
+}
+
+.city-option,
+.search-button,
+.page-button {
+  min-height: 2.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.city-option:hover,
+.page-button:not(:disabled):hover {
+  background: var(--surface);
+}
+.city-option[aria-pressed="true"] {
+  background: var(--lime);
+  border-color: #c4de7d;
+}
+.search-button {
+  padding-inline: 1.15rem;
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--white);
+}
+.search-button:hover {
+  background: #255741;
+}
+
+.input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.input-wrap > svg {
+  position: absolute;
+  left: 0.85rem;
+  top: 0.9rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+.search-input,
+.pin-field {
+  position: relative;
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.6rem 0.7rem 0.6rem 2.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: #fafcf9;
+  color: var(--ink);
+}
+.search-input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.pin-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 2.4rem 0.35rem 0.65rem;
+}
+.pin-field:focus-within {
+  border-color: #24754a;
+}
+.pin-input {
+  flex: 1 1 9rem;
+  min-width: 0;
+  padding: 0.13rem 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+}
+.pin-input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.pin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.55rem;
+  border-radius: 0.4rem;
+  background: var(--lime);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.pin-trigger,
+.pin-chip [data-slot="combobox-chip-remove"] {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--forest);
+}
+.pin-trigger {
+  position: absolute;
+  right: 0.35rem;
+  top: 0.5rem;
+}
+.pin-trigger svg,
+.pin-chip svg,
+.pin-option svg {
+  width: 1rem;
+  height: 1rem;
+}
+:has(> .pin-popup) {
+  z-index: 5;
+}
+.pin-popup {
+  width: var(--anchor-width);
+  max-width: var(--available-width);
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--white);
+  box-shadow: 0 8px 24px #19332724;
+}
+.pin-empty:not(:empty) {
+  padding: 0.75rem;
+  color: var(--muted);
+}
+.pin-list {
+  max-height: min(15rem, var(--available-height));
+  overflow-y: auto;
+}
+.pin-option {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 0.75rem;
+  cursor: pointer;
+}
+.pin-option[data-highlighted] {
+  background: var(--surface);
+}
+.pin-option[data-selected] {
+  font-weight: 700;
+}
+
+.text-button {
+  justify-self: start;
+  border: 0;
+  padding: 0.25rem 0;
+  background: transparent;
+  color: var(--forest);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.results {
+  margin-top: 2.25rem;
+}
+.results-header,
+.merchant-card,
+.pagination,
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.results-header {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+h2 {
+  font-size: clamp(1.4rem, 4vw, 1.95rem);
+  letter-spacing: -0.045em;
+  line-height: 1.2;
+}
+.result-summary {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.result-summary:empty {
+  margin: 0;
+}
+.source-link,
+.directions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0;
+  color: var(--forest);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.merchant-list {
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+}
+.merchant-card,
+.status-panel {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--white);
+}
+.merchant-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.7rem;
+  aspect-ratio: 1;
+  border-radius: 0.7rem;
+  background: #e8f1df;
+  color: var(--forest);
+}
+.merchant-details {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.merchant-details h3,
+.status-panel h3 {
+  font-size: 1rem;
+  font-weight: 750;
+}
+.merchant-details p,
+.status-panel p {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.status-panel .page-button {
+  margin-top: 0.75rem;
+}
+
+.pagination {
+  justify-content: center;
+  margin-top: 1.15rem;
+  font-size: 0.9rem;
+}
+.page-button:disabled {
+  opacity: 0.55;
+}
+.footer {
+  margin-top: 1.55rem;
+  padding: 0.9rem 0 1.35rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.footer svg {
+  flex: none;
+}
+
+@media (max-width: 49rem) {
+  .search-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 34rem) {
+  .wrap {
+    width: calc(100% - 2rem);
+  }
+  .search-panel {
+    padding: 1rem;
+  }
+  .intro {
+    margin-top: 1.95rem;
+  }
+  .city-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .merchant-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0.3rem 0.75rem;
+  }
+  .merchant-card .directions {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
