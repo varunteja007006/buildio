@@ -52,8 +52,9 @@ See `AGENTS.md` for conventions: adding shadcn components, theme wiring, env set
 | Scribble | 3023 | `pnpm dev:scribble` |
 | Secret Santa | 3024 | `pnpm dev:secret-santa` |
 | Eggsy (Expo) | 3025 | `pnpm --filter eggsy start` |
+| E2E PMS | 3026 | `pnpm dev:e2e-pms` |
 
-Ports 3026–3030 are available for future apps. For local sign-in, match the app
+Ports 3027–3030 are available for future apps. For local sign-in, match the app
 URL and OAuth callback origins to the ports above. Book also needs its Convex
 development deployment's `SITE_URL` to match the Book frontend origin.
 

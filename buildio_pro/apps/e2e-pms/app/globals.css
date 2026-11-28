@@ -1,0 +1,117 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #172432;
+  background: #f4f7f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a {
+  color: #125d52;
+  text-underline-offset: 0.2em;
+}
+
+.shell {
+  width: min(100% - 2rem, 64rem);
+  margin-inline: auto;
+}
+
+.site-header {
+  background: white;
+  border-bottom: 1px solid #dce4e7;
+}
+
+.header-content,
+nav,
+.filters,
+.task {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-content,
+.task {
+  justify-content: space-between;
+}
+.header-content {
+  padding-block: 1rem;
+}
+.brand {
+  color: inherit;
+  font-weight: 750;
+  text-decoration: none;
+}
+main {
+  padding-block: 2rem 4rem;
+}
+h1 {
+  margin: 0 0 1rem;
+}
+h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+.muted {
+  color: #506271;
+}
+.panel .muted {
+  margin: 0.4rem 0 0;
+}
+
+.project-grid,
+.task-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.project-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.panel {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #dce4e7;
+  border-radius: 0.75rem;
+}
+
+.filters {
+  align-items: end;
+}
+.filters label {
+  display: grid;
+  gap: 0.35rem;
+}
+.filters a {
+  align-self: center;
+}
+select,
+button {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #748591;
+  border-radius: 0.4rem;
+  background: white;
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  background: #125d52;
+  border-color: #125d52;
+  color: white;
+  cursor: pointer;
+}
+.status {
+  padding: 0.25rem 0.65rem;
+  background: #e1f2ed;
+  border-radius: 1rem;
+}

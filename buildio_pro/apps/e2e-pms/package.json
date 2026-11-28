@@ -1,0 +1,30 @@
+{
+  "name": "e2e-pms",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3026",
+    "build": "next build",
+    "start": "next start -p 3026",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "catalog:",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
