@@ -25,3 +25,10 @@ export async function fetchPinCodes(city: City, signal: AbortSignal) {
   });
   return data;
 }
+
+export async function fetchDirectoryCities(signal: AbortSignal) {
+  const { data } = await finderClient.get<string[]>(endpoints.finder.cities, {
+    signal,
+  });
+  return data;
+}

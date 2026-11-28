@@ -6,11 +6,16 @@ const directoryOrigin =
 export const mealPartnerCode = "99501";
 
 export const endpoints = {
-  finder: { merchants: "/api/merchants", pincodes: "/api/merchants/pincodes" },
+  finder: {
+    merchants: "/api/merchants",
+    pincodes: "/api/merchants/pincodes",
+    cities: "/api/merchants/cities",
+  },
   directory: {
     apiBase: "https://merchantdirectory.gw.zetapay.in",
     merchants: "/all_merchants",
+    cities: "/all_cities",
     link: (city: City, name: string) =>
-      `${directoryOrigin}/#/${city}/${mealPartnerCode}/1${name ? `/${encodeURIComponent(name)}` : ""}`,
+      `${directoryOrigin}/#/${encodeURIComponent(city)}/${mealPartnerCode}/1${name ? `/${encodeURIComponent(name)}` : ""}`,
   },
 } as const;

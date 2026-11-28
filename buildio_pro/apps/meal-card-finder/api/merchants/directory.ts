@@ -4,7 +4,9 @@ import { z } from "zod";
 import { endpoints, mealPartnerCode } from "@/api/endpoints";
 import { toMerchant } from "@/api/merchants/helpers";
 import {
-  cities,
+  cityLabel,
+  isQuickCity,
+  maxCityLength,
   pinCodePattern,
   type City,
   type MerchantSearch,
@@ -16,6 +18,40 @@ const directoryClient = axios.create({
   maxContentLength: 4 * 1024 * 1024,
   paramsSerializer: { encode: encodeURIComponent },
 });
+
+export const directoryCityParam = z.string().trim().min(1).max(maxCityLength);
+
+const directoryCities = z.object({
+  cities: z.array(directoryCityParam).min(1),
+});
+
+let cityListCache: { expires: number; cities: Promise<string[]> } | undefined;
+
+export function getAdditionalCities() {
+  if (cityListCache && cityListCache.expires > Date.now()) {
+    return cityListCache.cities;
+  }
+
+  const cities = directoryClient
+    .get<unknown>(endpoints.directory.cities, {
+      params: { merchantAccountType: "SODEXO" },
+    })
+    .then(({ data }) =>
+      [...new Set(directoryCities.parse(data).cities)].filter(
+        (city) => !isQuickCity(city.toLowerCase()),
+      ),
+    )
+    .catch((error) => {
+      if (cityListCache?.cities === cities) cityListCache = undefined;
+      throw error;
+    });
+  cityListCache = { expires: Date.now() + 60 * 60_000, cities };
+  return cities;
+}
+
+export async function isDirectoryCity(city: City) {
+  return isQuickCity(city) || (await getAdditionalCities()).includes(city);
+}
 
 export const directoryMerchant = z.object({
   secondaryID: z.string(),
@@ -38,6 +74,7 @@ type DirectoryMerchant = z.infer<typeof directoryMerchant>;
 
 const pageSize = 10;
 const cityBatchSize = 5000;
+const maxCachedCities = 12;
 const cityCache = new Map<
   City,
   {
@@ -95,6 +132,11 @@ function cityMerchants(city: City) {
     if (cityCache.get(city)?.merchants === merchants) cityCache.delete(city);
     throw error;
   });
+  cityCache.delete(city);
+  const oldest = cityCache.keys().next().value;
+  if (cityCache.size >= maxCachedCities && oldest !== undefined) {
+    cityCache.delete(oldest);
+  }
   cityCache.set(city, { expires: Date.now() + 5 * 60_000, merchants });
   return merchants;
 }
@@ -126,7 +168,7 @@ export async function lookupMerchants({
     return {
       merchants: matches
         .slice(start, start + pageSize)
-        .map((merchant) => toMerchant(merchant, cities[city])),
+        .map((merchant) => toMerchant(merchant, cityLabel(city))),
       page,
       pageCount: Math.ceil(matches.length / pageSize),
       total: matches.length,
@@ -137,7 +179,7 @@ export async function lookupMerchants({
 
   return {
     merchants: result.listOfMerchants.map((merchant) =>
-      toMerchant(merchant, cities[city]),
+      toMerchant(merchant, cityLabel(city)),
     ),
     page,
     pageCount: result.pageCount,

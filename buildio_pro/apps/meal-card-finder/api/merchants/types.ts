@@ -5,9 +5,19 @@ export const cities = {
   pune: "Pune",
 } as const;
 
-export type City = keyof typeof cities;
-export const cityIds = Object.keys(cities) as City[];
+type QuickCity = keyof typeof cities;
+export type City = string;
+export const cityIds = Object.keys(cities) as QuickCity[];
 
+export function isQuickCity(city: string): city is QuickCity {
+  return Object.hasOwn(cities, city);
+}
+
+export function cityLabel(city: City) {
+  return isQuickCity(city) ? cities[city] : city;
+}
+
+export const maxCityLength = 80;
 export const maxSearchLength = 100;
 export const pinCodePattern = /^[1-9]\d{5}$/;
 

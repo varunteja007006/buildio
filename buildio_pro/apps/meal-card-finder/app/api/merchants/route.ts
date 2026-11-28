@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-import { lookupMerchants } from "@/api/merchants/directory";
 import {
-  cityIds,
-  maxSearchLength,
-  pinCodePattern,
-} from "@/api/merchants/types";
+  directoryCityParam,
+  isDirectoryCity,
+  lookupMerchants,
+} from "@/api/merchants/directory";
+import { maxSearchLength, pinCodePattern } from "@/api/merchants/types";
 
 const searchParams = z.object({
-  city: z.enum(cityIds),
+  city: directoryCityParam,
   name: z.string().trim().max(maxSearchLength),
   pincodes: z
     .string()
@@ -38,6 +38,9 @@ export async function GET(request: Request) {
   }
 
   try {
+    if (!(await isDirectoryCity(search.data.city))) {
+      return Response.json({ error: "Choose a valid city." }, { status: 400 });
+    }
     return Response.json(await lookupMerchants(search.data), {
       headers: {
         "Cache-Control": "no-store",

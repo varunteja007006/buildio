@@ -21,6 +21,7 @@ const home = await fetch(root, {
 assert.equal(home.status, 200);
 const html = await home.text();
 assert.match(html, /Filter outlets/);
+assert.match(html, /Other city/);
 assert.match(html, /Search or select PIN codes/);
 
 for (const city of ["chennai", "hyderabad", "bengaluru", "pune"]) {
@@ -51,6 +52,26 @@ await search({ city: "invalid" }, 400);
 await search({ city: "pune", page: "0" }, 400);
 
 const pinCodesPath = "/api/merchants/pincodes";
+const otherCities = await search({}, 200, "/api/merchants/cities");
+assert.ok(otherCities.includes("New Delhi"));
+assert.ok(!otherCities.includes("Chennai"));
+const otherCity = { city: "New Delhi" };
+const otherCityResults = await search(otherCity);
+assert.ok(otherCityResults.total > 0);
+assert.match(otherCityResults.merchants[0].address, /New Delhi/);
+const otherCityPins = await search(otherCity, 200, pinCodesPath);
+assert.match(otherCityPins[0], /^[1-9]\d{5}$/);
+const otherCityFiltered = await search({
+  ...otherCity,
+  pincodes: otherCityPins[0],
+});
+assert.ok(otherCityFiltered.total > 0);
+assert.ok(
+  otherCityFiltered.merchants.every(({ address }) =>
+    address.endsWith(otherCityPins[0]),
+  ),
+);
+
 const chennaiPins = await search({ city: "chennai" }, 200, pinCodesPath);
 assert.ok(chennaiPins.includes("600096") && chennaiPins.includes("600061"));
 const bengaluruPins = await search({ city: "bengaluru" }, 200, pinCodesPath);

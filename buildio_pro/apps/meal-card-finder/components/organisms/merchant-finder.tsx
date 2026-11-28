@@ -15,9 +15,11 @@ import { merchantQuery } from "@/api/merchants/query";
 import {
   cities,
   cityIds,
+  cityLabel,
   maxSearchLength,
   type MerchantSearch,
 } from "@/api/merchants/types";
+import { CityPicker } from "@/components/molecules/city-picker";
 import { MerchantCard } from "@/components/molecules/merchant-card";
 import { PinCodeFilter } from "@/components/molecules/pin-code-filter";
 
@@ -33,6 +35,12 @@ function Directory() {
   const { data, isPending, isError, isFetching, refetch } = useQuery(
     merchantQuery(search),
   );
+
+  function selectCity(city: string) {
+    if (city !== search.city) {
+      setSearch({ ...search, city, pincodes: [], page: 1 });
+    }
+  }
 
   function changePage(page: number) {
     setSearch({ ...search, page });
@@ -70,15 +78,13 @@ function Directory() {
                 key={city}
                 type="button"
                 aria-pressed={city === search.city}
-                onClick={() => {
-                  if (city !== search.city)
-                    setSearch({ ...search, city, pincodes: [], page: 1 });
-                }}
+                onClick={() => selectCity(city)}
               >
                 {cities[city]}
               </Button>
             ))}
           </div>
+          <CityPicker value={search.city} onChange={selectCity} />
         </fieldset>
         <form
           className="search-form"
@@ -121,7 +127,7 @@ function Directory() {
         <div className="results-header">
           <div>
             <h2 id="results-heading" tabIndex={-1} ref={resultsHeading}>
-              Meal partners in {cities[search.city]}
+              Meal partners in {cityLabel(search.city)}
             </h2>
             <p className="result-summary" role="status">
               {isPending && "Loading outlets…"}
